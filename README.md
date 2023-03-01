@@ -89,6 +89,34 @@ The default is source, and it can be modified in the disk-image-create command l
 All elements can be found under *diskimage_builder/elements*, and you can create new elements following the conventions for environment variables. (https://docs.openstack.org/diskimage-builder/latest/developer/developing_elements.html)
 
 
+* Elements directory structure:
+
+
+```shell
+ubuntu@sylva:~/diskimage-builder/diskimage_builder/elements$ ls
+__init__.py                  cloud-init-nocloud   dracut-network         install-bin           pip-and-virtualenv         source-repositories
+__pycache__                  containerfile        dracut-ramdisk         install-static        pip-cache                  stable-interface-names
+apt-conf                     debian               dracut-regenerate      install-types         pkg-map                    svc-map
+apt-preferences              debian-minimal       dynamic-login          iscsi-boot            posix                      sysctl
+apt-sources                  debian-systemd       element-manifest       iso                   proliant-tools             sysprep
+baremetal                    debian-upstart       elrepo                 journal-to-console    pypi                       tpm-emulator
+base                         debootstrap          enable-serial-console  keylime-agent         python-brickclient         uboot
+block-device-efi             deploy-baremetal     ensure-venv            local-config          python-stow-versions       ubuntu
+block-device-efi-lvm         deploy-kexec         epel                   lvm                   ramdisk                    ubuntu-common
+block-device-gpt             deploy-targetcli     fedora                 manifests             ramdisk-base               ubuntu-minimal
+block-device-mbr             deploy-tgtadm        fedora-container       mellanox              rax-nova-agent             ubuntu-signed
+bootloader                   devuser              fedora-minimal         modprobe              redhat-common              ubuntu-systemd-container
+cache-url                    dhcp-all-interfaces  gentoo                 modprobe-blacklist    rhel                       vm
+centos                       dib-init-system      growroot               no-final-image        rhel-common                yum
+centos-minimal               dib-python           growvols               oat-client            rhel7                      yum-minimal
+centos7                      dib-run-parts        grub2                  openeuler-minimal     rocky-container            zipl
+cleanup-kernel-initrd        disable-nouveau      hpdsa                  openssh-server        rpm-distro                 zypper
+cloud-init                   disable-selinux      hwburnin               openstack-ci-mirrors  runtime-ssh-host-keys      zypper-minimal
+cloud-init-datasources       dkms                 hwdiscovery            opensuse              select-boot-kernel-initrd
+cloud-init-disable-resizefs  docker               ibft-interfaces        opensuse-minimal      selinux-permissive
+cloud-init-growpart          dpkg                 ilo                    package-installs      simple-init
+```
+
 
 
 
