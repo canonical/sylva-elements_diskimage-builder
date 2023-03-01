@@ -301,19 +301,19 @@ Example of _ubuntu_ basic element structure:
 README.rst  element-deps  element-provides  environment.d  package-installs.yaml  post-install.d  pre-install.d  root.d  test-elements
 ```
 
-* _element-deps_            specify dependencies on other elements
+* in _element-deps_            specify dependencies on other elements
 
-* _element-provides_        list of elements provided by current element
+* in _element-provides_        list of elements provided by current element
 
-* _environment.d_           define environment variables and data sources
+* in _environment.d_           define environment variables and data sources
 
-* _package-installs_        specify packages to be installed
+* in _package-installs_        specify packages to be installed
 
-* _post-install.d_          define post-install scripts to be called after install, but before first image boot
+* in _post-install.d_          define post-install scripts to be called after install, but before first image boot
 
-* _pre-install.d_           define pre-install scripts, good place to add apt repositories
+* in _pre-install.d_           define pre-install scripts, good place to add apt repositories
 
-* _root.d_                  adapt the initial root filesystem
+* in _root.d_                  adapt the initial root filesystem
 
-* _test-elements_           various build-succeed tests
+* in _test-elements_           various build-succeed tests
 
