@@ -1,0 +1,10 @@
+## template:jinja
+{
+    "auths": {
+{% for auth in auths %}
+        "{{ auth.repo }}": {
+            "auth": "{{ auth.token }}"
+        }{% if not loop.last %},{% endif %}
+{% endfor %}
+    }
+}

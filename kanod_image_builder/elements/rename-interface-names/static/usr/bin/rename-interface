@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# build array of network devices starting with en?
+for dev in $(ifconfig -a | grep eno | awk -F': ' '{print $1}'); do
+    edev+=("$dev")
+done
+
+int_index=1
+# use array to find mac address
+for d in "${edev[@]}"; do
+   mac=$(ip addr show "$d" | grep ether | awk '{print $2};')
+   if [ -n "$mac" ]; then
+      echo "# mac for $d is $mac"
+   fi
+
+   printf 'SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="%s", ATTR{dev_id}=="0x0", ATTR{type}=="1", NAME="eno%s"\n' "$mac" "$int_index" >> /etc/udev/rules.d/10-persistent-net.rules
+   ((int_index++))
+done

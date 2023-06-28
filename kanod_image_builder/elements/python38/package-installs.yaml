@@ -1,0 +1,13 @@
+make:
+autoconf:
+automake:
+gcc:
+libtool:
+openssl-devel:
+  build-only: True
+bzip2-devel:
+  build-only: True
+libffi-devel:
+  build-only: True
+xz-devel:
+  build-only: True

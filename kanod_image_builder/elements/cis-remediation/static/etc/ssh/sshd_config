@@ -1,0 +1,71 @@
+# Copyright 2022 b<>com.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# This is the sshd server system-wide configuration file compliant with CIS
+# Ubuntu Linux benchmarks.
+# sshd_config(5) for more information.
+#
+# This sshd was compiled with PATH=/usr/bin:/bin:/usr/sbin:/sbin
+#
+# The strategy used for options in the default sshd_config shipped with
+# OpenSSH is to specify options with their default value where
+# possible, but leave them commented.  Uncommented options override the
+# default value.
+
+AddressFamily any
+AllowAgentForwarding no
+AllowGroups sudo wheel
+AllowTcpForwarding no
+Banner /etc/issue.net
+ChallengeResponseAuthentication no
+Ciphers
+ClientAliveCountMax 3
+ClientAliveInterval 300
+DebianBanner no
+GatewayPorts no
+GSSAPIAuthentication no
+GSSAPICleanupCredentials yes
+HostbasedAuthentication no
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+HostKey /etc/ssh/ssh_host_rsa_key
+IgnoreRhosts yes
+IgnoreUserKnownHosts yes
+KerberosAuthentication no
+KerberosOrLocalPasswd no
+KerberosTicketCleanup yes
+KexAlgorithms
+ListenAddress 0.0.0.0
+LoginGraceTime 30s
+LogLevel VERBOSE
+MACs
+MaxAuthTries 2
+MaxSessions 10
+MaxStartups 10:30:60
+PasswordAuthentication yes
+PermitEmptyPasswords no
+PermitRootLogin no
+PermitTunnel no
+PermitUserEnvironment no
+Port 22
+PrintLastLog no
+PrintMotd no
+Protocol 2
+PubkeyAuthentication yes
+StrictModes yes
+SyslogFacility AUTH
+TCPKeepAlive no
+UseLogin no
+X11Forwarding no
+X11UseLocalhost yes

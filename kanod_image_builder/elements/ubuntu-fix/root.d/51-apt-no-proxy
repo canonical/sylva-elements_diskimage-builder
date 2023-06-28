@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+[ -n "$TARGET_ROOT" ]
+
+# set no proxy too
+if [ -n "${no_proxy:-}" ] ; then
+    IFS=',' read -ra host_list <<< "$no_proxy"
+    for host in "${host_list[@]}"; do
+        echo "Acquire::http::Proxy::$host \"DIRECT\";" | sudo tee -a "$TARGET_ROOT/etc/apt/apt.conf.d/60img-build-proxy"
+    done
+fi

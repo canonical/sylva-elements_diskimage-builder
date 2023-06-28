@@ -1,0 +1,81 @@
+#!/usr/bin/python3
+
+import copy
+import os
+import shutil
+from typing import Dict
+import yaml
+
+tmp_hook = os.getenv('TMP_HOOKS_PATH')
+elements_var = os.getenv('IMAGE_ELEMENT_YAML')
+image_name = os.getenv('IMAGE_NAME')
+if elements_var is None or tmp_hook is None or image_name is None:
+    print('DIB error: Required variables not available')
+    os.system('printenv')
+    exit(1)
+
+includes_dir = f'{tmp_hook}/config_includes'
+templates_dir = f'{tmp_hook}/config_templates'
+os.mkdir(includes_dir)
+os.mkdir(templates_dir)
+
+
+def merge_into(tree1, tree2):
+    for k, v2 in tree2.items():
+        if k in tree1:
+            v1 = tree1[k]
+            if isinstance(v1, dict) and isinstance(v2, dict):
+                merge_into(v1, v2)
+            elif isinstance(v1, list) and isinstance(v2, list):
+                v1.extend(copy.deepcopy(v2))
+            else:
+                if v1 != v2:
+                    raise Exception(
+                        'cannot merge two different values'
+                        f' {str(v1)} != {str(v2)}')
+        else:
+            tree1[k] = copy.deepcopy(v2)
+
+
+files = []
+tmpl_files = []
+schema: Dict = {}
+
+for cell in yaml.safe_load(elements_var).items():
+    element, path = cell
+    kanod_path = f'{path}/kanod'
+    template_path = f'{kanod_path}/templates'
+    if os.path.exists(kanod_path):
+        for file in os.listdir(kanod_path):
+            if file.endswith('.py'):
+                if file == '__init__.py':
+                    # We ignore init files. It can be useful to provide one
+                    # in the imported folder to avoid spurious mypy errors.
+                    continue
+                if file in files:
+                    print(f'Redefinition of file {file} in {kanod_path}')
+                    exit(1)
+                else:
+                    files.append(file)
+                shutil.copy(kanod_path + '/' + file, includes_dir)
+    if os.path.exists(template_path):
+        for file in os.listdir(template_path):
+            if file.endswith('.tmpl'):
+                if file in tmpl_files:
+                    print(f'Redefinition of file {file} in {template_path}')
+                    exit(1)
+                else:
+                    tmpl_files.append(file)
+                shutil.copy(template_path + '/' + file, templates_dir)
+    schema_path = f'{path}/schema.yaml'
+    if os.path.exists(schema_path):
+        with open(schema_path, mode='r', encoding='utf-8') as fd:
+            folder_schema = yaml.safe_load(fd)
+            merge_into(schema, folder_schema)
+
+with open(f'{includes_dir}/__init__.py', 'w') as fd:
+    for file in files:
+        fd.write(f'from . import {file[:-3]}\n')
+
+with open(f'{image_name}-schema.yaml', mode='w', encoding='utf-8') as fd:
+    yaml.safe_dump(schema, fd)

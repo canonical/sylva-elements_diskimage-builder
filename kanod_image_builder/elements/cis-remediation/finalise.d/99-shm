@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# set default option for /dev/shm partition
+
+echo "tmpfs /dev/shm tmpfs nosuid,nodev,noexec 0 2" >> /etc/fstab

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [ "$DISTRO_NAME" == "opensuse" ]; then
+    echo "Disable wicked service for opensuse"
+    systemctl disable wicked
+
+    echo "Uninstall wicked  for opensuse"
+    zypper remove -y wicked
+fi

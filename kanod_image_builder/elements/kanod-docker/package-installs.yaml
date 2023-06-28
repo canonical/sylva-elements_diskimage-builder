@@ -1,0 +1,11 @@
+docker-ce:
+  when:
+    - DISTRO_NAME != opensuse
+
+docker-ce-cli:
+  when:
+    - DISTRO_NAME != opensuse
+
+docker:
+  when:
+    - DISTRO_NAME = opensuse

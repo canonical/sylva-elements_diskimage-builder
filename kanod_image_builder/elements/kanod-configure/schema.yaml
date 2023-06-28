@@ -1,0 +1,152 @@
+#  Copyright (C) 2020-2021 Orange
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
+
+$schema: http://json-schema.org/draft-07/schema#
+type: object
+title: Core Image Configuration
+description: |
+  Configuration of a basic machine. This element is usually imported
+  by all OS images.
+
+required: [name]
+additionalProperties: false
+definitions:
+  nexus_definition:
+    type: object
+    description: Configuration of the connection to the Nexus used by this node
+    additionalProperties: false
+    properties:
+      maven:
+        type: string
+        description: URL of the maven repository
+      certificate:
+        type: string
+        description: Certificate for the Nexus
+
+  network_check:
+      description: |
+        Network checks are used to block cloud-init execution until the
+        network is available. Various kind of checks are provided: accessing
+        an http server, establishing a regular TCP connection or querying a
+        DNS server.
+      oneOf:
+      - type: object
+        additionalProperties: false
+        required: [http]
+        properties:
+          tries:
+            type: integer
+            description: number of tries to perform (-1 = unbounded)
+          http:
+            type: string
+            description: a URL to reach
+          timeout:
+            type: integer
+            description: number of seconds before aborting.
+      - type: object
+        additionalProperties: false
+        required: [tcp]
+        properties:
+          tries:
+            type: integer
+            description: number of tries to perform (-1 = unbounded)
+          tcp:
+            type: string
+            description: a port on a server to connect to specified as address:port
+      - type: object
+        additionalProperties: false
+        required: [dns]
+        properties:
+          tries:
+            type: integer
+            description: number of tries to perform (-1 = unbounded)
+          dns:
+            type: string
+            description: a host name to solve
+  proxy_definition:
+    type: object
+    additionalProperties: false
+    properties:
+      http:
+        type: string
+        format: uri
+        description: the URL of the http proxy if there is one
+      https:
+        type: string
+        format: uri
+        description: the URL for the https proxy if there is one
+      no_proxy:
+        type: string
+        description: |
+          a comma separated of domain suffix that should not go through
+          the proxy
+  mount_point_definition:
+    type: array
+    description: |
+      This option is used to mount additional disks
+      on the root file-system. For virtual machines, disks are usually names
+      vdX and vdb is the first additional disk. For real servers, the name
+      depend on the storage technology.
+    items:
+      - type: string
+        description: a source device (eg /dev/vdb)
+      - type: string
+        description: a mount point (eg /data)
+    additionalItems: false
+  boot_definition:
+    type: object
+    description: |
+      Elements configured during the early boot
+    properties: {}
+
+properties:
+  name:
+    type: string
+    description: name of the machine launched
+  network:
+    type: object
+    description: |
+      Definition of the network configuration in cloudinit version 2 format
+
+      This is a simplified version of the netplan configuration.
+
+      Please refer to cloudinit documentation.
+
+      (https://cloudinit.readthedocs.io/en/latest/topics/network-config-format-v2.html)
+  network_checks:
+    type: array
+    items:
+      $ref: '#/definitions/network_check'
+  nexus:
+    $ref: '#/definitions/nexus_definition'
+  mounts:
+    type: array
+    items:
+      $ref: '#/definitions/mount_point_definition'
+    description: |
+      list of mount points.
+  proxy:
+    $ref: '#/definitions/proxy_definition'
+  certificates:
+    type: object
+    additionalProperties:
+      type: string
+    description: |
+      A dictionary where keys are certificate names and values certificates
+      in PEM format.
+  admin:
+    $ref: '#/definitions/admin_user_definition'
+  boot:
+    $ref: '#/definitions/boot_definition'

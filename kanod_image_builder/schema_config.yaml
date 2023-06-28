@@ -1,0 +1,124 @@
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
+
+$schema: http://json-schema.org/draft-07/schema#
+type: object
+title: Recipe Definition for Image Building
+description: |
+  Recipe for building a machine image assembling
+  elements and packages. A user will drive the
+  assembly by defining options and setting flags.
+  This will influence the definition of environment
+  variables and variables influence the behiavour
+  of diskimage_builder elements. Finally conditionally
+  included recipe define the packages and
+  diskimage_builder elements run and so the
+  content of the image.
+
+definitions:
+  option:
+    type: object
+    description: |
+      A user level option. There are two kinds:
+      boolean flags and string variables. Default
+      flag value is always false and it is set
+      with -b.
+    required: [name, kind]
+    additionalProperties: false
+    properties:
+      name:
+        type: string
+        description: name of the variable
+      kind:
+        type: string
+        enum: ['flag', 'var']
+        description: kind of setting.
+      choices:
+        type: array
+        items:
+          type: string
+        description: values that can be taken for a choice.
+      default:
+        type: string
+        description: default value for a variable
+
+  environment:
+    description: |
+      Definition of an environment variable.
+      Environment variable imported in elements
+      (The only real use for them) must begin
+      with prefix DIB_ to ensure diskimage_builder
+      handle them.
+    type: object
+    required: [name, value]
+    additionalProperties: false
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+      when:
+        description: |
+          list of conditions to fulfil to define the variable.
+          Each condition can be either a flag name
+          or  key=value where key is a var. If the
+          condition begins with an exclamation mark (!)
+          it is negated.
+        type: array
+        items:
+          type: string
+
+  recipe:
+    type: object
+    additionalProperties: false
+    description: |
+      A recipe elements is made of a set of
+      packages to install, a set of elements
+      to run and optional conditions.
+    properties:
+      when:
+        description: |
+          list of conditions to fulfil to add the step.
+          The syntax is the same as for environment variables.
+        type: array
+        items:
+          type: string
+      packages:
+        description: list of packages to add
+        type: array
+        items:
+          type: string
+      elements:
+        description: list of elements to add
+        type: array
+        items:
+          type: string
+
+properties:
+  env:
+    type: array
+    description: |
+      A list of environment variable bindings using jinja2 for value definition
+    items:
+      $ref: '#/definitions/environment'
+  options:
+    type: array
+    description: |
+      A list of options to pass to the utility through either -f or -s
+    items:
+      $ref: '#/definitions/option'
+  recipes:
+    type: array
+    items:
+      $ref: '#/definitions/recipe'
