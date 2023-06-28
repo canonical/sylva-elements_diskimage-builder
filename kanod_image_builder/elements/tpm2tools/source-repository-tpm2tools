@@ -1,0 +1,1 @@
+tpm2tools tar /opt/ https://github.com/tpm2-software/tpm2-tools/releases/download/${DIB_TPM2_TOOLS}/tpm2-tools-${DIB_TPM2_TOOLS}.tar.gz .

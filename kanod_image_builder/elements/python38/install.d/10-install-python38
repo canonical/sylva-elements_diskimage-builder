@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -eu
+
+# yum -y groupinstall "Development Tools"
+# yum -y install openssl-devel bzip2-devel libffi-devel xz-devel
+cd /opt
+curl -L "https://www.python.org/ftp/python/${DIB_PYVER}/Python-${DIB_PYVER}.tgz" -o python.tgz
+tar -xvf python.tgz
+cd "Python-${DIB_PYVER}"
+./configure --enable-optimizations
+make altinstall

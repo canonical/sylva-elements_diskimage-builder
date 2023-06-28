@@ -1,0 +1,24 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      https://maven.apache.org/xsd/settings-1.0.0.xsd">
+<proxies>
+  <proxy>
+   <id>proxy</id>
+   <active>${RUNNER_PROXY_ACTIVE}</active>
+   <protocol>http</protocol>
+   <host>${RUNNER_PROXY_HOST}</host>
+   <port>${RUNNER_PROXY_PORT}</port>
+   <nonProxyHosts>${RUNNER_NO_PROXY}</nonProxyHosts>
+  </proxy>
+</proxies>
+
+<servers>
+  <server>
+    <id>kanod</id>
+    <username>${NEXUS_ADMIN_USER}</username>
+    <password>${NEXUS_ADMIN_PASSWORD}</password>
+  </server>
+</servers>
+
+</settings>

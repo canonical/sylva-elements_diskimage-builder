@@ -1,0 +1,32 @@
+#!/bin/bash
+# From OpenStack project diskimage-builder - Apache 2.0 License
+
+# Configure grub. Note that the various conditionals here are to handle
+# different distributions gracefully.
+
+if [ "${DIB_DEBUG_TRACE:-1}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# This might be better factored out into a per-distro 'install-bootblock'
+# helper.
+if [ -d /boot/grub2 ]; then
+    GRUB_CFG=/boot/grub2/grub.cfg
+elif [ -d /boot/grub ]; then
+    GRUB_CFG=/boot/grub/grub.cfg
+fi
+
+if type grub2-mkconfig >/dev/null; then
+    GRUB_MKCONFIG="grub2-mkconfig -o $GRUB_CFG"
+else
+    GRUB_MKCONFIG="grub-mkconfig -o $GRUB_CFG"
+fi
+
+# No need for a timeout. Nobody attends
+sed -i -e 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/g' /etc/default/grub
+echo "GRUB_RECORDFAIL_TIMEOUT=0" >> /etc/default/grub
+
+
+$GRUB_MKCONFIG

@@ -1,0 +1,4 @@
+properties:
+  greeting:
+    type: string
+    description: Text displayed on console startup

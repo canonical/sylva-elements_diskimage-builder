@@ -1,0 +1,142 @@
+- local_loop:
+    name: image0
+    size: 5G
+
+- partitioning:
+    base: image0
+    label: gpt
+    partitions:
+      - name: BSP
+        type: 'EF02'
+        size: 4MiB
+      - name: ESP
+        type: 'EF00'
+        size: 106MiB
+        mkfs:
+          type: vfat
+          mount:
+            mount_point: /boot/efi
+            fstab:
+              options: "defaults"
+              fsck-passno: 1
+      - name: root
+        type: 8E00
+        size: 100%
+
+- lvm:
+    name: lvm
+    pvs:
+      - name: pv
+        options: ["--force"]
+        base: root
+
+    vgs:
+      - name: vg
+        base: ["pv"]
+        options: ["--force"]
+
+    lvs:
+      - name: lv_root
+        base: vg
+        size: 3010M
+
+      - name: lv_tmp
+        base: vg
+        size: 600M
+
+      - name: lv_var
+        base: vg
+        size: 500M
+
+      - name: lv_vartmp
+        base: vg
+        size: 200M
+
+      - name: lv_varlog
+        base: vg
+        size: 100M
+
+      - name: lv_varlogaudit
+        base: vg
+        size: 90M
+
+      - name: lv_home
+        base: vg
+        size: 90M
+
+- mkfs:
+    name: fs_root
+    base: lv_root
+    type: ext4
+    label: "img-rootfs"
+    mount:
+        mount_point: /
+        fstab:
+            options: "rw,relatime"
+            fsck-passno: 1
+
+- mkfs:
+    name: fs_var
+    base: lv_var
+    type: ext4
+    label: "img-var"
+    mount:
+        mount_point: /var
+        fstab:
+            options: "rw,relatime"
+            fsck-passno: 1
+
+- mkfs:
+    name: fs_vartmp
+    base: lv_vartmp
+    type: ext4
+    label: "img-vartmp"
+    mount:
+        mount_point: /var/tmp
+        fstab:
+            options: "rw,relatime,nodev,nosuid,noexec"
+            fsck-passno: 1
+
+- mkfs:
+    name: fs_varlog
+    base: lv_varlog
+    type: ext4
+    label: "img-varlog"
+    mount:
+        mount_point: /var/log
+        fstab:
+            options: "rw,relatime"
+            fsck-passno: 1
+
+- mkfs:
+    name: fs_varlogaudit
+    base: lv_varlogaudit
+    type: ext4
+    label: "img-varlogaudit"
+    mount:
+        mount_point: /var/log/audit
+        fstab:
+            options: "rw,relatime"
+            fsck-passno: 1
+
+- mkfs:
+    name: fs_tmp
+    base: lv_tmp
+    type: ext4
+    label: "img-tmp"
+    mount:
+        mount_point: /tmp
+        fstab:
+            options: "rw,relatime,nodev,nosuid,noexec"
+            fsck-passno: 1
+
+- mkfs:
+    name: fs_home
+    base: lv_home
+    type: ext4
+    label: "img-home"
+    mount:
+        mount_point: /home
+        fstab:
+            options: "rw,relatime,nodev"
+            fsck-passno: 1

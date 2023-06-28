@@ -1,0 +1,30 @@
+build-essential:
+  build-only: True
+  when:
+  - DISTRO_NAME=ubuntu
+gcc:
+  build-only: True
+make:
+  build-only: True
+autoconf:
+  build-only: True
+pkg-config:
+  build-only: True
+libcurl4-openssl-dev:
+  when:
+  - DISTRO_NAME=ubuntu
+libjson-c-dev:
+  when:
+  - DISTRO_NAME=ubuntu
+libssl-dev:
+  when:
+  - DISTRO_NAME=ubuntu
+libcurl-devel:
+  when:
+  - DISTRO_NAME=centos
+json-c-devel:
+  when:
+  - DISTRO_NAME=centos
+openssl-devel:
+  when:
+  - DISTRO_NAME=centos

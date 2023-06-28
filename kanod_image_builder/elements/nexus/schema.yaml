@@ -1,0 +1,21 @@
+definitions:
+  nexus_definition:
+    type: object
+    description: Configuration of the connection to the Nexus used by this node
+    additionalProperties: false
+    properties:
+      maven:
+        type: string
+        description: URL of the maven repository
+      docker:
+        type: string
+        description: definition of the docker registry as a host:port pair
+      insecure:
+        type: boolean
+        description: Whether the registry is insecure or not
+      certificate:
+        type: string
+        description: Certificate for the Nexus
+properties:
+  nexus:
+    $ref: '#/definitions/nexus_definition'
