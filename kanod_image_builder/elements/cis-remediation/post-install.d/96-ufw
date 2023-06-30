@@ -1,0 +1,26 @@
+#!/bin/bash
+
+SUBNET=$(ip r l |grep 'kernel'| awk '{ print $1 }')
+
+ufw allow in from 10.42.0.0/16 to any comment "allow internal k8s traffic (pods)"
+ufw allow in from 10.43.0.0/16 to any comment "allow internal k8s traffic (services)"
+ufw allow in proto tcp from $SUBNET to any port 2379:2381 comment "etcd and etcd metrics"
+ufw allow in proto tcp from any to any port 443,6443 comment "kube api"
+ufw allow in proto tcp from $SUBNET to any port 6443,9345,2399,2400 comment "etcd and rke server"
+ufw allow in proto tcp from $SUBNET to any port 8080,8181 comment "coredns probes"
+ufw allow in proto tcp from $SUBNET to any port 10249:10250 comment "kubelet metrics"
+ufw allow in proto tcp from $SUBNET to any port 10256,10257,10259 comment "k8s ctrl mgr, k8s scheduler mgr metrics"
+ufw allow in proto tcp from $SUBNET to any port 179 comment "Calico BGP"
+ufw allow in proto udp from $SUBNET to any port 4789 comment "Calico VXLAN"
+ufw allow in proto tcp from $SUBNET to any port 5473 comment "Calico Typha"
+ufw allow in proto udp from $SUBNET to any port 8472 comment "Cilium CNI VXLAN"
+ufw allow in proto tcp from $SUBNET to any port 4240,4244,4245,9234,9879,9891,9962,9964 comment "Cilium CNI health checks, UI access, metrics"
+ufw allow in proto tcp from $SUBNET to any port 9090,9963 comment "Cilium Operator metrics"
+ufw allow in proto tcp from $SUBNET to any port 6942 comment "metallb metrics"
+ufw allow in proto tcp from $SUBNET to any port 9100 comment "node exporter metrics"
+ufw allow in proto tcp from $SUBNET to any port 7946,7472 comment "metallb speaker"
+ufw allow in proto udp from $SUBNET to any port 7946 comment "metallb speaker udp"
+ufw allow out from any to any  comment "allow all out"
+ufw default allow outgoing
+ufw default deny incoming
+ufw default deny forward

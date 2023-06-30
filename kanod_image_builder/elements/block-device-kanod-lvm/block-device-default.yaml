@@ -1,6 +1,6 @@
 - local_loop:
     name: image0
-    size: 5G
+    size: 100G
 
 - partitioning:
     base: image0
@@ -42,27 +42,39 @@
 
       - name: lv_tmp
         base: vg
-        size: 600M
+        size: 10G
 
       - name: lv_var
         base: vg
-        size: 500M
+        size: 10G
 
       - name: lv_vartmp
         base: vg
-        size: 200M
+        size: 1G
 
       - name: lv_varlog
         base: vg
-        size: 100M
+        size: 5G
 
       - name: lv_varlogaudit
         base: vg
-        size: 90M
+        size: 1G
 
       - name: lv_home
         base: vg
-        size: 90M
+        size: 1G
+
+      - name: lv_etcd
+        base: vg
+        size: 10G
+
+      - name: lv_containerd
+        base: vg
+        size: 30G
+
+      - name: lv_kubelet
+        base: vg
+        size: 10G
 
 - mkfs:
     name: fs_root
@@ -140,3 +152,37 @@
         fstab:
             options: "rw,relatime,nodev"
             fsck-passno: 1
+
+- mkfs:
+    name: fs_etcd
+    base: lv_etcd
+    type: ext4
+    label: "img-etcd"
+    mount:
+        mount_point: /var/lib/rancher/rke2/server/db
+        fstab:
+            options: "rw,relatime,nodev"
+            fsck-passno: 1
+
+- mkfs:
+    name: fs_containerd
+    base: lv_containerd
+    type: ext4
+    label: "img-containerd"
+    mount:
+        mount_point: /var/lib/rancher/rke2/agent/containerd
+        fstab:
+            options: "rw,relatime,nodev"
+            fsck-passno: 1
+
+- mkfs:
+    name: fs_kubelet
+    base: lv_kubelet
+    type: ext4
+    label: "img-kubelet"
+    mount:
+        mount_point: /var/lib/kubelet
+        fstab:
+            options: "rw,relatime,nodev"
+            fsck-passno: 1
+

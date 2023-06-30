@@ -1,0 +1,96 @@
+#!/bin/bash
+
+cat > /tmp/requirements.yml <<EOF
+roles:
+  - name: UBUNTU20-CIS
+    scm: git
+    src: https://github.com/ansible-lockdown/UBUNTU20-CIS
+    version: "1.1.1"
+EOF
+
+cat > /tmp/site.yml <<EOF
+---
+- hosts: localhost
+  become: true
+  vars:
+      is_container: false
+      ubtu20cis_skip_for_travis: false
+      ubtu20cis_oscap_scan: yes
+      ubtu20cis_is_router: true 
+      ubtu20cis_time_sync_tool: chrony
+      ubtu20cis_ipv6_required: true
+      ubtu20cis_install_network_manager: false
+      ubtu20cis_system_is_log_server: false
+      ubtu20cis_firewall_package: ufw
+      ubtu20cis_time_synchronization_servers:
+        - 172.20.4.108
+      ubtu20cis_rsyslog_ansible_managed: false
+      ubtu20cis_logrotate_create_settings: "0640 syslog adm"
+      ubtu20cis_sshd:
+        log_level: "INFO"
+        max_auth_tries: 4
+        ciphers: "chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr"
+        macs: "hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256"
+        kex_algorithms: "curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group14-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256"
+        client_alive_interval: 300
+        client_alive_count_max: 0
+        login_grace_time: 60
+        max_sessions: 4
+        allow_users: ""
+        allow_groups: ""
+
+  roles:
+  - { role: UBUNTU20-CIS, ignore_errors: yes, tags: ['hardening'] }        
+  
+  tasks: 
+   - name: remove config file from uninstalled package telnet
+     ansible.builtin.package:
+      name: telnet
+      purge: yes
+      state: absent
+   
+   - name: remove config file from uninstalled package rsync
+     ansible.builtin.package:
+      name: rsync
+      purge: yes
+      state: absent
+      
+   - name: fix ClientAliveCountMax
+     command: sed -i -e 's/ClientAliveCountMax 0/ClientAliveCountMax 3/' /etc/ssh/sshd_config
+
+   - name: fix core dumps size
+     copy:
+      dest: "/etc/security/limits.d/00-core-dumps"
+      content: '* hard core 0'
+EOF
+
+ansible-galaxy install -r /tmp/requirements.yml
+ansible-playbook /tmp/site.yml --skip-tags="rule_3.5.3.2.3,rule_4.2.1.5"
+umount -A /tmp
+
+sysctl --system
+aa-enforce /etc/apparmor.d/*
+aideinit --force --yes -b
+touch /var/lib/aide/aide.db
+chmod 600 /var/lib/aide/aide.db
+sed -i "s/^UMASK.*/UMASK 027/g" /etc/login.defs
+sed -i "s/^inet_interface.*/inet_interfaces = localhost/g" /etc/postfix/main.cf
+echo "session optional  pam_mkhomedir.so  umask=0027" |sudo tee -a  /etc/pam.d/common-session
+
+### Upgrade Python  
+add-apt-repository -y ppa:deadsnakes/ppa
+apt-get update
+apt-get install python3.11 -y 
+ln -sf /usr/bin/python3.11 /usr/bin/python
+pip3 list --outdated  | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip3 install -U --ignore-installed
+pip install PGPy 
+pip uninstall -y pyOpenSSL
+pip install pyOpenSSL==22.0.0
+pip uninstall -y cryptography
+pip install cryptography==37.0.4
+
+### Cleanup
+apt remove --purge iputils-ping netcat wget tcpdump ansible perl gcc strace ltrace -y
+rm -rf /tmp/requirements.yml /tmp/site.yml ~/.ansible
+pip uninstall ansible-core -y
+apt autoremove -y
