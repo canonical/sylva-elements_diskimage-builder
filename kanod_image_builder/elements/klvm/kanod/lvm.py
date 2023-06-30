@@ -97,6 +97,9 @@ def configure_lvm(args: common.BootParams):
             {'name': 'lv_vartmp', 'size': '+10%FREE'},
             {'name': 'lv_varlogaudit', 'size': '+5%FREE'},
             {'name': 'lv_var', 'size': '100%FREE'},
+            {'name': 'lv_etcd', 'size': '100%FREE'},
+            {'name': 'lv_containerd', 'size': '100%FREE'},
+            {'name': 'lv_kubelet', 'size': '100%FREE'},
         ]
     fill_lvm_disk(args.conf)
     grow_lvm_volumes(lvm_parts)

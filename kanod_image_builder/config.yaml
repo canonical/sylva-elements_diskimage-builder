@@ -32,6 +32,8 @@ options:
   kind: var
 - name: no_kanod_network
   kind: flag
+- name: kanod_admin
+  kind: flag
 
 env:
 - name: DIB_TPM2_TOOLS
@@ -207,6 +209,10 @@ recipes:
 - when:
   - target=ubuntu
   - cis_remediation
+  packages:
+  - ansible
+  - git
+  - ufw
   elements:
   - cis-remediation
 - when:
@@ -253,3 +259,8 @@ recipes:
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
   - block-device-gpt
+- when:
+  - target=ubuntu
+  - kanod_admin
+  elements:
+  - kanod-admin
