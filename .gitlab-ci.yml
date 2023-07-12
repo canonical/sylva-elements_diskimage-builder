@@ -13,9 +13,9 @@ build-hardened:
     - export PATH="${HOME}/.local/bin:${PATH}"
     - pip3 install diskimage-builder
     - python3 -m pip install --user .
-    - kanod-image-builder -s target=ubuntu -s release=focal -b no_kanod_network -b cis_remediation -b lvm -o ubuntu-20.04-hardened.qcow2
-    - sha256sum ubuntu-20.04-hardened.qcow2 | awk '{ print $1 }'
-    - flux push artifact $REPO_URL/diskimage-builder-hardened:$(git tag --points-at HEAD) --path="ubuntu-20.04-hardened.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $GITLAB_USER_LOGIN:$REPO_TOKEN
+    - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b cis_remediation -b lvm -o ubuntu-22.04-hardened.qcow2
+    - sha256sum ubuntu-22.04-hardened.qcow2 | awk '{ print $1 }'
+    - flux push artifact $REPO_URL/diskimage-builder-hardened:$(git tag --points-at HEAD) --path="ubuntu-22.04-hardened.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $GITLAB_USER_LOGIN:$REPO_TOKEN
   only:
     - tags
 
@@ -27,8 +27,8 @@ build-plain:
     - export PATH="${HOME}/.local/bin:${PATH}"
     - pip3 install diskimage-builder
     - python3 -m pip install --user .
-    - kanod-image-builder -s target=ubuntu -s release=focal -b no_kanod_network -b lvm -p nfs-common,iptables -o ubuntu-20.04-plain.qcow2
-    - sha256sum ubuntu-20.04-plain.qcow2 | awk '{ print $1 }'
-    - flux push artifact $REPO_URL/diskimage-builder-plain:$(git tag --points-at HEAD) --path="ubuntu-20.04-plain.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $GITLAB_USER_LOGIN:$REPO_TOKEN
+    - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -p vim,iputils-ping,nfs-common,iptables -o ubuntu-22.04-plain.qcow2
+    - sha256sum ubuntu-22.04-plain.qcow2 | awk '{ print $1 }'
+    - flux push artifact $REPO_URL/diskimage-builder-plain:$(git tag --points-at HEAD) --path="ubuntu-22.04-plain.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $GITLAB_USER_LOGIN:$REPO_TOKEN
   only:
     - tags
