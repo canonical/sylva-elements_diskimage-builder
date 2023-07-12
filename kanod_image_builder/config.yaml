@@ -149,11 +149,6 @@ recipes:
   - grub-config
 - when:
   - target=ubuntu
-  - lvm
-  elements:
-  - block-device-kanod-lvm
-- when:
-  - target=ubuntu
   packages:
   - initramfs-tools
   - parted
@@ -206,6 +201,11 @@ recipes:
   - '!lvm'
   elements:
   - block-device-efi
+- when:
+  - target=ubuntu
+  - lvm
+  elements:
+  - block-device-kanod-lvm
 - when:
   - target=ubuntu
   - cis_remediation

@@ -38,7 +38,7 @@
     lvs:
       - name: lv_root
         base: vg
-        size: 10G
+        size: 3010M
 
       - name: lv_tmp
         base: vg
