@@ -217,6 +217,16 @@ recipes:
   - cis-remediation
 - when:
   - target=ubuntu
+  - release=jammy
+  packages:
+  - vim
+  - iputils-ping
+  - rsyslog
+  - nfs-common
+  - iptables
+  - zstd
+- when:
+  - target=ubuntu
   - rename_interface_names
   elements:
   - rename-interface-names
