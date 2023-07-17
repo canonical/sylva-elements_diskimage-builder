@@ -1,42 +1,60 @@
 variables:
   REPO_URL: "oci://$CI_REGISTRY_IMAGE"
+  COSIGN_VERSION: "2.1.1"
+  CRANE_VERSION: "v0.15.2"
 
 stages:
-  - "build hardened image"
   - "build plain image"
+  - "build hardened image"
+
+default:
+  tags: 
+    - oro-libvirt
+
+.config:
+  before_script:
+    - curl -sL https://github.com/google/go-containerregistry/releases/download/${CRANE_VERSION}/go-containerregistry_Linux_x86_64.tar.gz > go-containerregistry.tar.gz
+    - sudo tar -zxvf go-containerregistry.tar.gz -C /usr/local/bin/ crane
+    - curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker.gpg
+    - echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    - sudo apt update -y
+    - sudo apt install docker-ce-cli zstd -y
+    - curl -sO http://ports.ubuntu.com/pool/main/d/debootstrap/debootstrap_1.0.126+nmu1_all.deb
+    - sudo dpkg -i debootstrap_1.0.126+nmu1_all.deb
+    - curl -sOL https://github.com/sigstore/cosign/releases/latest/download/cosign_${COSIGN_VERSION}_amd64.deb
+    - sudo dpkg -i cosign_${COSIGN_VERSION}_amd64.deb
+    - export GITLAB_TOKEN=$REPO_TOKEN   # cosign expects legacy variables name
 
 build-hardened:
   stage: "build hardened image"
-  tags:
-    - oro-libvirt
-  before_script:
-    - curl -O http://ports.ubuntu.com/pool/main/d/debootstrap/debootstrap_1.0.126+nmu1_all.deb
-    - sudo dpkg -i debootstrap_1.0.126+nmu1_all.deb
-    - sudo apt install zstd -y
+  extends: 
+  - .config
   script:
     - export PATH="${HOME}/.local/bin:${PATH}"
     - pip3 install diskimage-builder
     - python3 -m pip install --user .
     - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b cis_remediation -b lvm -o ubuntu-22.04-hardened.qcow2
     - sha256sum ubuntu-22.04-hardened.qcow2 | awk '{ print $1 }'
-    - flux push artifact $REPO_URL/diskimage-builder-hardened:$(git tag --points-at HEAD) --path="ubuntu-22.04-hardened.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $GITLAB_USER_LOGIN:$REPO_TOKEN
+    - flux push artifact $REPO_URL/diskimage-builder-hardened:$(git tag --points-at HEAD) --timeout 10m --path="ubuntu-22.04-hardened.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $GITLAB_USER_LOGIN:$REPO_TOKEN
+    - DIGEST=$(crane digest $CI_REGISTRY_IMAGE/diskimage-builder-hardened:$(git tag --points-at HEAD))
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - cosign sign -y --key gitlab://$CI_PROJECT_ID $CI_REGISTRY_IMAGE/diskimage-builder-hardened@$DIGEST
   only:
     - tags
 
 build-plain:
   stage: "build plain image"
-  tags:
-    - oro-libvirt
-  before_script:
-    - curl -O http://ports.ubuntu.com/pool/main/d/debootstrap/debootstrap_1.0.126+nmu1_all.deb
-    - sudo dpkg -i debootstrap_1.0.126+nmu1_all.deb
-    - sudo apt install zstd -y
+  extends: 
+  - .config
   script:
     - export PATH="${HOME}/.local/bin:${PATH}"
     - pip3 install diskimage-builder
     - python3 -m pip install --user .
     - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -o ubuntu-22.04-plain.qcow2
     - sha256sum ubuntu-22.04-plain.qcow2 | awk '{ print $1 }'
-    - flux push artifact $REPO_URL/diskimage-builder-plain:$(git tag --points-at HEAD) --path="ubuntu-22.04-plain.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $GITLAB_USER_LOGIN:$REPO_TOKEN
+    - flux push artifact $REPO_URL/diskimage-builder-plain:$(git tag --points-at HEAD) --timeout 10m --path="ubuntu-22.04-plain.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $GITLAB_USER_LOGIN:$REPO_TOKEN
+    - DIGEST=$(crane digest $CI_REGISTRY_IMAGE/diskimage-builder-plain:$(git tag --points-at HEAD))
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - cosign sign -y --key gitlab://$CI_PROJECT_ID $CI_REGISTRY_IMAGE/diskimage-builder-plain@$DIGEST
   only:
     - tags
