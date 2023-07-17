@@ -1,8 +1,4 @@
 ---
-workflow:
-  rules:
-    - when: always
-
 variables:
   REPO_URL: "oci://$CI_REGISTRY_IMAGE"
   IMAGE_FORMAT: qcow2
@@ -14,6 +10,7 @@ stages:
   - test
   - build
   - release
+  - sign
 
 include:
   - project: 'renovate-bot/renovate-runner'
@@ -44,14 +41,31 @@ include:
   before_script:
     - curl -O http://ports.ubuntu.com/pool/main/d/debootstrap/debootstrap_1.0.126+nmu1_all.deb
     - sudo dpkg -i debootstrap_1.0.126+nmu1_all.deb
-    - sudo apt install zstd -y
+    - sudo apt install zstd jq -y
+    - |
+      LATEST_VERSION=$(curl https://api.github.com/repos/sigstore/cosign/releases/latest | grep tag_name | cut -d : -f2 | tr -d "v\", ")
+    - curl -O -L "https://github.com/sigstore/cosign/releases/latest/download/cosign_${LATEST_VERSION}_amd64.deb"
+    - sudo dpkg -i cosign_${LATEST_VERSION}_amd64.deb
   script:
     - export PATH="${HOME}/.local/bin:${PATH}"
     - pip3 install diskimage-builder --break-system-packages
     - python3 -m pip install --user . --break-system-packages
     - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
     - sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }'
-    - GODEBUG=http2client=0 flux push artifact $REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD) --timeout 2h --path="$DISK_IMAGE_FILENAME" --source="${CI_REPOSITORY_URL/gitlab-ci-token*@/}" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
+    - digest_url=$(
+       flux push artifact
+       $REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD)
+       --timeout 2h --path="$DISK_IMAGE_FILENAME"
+       --source="${CI_REPOSITORY_URL/gitlab-ci-token*@/}"
+       --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)"
+       --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
+       --output json |
+       jq -r '. | .repository + "@" + .digest')
+    - |
+      if [[ ${CI_COMMIT_TAG} && ${COSIGN_PRIVATE_KEY} ]]; then
+        echo "-- Signing $DISK_IMAGE_NAME image"
+        cosign sign $digest_url
+      fi
     # Can be removed when the CLi will be installed by default in the base image
     - sudo apt install gitlab-runner -y
     - echo "BUILD_IMAGE_$CI_JOB_ID=$REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD)" >> variables.env
@@ -61,6 +75,8 @@ include:
       dotenv: variables.env
   only:
     - tags
+  rules:
+    - if: $CI_COMMIT_TAG
 
 build-ubuntu-hardened:
   extends: .build-image
