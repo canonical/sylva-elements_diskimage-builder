@@ -19,6 +19,6 @@ set -eu
 
 mkdir /opt/rke2-artifacts
 curl -sfL https://get.rke2.io > /opt/install.sh
-wget https://github.com/rancher/rke2/releases/download/v1.24.12%2Brke2r1/rke2-images.linux-amd64.tar.zst -O /opt/rke2-artifacts/rke2-images.linux-amd64.tar.zst
-wget https://github.com/rancher/rke2/releases/download/v1.24.12%2Brke2r1/rke2.linux-amd64.tar.gz -O /opt/rke2-artifacts/rke2.linux-amd64.tar.gz
-wget https://github.com/rancher/rke2/releases/download/v1.24.12%2Brke2r1/sha256sum-amd64.txt -O /opt/rke2-artifacts/sha256sum-amd64.txt
+curl -L https://github.com/rancher/rke2/releases/download/v1.24.12%2Brke2r1/rke2-images.linux-amd64.tar.zst -o /opt/rke2-artifacts/rke2-images.linux-amd64.tar.zst
+curl -L https://github.com/rancher/rke2/releases/download/v1.24.12%2Brke2r1/rke2.linux-amd64.tar.gz -o /opt/rke2-artifacts/rke2.linux-amd64.tar.gz
+curl -L https://github.com/rancher/rke2/releases/download/v1.24.12%2Brke2r1/sha256sum-amd64.txt -o /opt/rke2-artifacts/sha256sum-amd64.txt
