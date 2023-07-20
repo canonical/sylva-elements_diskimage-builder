@@ -4,7 +4,7 @@ This document explains how to use `cosign` to sign the artifacts pushed to the O
 
 ## Generate Keys
 
-The first step is to generate keys using the Gitlab provider with the command:
+The first step is to generate keys using the GitLab provider with the command:
 
 ```shell
 cosign generate-key-pair gitlab://<project_id>
@@ -18,7 +18,7 @@ Export the environment variable `GITLAB_TOKEN` with rights to create CI/CD varia
 export GITLAB_TOKEN=glpat-Z7Dj....
 ```
 
-Then generate the cosign key pair with the Gitlab provider:
+Then generate the cosign key pair with the GitLab provider:
 
 ```shell
 $ cosign generate-key-pair gitlab://43786055
@@ -30,9 +30,13 @@ Public key written to "COSIGN_PUBLIC_KEY" variable
 Public key also written to cosign.pub
 ```
 
-On success, three variables are added to the project:
+On success, three CI/CD variables are added to the project:
 
 ![variable](./img/cosign-gitlab-variables.png)
+
+> **_SECURITY NOTICE_**: for a better security we recommend to store the private signing material in a KMS, e.g. Hashicorp Vault, instead the CI/CD variables, with a fine-grained access control to these material (in other words, with a fine-grained control on who is allowed to sign the artifacts).
+>
+> For example, if using Vault: when the signing is handled by a CI, the signing job shall authenticate against Vault with the JWT method (see https://docs.gitlab.com/ee/ci/secrets/) to fetch the signing keys. On the Vault side, a role is configured to grant only the Job's JWT with the appropriate bound claims, e.g. a set of GitLab user ID, to access the secret path with the signing keys.
 
 The public key can be retrieved with:
 
@@ -83,13 +87,13 @@ tlog entry created with index: 27773186
 Pushing signature to: registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/diskimage-builder-hardened
 ```
 
-It is also possible to sign by fetching the private key from Gitlab (assuming `GITLAB_TOKEN` with read access on project variables):
+It is also possible to sign by fetching the private key from GitLab (assuming `GITLAB_TOKEN` with read access on project variables):
 
 ```shell
 cosign sign --key gitlab://43786055 registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/diskimage-builder-hardened@sha256:b4affd8071d5c30f302b50a29b524d97cc25727dddc3d1ab9a46275ac5471a3b
 ```
 
- We can get rif of crane when pushing and signing (`flux push artifact --help`):
+ We can get rid of `crane` when pushing and signing sequentially (source: `flux push artifact --help`):
 
 ```shell
 digest_url = $(flux push artifact oci://ghcr.io/org/config/app:$(git rev-parse --short HEAD) \
@@ -100,15 +104,23 @@ digest_url = $(flux push artifact oci://ghcr.io/org/config/app:$(git rev-parse -
 cosign sign $digest_url
 ```
 
+**Important Notice:**   By default, **artifact signatures are uploaded to [Rekor](https://github.com/sigstore/rekor)**. Quoting https://blog.sigstore.dev/cosign-2-0-released/:
+
+> To not upload to Rekor, include `--tlog-upload=false`.
+>
+>* You must also include `--insecure-ignore-tlog=true` when verifying an artifact that was not uploaded to Rekor.
+>* Examples of when you may want to skip uploading to the transparency log are if you have a private Sigstore deployment that does not use >transparency or a private artifact.
+>* We (Sigstore) strongly encourage all other use-cases to upload artifact signatures to Rekor. Transparency is a critical component of supply chain security, to allow artifact maintainers and consumers to monitor a public log for their artifacts and signing identities.
+
 ## Verifying
 
-The signature is verified against the public key fetched from an environment variable or from the Gitlab project hosting the registry:
+The signature is verified against the public key fetched from an environment variable or from the GitLab project hosting the registry:
 
 ```shell
-$ cosign verify --key env://COSIGN_PUBLIC_KEY registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/diskimage-builder-hardened@sha256:b4affd8071d5c30f302b50a29b524d97cc25727dddc3d1ab9a46275ac5471a3b
+cosign verify --key env://COSIGN_PUBLIC_KEY registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/diskimage-builder-hardened@sha256:b4affd8071d5c30f302b50a29b524d97cc25727dddc3d1ab9a46275ac5471a3b
 ```
 
-When using the Gitlab provider, set the environment varioable `GITLAB_TOKEN` with read access on Gitlab CI/CD variable:
+When using the GitLab provider, set the environment variable `GITLAB_TOKEN` with read access on GitLab CI/CD variable:
 
 ```shell
 $ export GITLAB_TOKEN=glpat-..... 
