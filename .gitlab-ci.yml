@@ -1,18 +1,14 @@
 variables:
   REPO_URL: "oci://$CI_REGISTRY_IMAGE"
-  COSIGN_VERSION: "2.1.1"
-  CRANE_VERSION: "v0.15.2"
 
 stages:
   - build
   - sign
 
-default:
-  tags: 
-    - oro-libvirt
-
 .config_build:
   stage: build
+  tags: 
+  - oro-libvirt
   script:
     - curl -O http://ports.ubuntu.com/pool/main/d/debootstrap/debootstrap_1.0.126+nmu1_all.deb
     - sudo dpkg -i debootstrap_1.0.126+nmu1_all.deb
@@ -20,15 +16,15 @@ default:
     - export PATH="${HOME}/.local/bin:${PATH}"
     - pip3 install diskimage-builder
     - python3 -m pip install --user .
-   # - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b cis_remediation -b lvm -o image.qcow2
-   # - sha256sum image.qcow2 | awk '{ print $1 }'
-   # - flux push artifact $REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD) --timeout 10m --path="image.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
+    - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b cis_remediation -b lvm -o image.qcow2
+    - sha256sum image.qcow2 | awk '{ print $1 }'
+    - flux push artifact $REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD) --timeout 10m --path="image.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
   only:
     - tags
 
 .config_sign:
-  image: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-image:v1.0.7-cosign
   stage: sign
+  image: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-image:v1.0.8
   script:
     - DIGEST=$(crane digest $CI_REGISTRY_IMAGE/$DISK_IMAGE_NAME:$(git tag --points-at HEAD))
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -36,14 +32,12 @@ default:
   only:
     -  /^cosign-.*$/i
 
-
 build-hardened:
   stage: build
   extends: 
   - .config_build
   variables:
     DISK_IMAGE_NAME: diskimage-builder-hardened
-
 
 build-plain:
   stage: build
