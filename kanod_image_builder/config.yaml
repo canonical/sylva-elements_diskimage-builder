@@ -210,7 +210,6 @@ recipes:
   - target=ubuntu
   - cis_remediation
   packages:
-  - ansible
   - git
   - ufw
   elements:
