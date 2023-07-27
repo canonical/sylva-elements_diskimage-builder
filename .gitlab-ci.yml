@@ -1,5 +1,6 @@
 variables:
   REPO_URL: "oci://$CI_REGISTRY_IMAGE"
+  RUNNER_GENERATE_ARTIFACTS_METADATA: "true"
 
 stages:
   - build
@@ -11,14 +12,14 @@ stages:
   - oro-libvirt
   script:
     - curl -O http://ports.ubuntu.com/pool/main/d/debootstrap/debootstrap_1.0.126+nmu1_all.deb
-    - sudo dpkg -i debootstrap_1.0.126+nmu1_all.deb
-    - sudo apt install zstd -y
-    - export PATH="${HOME}/.local/bin:${PATH}"
-    - pip3 install diskimage-builder
-    - python3 -m pip install --user .
-    - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b cis_remediation -b lvm -o image.qcow2
-    - sha256sum image.qcow2 | awk '{ print $1 }'
-    - flux push artifact $REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD) --timeout 10m --path="image.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
+ #   - sudo dpkg -i debootstrap_1.0.126+nmu1_all.deb
+ #   - sudo apt install zstd -y
+ #   - export PATH="${HOME}/.local/bin:${PATH}"
+ #   - pip3 install diskimage-builder
+ #   - python3 -m pip install --user .
+ #   - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b cis_remediation -b lvm -o image.qcow2
+ #   - sha256sum image.qcow2 | awk '{ print $1 }'
+ #   - flux push artifact $REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD) --timeout 10m --path="image.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
   only:
     - tags
 
@@ -29,8 +30,13 @@ stages:
     - DIGEST=$(crane digest $CI_REGISTRY_IMAGE/$DISK_IMAGE_NAME:$(git tag --points-at HEAD))
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - cosign sign -y --key env://COSIGN_PRIVATE_KEY $CI_REGISTRY_IMAGE/$DISK_IMAGE_NAME@$DIGEST
+    - echo "data" > data.txt
   only:
     -  /^cosign-.*$/i
+  artifacts:
+    paths:
+    - data.txt
+    expire_in: 1 hour
 
 build-hardened:
   stage: build
