@@ -77,6 +77,7 @@ ansible-playbook /tmp/site.yml --skip-tags="rule_3.5.3.2.3,rule_4.2.1.5"
 
 sysctl --system
 sed -i "s/^UMASK.*/UMASK 027/g" /etc/login.defs
+sed -i "/umask/d" /etc/login.defs
 echo "session optional  pam_mkhomedir.so  umask=0027" |sudo tee -a  /etc/pam.d/common-session
 
 ### Cleanup
