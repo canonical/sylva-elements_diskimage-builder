@@ -1,81 +1,70 @@
 - local_loop:
     name: image0
-    size: 100G
+    size: 40G
 
 - partitioning:
     base: image0
     label: gpt
     partitions:
-      - name: BSP
-        type: 'EF02'
-        size: 4MiB
       - name: ESP
         type: 'EF00'
-        size: 106MiB
+        size: 550MiB
         mkfs:
           type: vfat
           mount:
             mount_point: /boot/efi
             fstab:
               options: "defaults"
-              fsck-passno: 1
+              fsck-passno: 2
+      - name: BSP
+        type: 'EF02'
+        size: 8MiB
       - name: root
-        type: 8E00
+        flags: [ boot ]
         size: 100%
-
 - lvm:
     name: lvm
+    base: [ root ]
     pvs:
-      - name: pv
-        options: ["--force"]
-        base: root
-
+        - name: pv
+          base: root
+          options: [ "--force" ]
     vgs:
-      - name: vg
-        base: ["pv"]
-        options: ["--force"]
+        - name: vg
+          base: [ "pv" ]
+          options: [ "--force" ]
 
     lvs:
-      - name: lv_root
-        base: vg
-        size: 5G
-
-      - name: lv_tmp
-        base: vg
-        size: 10G
-
-      - name: lv_var
-        base: vg
-        size: 10G
-
-      - name: lv_vartmp
-        base: vg
-        size: 1G
-
-      - name: lv_varlog
-        base: vg
-        size: 5G
-
-      - name: lv_varlogaudit
-        base: vg
-        size: 1G
-
-      - name: lv_home
-        base: vg
-        size: 1G
-
-      - name: lv_etcd
-        base: vg
-        size: 10G
-
-      - name: lv_containerd
-        base: vg
-        size: 30G
-
-      - name: lv_kubelet
-        base: vg
-        size: 10G
-
+        - name: lv_root
+          base: vg
+          extents: 10%VG
+        - name: lv_var
+          base: vg
+          extents: 5%VG
+        - name: lv_home
+          base: vg
+          extents: 5%VG
+        - name: lv_tmp
+          base: vg
+          extents: 5%VG
+        - name: lv_vartmp
+          base: vg
+          extents: 5%VG
+        - name: lv_varlog
+          base: vg
+          extents: 5%VG
+        - name: lv_varlogaudit
+          base: vg
+          extents: 5%VG
+        - name: lv_etcd
+          base: vg
+          extents: 10%VG
+        - name: lv_containerd
+          base: vg
+          extents: 30%VG
+        - name: lv_kubelet
+          base: vg
+          extents: 20%VG
 - mkfs:
     name: fs_root
     base: lv_root
@@ -185,4 +174,3 @@
         fstab:
             options: "rw,relatime,nodev"
             fsck-passno: 1
-
