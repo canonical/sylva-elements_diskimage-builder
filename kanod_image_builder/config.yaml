@@ -34,6 +34,10 @@ options:
   kind: flag
 - name: kanod_admin
   kind: flag
+- name: growpart
+  kind: flag
+- name: rke2_airgapped
+  kind: flag
 
 env:
 - name: DIB_TPM2_TOOLS
@@ -272,3 +276,14 @@ recipes:
   - kanod_admin
   elements:
   - kanod-admin
+- when:
+  - target=ubuntu
+  - growpart
+  elements:
+  - cloud-init-growpart
+- when:
+  - target=ubuntu
+  - rke2_airgapped
+  elements:
+  - rke2-airgapped
+
