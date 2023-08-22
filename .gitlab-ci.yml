@@ -20,3 +20,5 @@ build-hardened:
     - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b cis_remediation -o ubuntu-22.04-hardened.qcow2
     - sha256sum ubuntu-22.04-hardened.qcow2 | awk '{ print $1 }'
     - flux push artifact $REPO_URL/diskimage-builder-hardened:$(git tag --points-at HEAD) --timeout 30m --path="ubuntu-22.04-hardened.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
+  only:
+    - tags

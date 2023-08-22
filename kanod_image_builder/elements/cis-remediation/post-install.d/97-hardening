@@ -23,7 +23,7 @@ cat > /tmp/site.yml <<EOF
   become: true
   vars:
       is_container: false
-      ubtu22cis_is_router: true 
+      ubtu22cis_is_router: true
       ubtu22cis_time_sync_tool: chrony
       ubtu22cis_ipv6_required: true
       ubtu22cis_install_network_manager: false
@@ -48,27 +48,22 @@ cat > /tmp/site.yml <<EOF
 
   roles:
   - { role: UBUNTU22-CIS, ignore_errors: yes, tags: ['hardening'] }
-  
-  tasks: 
+
+  tasks:
    - name: remove config file from uninstalled package telnet
      ansible.builtin.package:
       name: telnet
       purge: yes
       state: absent
-   
+
    - name: remove config file from uninstalled package rsync
      ansible.builtin.package:
       name: rsync
       purge: yes
       state: absent
-      
+
    - name: fix ClientAliveCountMax
      command: sed -i -e 's/ClientAliveCountMax 0/ClientAliveCountMax 3/' /etc/ssh/sshd_config
-
-   - name: fix core dumps size
-     copy:
-      dest: "/etc/security/limits.d/00-core-dumps"
-      content: '* hard core 0'
 EOF
 
 ufw allow out from any to any  comment "allow all out"
@@ -81,6 +76,7 @@ sed -i "/umask/d" /etc/login.defs
 echo "session optional  pam_mkhomedir.so  umask=0027" |sudo tee -a  /etc/pam.d/common-session
 
 ### Cleanup
-apt remove --purge  ansible perl gcc strace ltrace -y
+apt remove --purge iputils-ping netcat wget tcpdump ansible perl gcc strace ltrace -y
 rm -rf /tmp/requirements.yml /tmp/site.yml ~/.ansible
+pip uninstall ansible-core -y
 apt autoremove -y
