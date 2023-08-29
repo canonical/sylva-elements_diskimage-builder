@@ -2,10 +2,10 @@ variables:
   REPO_URL: "oci://$CI_REGISTRY_IMAGE"
 
 stages:
-  - "build hardened image"
+  - build
 
-build-hardened:
-  stage: "build hardened image"
+.config_build:
+  stage: build
   tags:
     - oro-libvirt
   before_script:
@@ -14,11 +14,28 @@ build-hardened:
   script:
     - export PATH="${HOME}/.local/bin:${PATH}"
     - export DIB_CLOUD_INIT_GROWPART_DEVICES=/dev/vda3
-    - pip3 install diskimage-builder
-    - python3 -m pip install --user .
-    - sleep 99999999
-#    - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b cis_remediation -o ubuntu-22.04-hardened.qcow2
-#    - sha256sum ubuntu-22.04-hardened.qcow2 | awk '{ print $1 }'
-#    - flux push artifact $REPO_URL/diskimage-builder-hardened:$(git tag --points-at HEAD) --timeout 30m --path="ubuntu-22.04-hardened.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
-#  only:
-#    - tags
+    - pip3 install diskimage-builder --break-system-packages
+    - python3 -m pip install --user --break-system-packages .
+    - sed -i '226s/umount -f/umount -l/' $HOME/.local/lib/python3.11/site-packages/diskimage_builder/lib/common-functions
+    - $BUILD_CMD -o $DISK_IMAGE_NAME
+    - sha256sum $DISK_IMAGE_NAME | awk '{ print $1 }'
+    - flux push artifact $REPO_URL/$DISK_IMAGE_TYPE:$(git tag --points-at HEAD) --timeout 1h --path="$DISK_IMAGE_NAME" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
+build-plain:
+  extends:
+  - .config_build
+  variables:
+    BUILD_CMD: kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network
+    DISK_IMAGE_NAME: ubuntu-22.04-plain.qcow2
+    DISK_IMAGE_TYPE: diskimage-builder-plain
+  only:
+    - tags
+build-hardened:
+  extends:
+  - .config_build
+  variables:
+    BUILD_CMD: kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b cis_remediation -b lvm -b growpart
+    DISK_IMAGE_NAME: ubuntu-22.04-hardened.qcow2
+    DISK_IMAGE_TYPE: diskimage-builder-hardened
+
+  only:
+    - tags
