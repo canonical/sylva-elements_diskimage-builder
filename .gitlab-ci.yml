@@ -8,17 +8,15 @@ build-hardened:
   stage: "build hardened image"
   tags:
     - oro-libvirt
-#  before_script:
-#    - curl -O http://ports.ubuntu.com/pool/main/d/debootstrap/debootstrap_1.0.126+nmu1_all.deb
-#    - sudo dpkg -i debootstrap_1.0.126+nmu1_all.deb
-#    - sudo apt install zstd -y
+  before_script:
+    - curl -O http://ports.ubuntu.com/pool/main/d/debootstrap/debootstrap_1.0.126+nmu1_all.deb
+    - sudo dpkg -i debootstrap_1.0.126+nmu1_all.deb
   script:
-     - lsblk
-     - df -h 
-#    - export PATH="${HOME}/.local/bin:${PATH}"
-#    - export DIB_CLOUD_INIT_GROWPART_DEVICES=/dev/vda3
-#    - pip3 install diskimage-builder
-#    - python3 -m pip install --user .
+    - export PATH="${HOME}/.local/bin:${PATH}"
+    - export DIB_CLOUD_INIT_GROWPART_DEVICES=/dev/vda3
+    - pip3 install diskimage-builder
+    - python3 -m pip install --user .
+    - sleep 99999999
 #    - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b cis_remediation -o ubuntu-22.04-hardened.qcow2
 #    - sha256sum ubuntu-22.04-hardened.qcow2 | awk '{ print $1 }'
 #    - flux push artifact $REPO_URL/diskimage-builder-hardened:$(git tag --points-at HEAD) --timeout 30m --path="ubuntu-22.04-hardened.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
