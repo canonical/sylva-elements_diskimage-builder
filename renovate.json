@@ -1,6 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:recommended"
+  ],
+  "regexManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": "kanod_image_builder/elements/cis-remediation/post-install.d/97-hardening",
+      "matchStrings": ["https:\/\/github\\.com\/(?<depName>.*?)\\n\\s+version: \"(?<currentValue>.*)\""],
+      "datasourceTemplate": "github-tags"
+    }
   ]
 }
