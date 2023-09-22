@@ -73,17 +73,13 @@ EOF
 
 ansible-galaxy install -r /tmp/requirements.yml
 ansible-playbook /tmp/site.yml --skip-tags="rule_3.5.3.2.3,rule_4.2.1.5"
-umount -A /tmp
 
 sysctl --system
-aa-enforce /etc/apparmor.d/*
 sed -i "s/^UMASK.*/UMASK 027/g" /etc/login.defs
 sed -i "/umask/d" /etc/login.defs
-sed -i "s/^inet_interface.*/inet_interfaces = localhost/g" /etc/postfix/main.cf
 echo "session optional  pam_mkhomedir.so  umask=0027" |sudo tee -a  /etc/pam.d/common-session
 
 ### Cleanup
 apt remove --purge iputils-ping netcat wget tcpdump ansible perl gcc strace ltrace -y
 rm -rf /tmp/requirements.yml /tmp/site.yml ~/.ansible
-pip uninstall ansible-core -y
 apt autoremove -y
