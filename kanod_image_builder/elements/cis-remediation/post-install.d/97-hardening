@@ -87,3 +87,6 @@ sed -i -e '$a\' /etc/audit/rules.d/*
 apt remove --purge iputils-ping netcat wget tcpdump ansible perl gcc strace ltrace -y
 rm -rf /tmp/requirements.yml /tmp/site.yml ~/.ansible
 apt autoremove -y
+
+### Stop auditd service ###
+systemctl stop auditd
