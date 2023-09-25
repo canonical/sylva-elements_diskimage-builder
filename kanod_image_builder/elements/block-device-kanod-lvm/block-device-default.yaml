@@ -1,6 +1,6 @@
 - local_loop:
     name: image0
-    size: 100G
+    size: 80G
 
 - partitioning:
     base: image0
@@ -42,11 +42,11 @@
 
       - name: lv_tmp
         base: vg
-        size: 10G
+        size: 1G
 
       - name: lv_var
         base: vg
-        size: 10G
+        size: 5G
 
       - name: lv_vartmp
         base: vg
@@ -54,7 +54,7 @@
 
       - name: lv_varlog
         base: vg
-        size: 5G
+        size: 6G
 
       - name: lv_varlogaudit
         base: vg
@@ -70,11 +70,11 @@
 
       - name: lv_containerd
         base: vg
-        size: 30G
+        size: 25G
 
       - name: lv_kubelet
         base: vg
-        size: 10G
+        size: 20G
 
 - mkfs:
     name: fs_root
@@ -185,4 +185,3 @@
         fstab:
             options: "rw,relatime,nodev"
             fsck-passno: 1
-
