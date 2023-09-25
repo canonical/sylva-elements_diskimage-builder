@@ -79,6 +79,10 @@ sed -i "s/^UMASK.*/UMASK 027/g" /etc/login.defs
 sed -i "/umask/d" /etc/login.defs
 echo "session optional  pam_mkhomedir.so  umask=0027" |sudo tee -a  /etc/pam.d/common-session
 
+# add newlines to audit rules files which miss one
+# can be removed when fixed upstream
+sed -i -e '$a\' /etc/audit/rules.d/*
+
 ### Cleanup
 apt remove --purge iputils-ping netcat wget tcpdump ansible perl gcc strace ltrace -y
 rm -rf /tmp/requirements.yml /tmp/site.yml ~/.ansible
