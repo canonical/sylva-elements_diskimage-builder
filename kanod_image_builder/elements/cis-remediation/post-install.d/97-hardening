@@ -14,7 +14,7 @@ roles:
   - name: UBUNTU22-CIS
     scm: git
     src: https://github.com/ansible-lockdown/UBUNTU22-CIS
-    version: "V1.0.0"
+    version: "V1.1.0"
 EOF
 
 cat > /tmp/site.yml <<EOF
