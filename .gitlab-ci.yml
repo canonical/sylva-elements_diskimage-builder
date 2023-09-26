@@ -15,7 +15,6 @@ build-hardened:
     - sudo apt install zstd -y
   script:
     - export PATH="${HOME}/.local/bin:${PATH}"
-    - sleep 99999999
     - pip3 install diskimage-builder --break-system-packages
     - python3 -m pip install --user . --break-system-packages
     - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b cis_remediation -b lvm -o ubuntu-22.04-hardened.qcow2
