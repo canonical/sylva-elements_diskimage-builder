@@ -17,6 +17,7 @@ build-hardened:
     - export PATH="${HOME}/.local/bin:${PATH}"
     - pip3 install diskimage-builder --break-system-packages
     - python3 -m pip install --user . --break-system-packages
+    - sed -i '226s/umount -f/umount -l/' $HOME/.local/lib/python3.11/site-packages/diskimage_builder/lib/common-functions
     - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b cis_remediation -b lvm -o ubuntu-22.04-hardened.qcow2
     - sha256sum ubuntu-22.04-hardened.qcow2 | awk '{ print $1 }'
     - flux push artifact $REPO_URL/diskimage-builder-hardened:$(git tag --points-at HEAD) --timeout 30m --path="ubuntu-22.04-hardened.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
