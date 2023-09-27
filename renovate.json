@@ -3,7 +3,7 @@
   "extends": [
     "config:recommended"
   ],
-  "regexManagers": [
+  "customManagers": [
     {
       "customType": "regex",
       "fileMatch": "kanod_image_builder/elements/cis-remediation/post-install.d/97-hardening",
