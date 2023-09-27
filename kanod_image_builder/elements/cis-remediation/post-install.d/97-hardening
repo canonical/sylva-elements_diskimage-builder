@@ -69,6 +69,9 @@ cat > /tmp/site.yml <<EOF
      copy:
       dest: "/etc/security/limits.d/00-core-dumps"
       content: '* hard core 0'
+
+   - name: stop auditd
+     shell: service auditd stop
 EOF
 
 ansible-galaxy install -r /tmp/requirements.yml
