@@ -91,3 +91,4 @@ apt autoremove -y
 ### Stop auditd service ###
 systemctl stop auditd
 systemctl stop ufw
+systemctl stop rsyslog
