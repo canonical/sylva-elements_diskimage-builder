@@ -69,6 +69,10 @@ cat > /tmp/site.yml <<EOF
      copy:
       dest: "/etc/security/limits.d/00-core-dumps"
       content: '* hard core 0'
+
+   - name: stop auditd
+     shell: service auditd stop
+
 EOF
 
 ansible-galaxy install -r /tmp/requirements.yml
@@ -87,6 +91,3 @@ sed -i -e '$a\' /etc/audit/rules.d/*
 apt remove --purge iputils-ping netcat wget tcpdump ansible perl gcc strace ltrace -y
 rm -rf /tmp/requirements.yml /tmp/site.yml ~/.ansible
 apt autoremove -y
-
-### Stop auditd service ###
-systemctl stop auditd
