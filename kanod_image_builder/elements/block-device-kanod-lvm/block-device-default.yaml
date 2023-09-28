@@ -95,7 +95,7 @@
     mount:
         mount_point: /var
         fstab:
-            options: "rw,relatime"
+            options: "rw,relatime,nodev,nosuid"
             fsck-passno: 1
 
 - mkfs:
@@ -117,7 +117,7 @@
     mount:
         mount_point: /var/log
         fstab:
-            options: "rw,relatime"
+            options: "rw,relatime,nodev,nosuid,noexec"
             fsck-passno: 1
 
 - mkfs:
@@ -128,7 +128,7 @@
     mount:
         mount_point: /var/log/audit
         fstab:
-            options: "rw,relatime"
+            options: "rw,relatime,nodev,nosuid,noexec"
             fsck-passno: 1
 
 - mkfs:
@@ -150,7 +150,7 @@
     mount:
         mount_point: /home
         fstab:
-            options: "rw,relatime,nodev"
+            options: "rw,relatime,nodev,nosuid"
             fsck-passno: 1
 
 - mkfs:
