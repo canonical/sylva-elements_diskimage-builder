@@ -29,8 +29,6 @@ cat > /tmp/site.yml <<EOF
       ubtu22cis_install_network_manager: false
       ubtu22cis_system_is_log_server: false
       ubtu22cis_firewall_package: ufw
-      ubtu22cis_time_synchronization_servers:
-        - 172.20.4.108
       ubtu22cis_rsyslog_ansible_managed: false
       ubtu22cis_logrotate_create_settings: "0640 syslog adm"
       ubtu22cis_sshd:
