@@ -122,9 +122,6 @@ EOF
 ufw disable
 apt remove ufw
 
-sed -i 's/name: ubuntu/name: node-admin/' /etc/cloud/cloud.cfg
-sed -i 's/gecos: Ubuntu/gecos: node-admin/' /etc/cloud/cloud.cfg
-
 sed -i '/rp_filter=/d' /etc/sysctl.conf
 sed -i 's/rp_filter=2/rp_filter=1/g' /etc/sysctl.d/10-network-security.conf
 sysctl --system

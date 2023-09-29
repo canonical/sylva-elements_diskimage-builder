@@ -84,6 +84,10 @@ sed -i '/security=apparmor/d' /etc/default/grub
 echo 'GRUB_CMDLINE_LINUX="apparmor=1 security=apparmor audit=1 audit_backlog_limit=8192"' >> /etc/default/grub
 update-grub2
 
+# Change the default username
+sed -i 's/name: ubuntu/name: node-admin/' /etc/cloud/cloud.cfg
+sed -i 's/gecos: Ubuntu/gecos: node-admin/' /etc/cloud/cloud.cfg
+
 ### Cleanup
 apt remove --purge iputils-ping netcat wget tcpdump ansible perl gcc strace ltrace -y
 rm -rf /tmp/requirements.yml /tmp/site.yml ~/.ansible
