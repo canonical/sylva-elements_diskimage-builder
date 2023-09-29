@@ -47,6 +47,10 @@ cat > /tmp/site.yml <<EOF
         allow_users: ""
         allow_groups: ""
       ubtu22cis_grub_file: /boot/grub/grub.cfg
+      ubtu22cis_max_log_file_size: 150
+      ubtu22cis_auditd:
+        admin_space_left_action: rotate
+        max_log_file_action: rotate
 
   roles:
   - { role: UBUNTU22-CIS, ignore_errors: yes, tags: ['hardening'] }
