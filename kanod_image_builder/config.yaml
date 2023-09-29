@@ -211,6 +211,8 @@ recipes:
   - cis_remediation
   packages:
   - git
+  elements:
+  - cis-remediation
 - when:
   - target=ubuntu
   - release=jammy
