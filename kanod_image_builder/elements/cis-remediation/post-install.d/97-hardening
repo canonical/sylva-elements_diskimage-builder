@@ -26,7 +26,6 @@ cat > /tmp/site.yml <<EOF
       is_container: false
       ubtu22cis_is_router: true 
       ubtu22cis_time_sync_tool: chrony
-      ubtu22cis_ipv6_required: true
       ubtu22cis_install_network_manager: false
       ubtu22cis_system_is_log_server: false
       ubtu22cis_firewall_package: none
