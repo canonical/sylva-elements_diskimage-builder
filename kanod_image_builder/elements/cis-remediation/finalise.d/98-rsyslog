@@ -1,6 +1,6 @@
 #!/bin/bash
 ### Fix rsyslog ###
-cat > /etc/rsyslog.conf << EOF
+cat > /etc/rsyslog.conf <<'EOF'
 # /etc/rsyslog.conf configuration file for rsyslog
 #
 # For more information install rsyslog-doc and see
@@ -35,29 +35,29 @@ module(load="imklog" permitnonkernelfacility="on")
 # Use traditional timestamp format.
 # To enable high precision timestamps, comment out the following line.
 #
-\$ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat
+$ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat
 
 # Filter duplicated messages
-\$RepeatedMsgReduction on
+$RepeatedMsgReduction on
 
 #
 # Set the default permissions for all log files.
 #
-\$FileOwner syslog
-\$FileGroup adm
-\$FileCreateMode 0640
-\$DirCreateMode 0755
-\$Umask 0027
-\$PrivDropToUser syslog
-\$PrivDropToGroup syslog
+$FileOwner syslog
+$FileGroup adm
+$FileCreateMode 0640
+$DirCreateMode 0755
+$Umask 0027
+$PrivDropToUser syslog
+$PrivDropToGroup syslog
 
 #
 # Where to place spool and state files
 #
-\$WorkDirectory /var/spool/rsyslog
+$WorkDirectory /var/spool/rsyslog
 
 #
 # Include all config files in /etc/rsyslog.d/
 #
-\$IncludeConfig /etc/rsyslog.d/*.conf
+$IncludeConfig /etc/rsyslog.d/*.conf
 EOF

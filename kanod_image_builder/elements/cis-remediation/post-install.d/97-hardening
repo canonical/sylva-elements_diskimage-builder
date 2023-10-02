@@ -4,6 +4,7 @@
 apt update
 apt install software-properties-common -y
 apt install gpg-agent -y
+apt install python3-jinja2 -y
 add-apt-repository --yes --update ppa:ansible/ansible
 apt install ansible -y
 export LC_ALL="en_US.UTF-8"
@@ -25,10 +26,9 @@ cat > /tmp/site.yml <<EOF
       is_container: false
       ubtu22cis_is_router: true 
       ubtu22cis_time_sync_tool: chrony
-      ubtu22cis_ipv6_required: true
       ubtu22cis_install_network_manager: false
       ubtu22cis_system_is_log_server: false
-      ubtu22cis_firewall_package: ufw
+      ubtu22cis_firewall_package: none
       ubtu22cis_time_synchronization_servers:
         - 172.20.4.108
       ubtu22cis_rsyslog_ansible_managed: false
@@ -45,6 +45,11 @@ cat > /tmp/site.yml <<EOF
         max_sessions: 4
         allow_users: ""
         allow_groups: ""
+      ubtu22cis_grub_file: /boot/grub/grub.cfg
+      ubtu22cis_max_log_file_size: 150
+      ubtu22cis_auditd:
+        admin_space_left_action: rotate
+        max_log_file_action: rotate
 
   roles:
   - { role: UBUNTU22-CIS, ignore_errors: yes, tags: ['hardening'] }
@@ -76,18 +81,41 @@ cat > /tmp/site.yml <<EOF
 EOF
 
 ansible-galaxy install -r /tmp/requirements.yml
-ansible-playbook /tmp/site.yml --skip-tags="rule_3.5.3.2.3,rule_4.2.1.5"
 
-sysctl --system
+# The CIS benchmark tests skipped here are:
+# rule_3.5.3.2.3: Ensure iptables outbound and established connections are configured
+# rule_4.2.1.5: Ensure iptables outbound and established connections are configured
+# rule_1.6.1.2: Ensure AppArmor is enabled in the bootloader configuration
+# rule_4.1.1.3: Ensure auditing for processes that start prior to auditd is enabled
+# rule_4.1.1.4: Ensure audit_backlog_limit is sufficient
+ansible-playbook /tmp/site.yml --skip-tags="rule_3.5.3.2.3,rule_4.2.1.5,rule_1.6.1.2,rule_4.1.1.3,rule_4.1.1.4"
+
 sed -i "s/^UMASK.*/UMASK 027/g" /etc/login.defs
 sed -i "/umask/d" /etc/login.defs
 echo "session optional  pam_mkhomedir.so  umask=0027" |sudo tee -a  /etc/pam.d/common-session
 
-# add newlines to audit rules files which miss one
-# can be removed when fixed upstream
-sed -i -e '$a\' /etc/audit/rules.d/*
+# CIS 4.1.3.2
+cat > /etc/audit/rules.d/55-setgid.rules << EOF
+-a always,exit -F arch=b64 -S execve -C gid!=egid -F egid=0 -k setgid
+-a always,exit -F arch=b32 -S execve -C gid!=egid -F egid=0 -k setgid
+EOF
 
-### Cleanup
-apt remove --purge iputils-ping netcat wget tcpdump ansible perl gcc strace ltrace -y
-rm -rf /tmp/requirements.yml /tmp/site.yml ~/.ansible
-apt autoremove -y
+# CIS 4.1.3.4
+cat > /etc/audit/rules.d/56-audit-time.rules << EOF
+-a always,exit -F arch=b32 -S stime -F key=audit_time_rules
+EOF
+
+# CIS 4.1.3.19
+cat > /etc/audit/rules.d/57-modules.rules << EOF
+-w /sbin/insmod -p x -k modules
+-w /sbin/modprobe -p x -k modules
+-w /sbin/rmmod -p x -k modules
+EOF
+
+ufw disable
+apt remove ufw
+
+sed -i '/rp_filter=/d' /etc/sysctl.conf
+sed -i 's/rp_filter=2/rp_filter=1/g' /etc/sysctl.d/10-network-security.conf
+sysctl --system
+
