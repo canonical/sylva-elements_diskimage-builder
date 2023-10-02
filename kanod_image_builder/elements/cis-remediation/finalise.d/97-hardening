@@ -1,0 +1,30 @@
+#!/bin/bash
+
+export LC_ALL="en_US.UTF-8"
+export LC_CTYPE="en_US.UTF-8"
+
+# The CIS benchmark tests passed are:
+# rule_1.4.2: Ensure permissions on bootloader config are configured
+# rule_1.6.1.2: Ensure AppArmor is enabled in the bootloader configuration
+# rule_4.1.1.3: Ensure auditing for processes that start prior to auditd is enabled
+# rule_4.1.1.4: Ensure audit_backlog_limit is sufficient
+# rule_4.1.3.6: Ensure use of privileged commands are collected
+# rule_4.1.3.21: Ensure the running and on disk configuration of auditd is the same
+ansible-playbook /tmp/site.yml --tags="rule_1.4.2,rule_1.6.1.2,rule_4.1.1.3,rule_4.1.1.4,rule_4.1.3.6,rule_4.1.3.21"
+
+# workaround to set GRUB_CMDLINE_LINUX, the playbooks put the first 3 parameters in a single line
+sed -i '/GRUB_CMDLINE_LINUX=/d' /etc/default/grub
+sed -i '/security=apparmor/d' /etc/default/grub
+echo 'GRUB_CMDLINE_LINUX="apparmor=1 security=apparmor audit=1 audit_backlog_limit=8192"' >> /etc/default/grub
+update-grub2
+
+# Change the default username
+sed -i 's/name: ubuntu/name: node-admin/' /etc/cloud/cloud.cfg
+sed -i 's/gecos: Ubuntu/gecos: node-admin/' /etc/cloud/cloud.cfg
+
+### Cleanup
+apt remove --purge iputils-ping netcat wget tcpdump ansible perl gcc strace ltrace -y
+rm -rf /tmp/requirements.yml /tmp/site.yml ~/.ansible
+apt autoremove -y
+
+service auditd stop

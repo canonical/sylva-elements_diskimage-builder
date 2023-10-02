@@ -215,7 +215,6 @@ recipes:
   - cis_remediation
   packages:
   - git
-  - ufw
   elements:
   - cis-remediation
 - when:
