@@ -111,11 +111,13 @@ cat > /etc/audit/rules.d/55-setgid.rules << EOF
 -a always,exit -F arch=b64 -S execve -C gid!=egid -F egid=0 -k setgid
 -a always,exit -F arch=b32 -S execve -C gid!=egid -F egid=0 -k setgid
 EOF
+chmod 640 /etc/audit/rules.d/55-setgid.rules
 
 # CIS 4.1.3.4
 cat > /etc/audit/rules.d/56-audit-time.rules << EOF
 -a always,exit -F arch=b32 -S stime -F key=audit_time_rules
 EOF
+chmod 640 /etc/audit/rules.d/56-audit-time.rules
 
 # CIS 4.1.3.19
 cat > /etc/audit/rules.d/57-modules.rules << EOF
@@ -123,11 +125,13 @@ cat > /etc/audit/rules.d/57-modules.rules << EOF
 -w /sbin/modprobe -p x -k modules
 -w /sbin/rmmod -p x -k modules
 EOF
+chmod 640 /etc/audit/rules.d/57-modules.rules
 
 # CIS 4.1.3.12
 cat > /etc/audit/rules.d/58-faillock.rules << EOF
 -w /var/run/faillock -p wa -k logins
 EOF
+chmod 640 /etc/audit/rules.d/58-faillock.rules
 
 ufw disable
 apt remove ufw
