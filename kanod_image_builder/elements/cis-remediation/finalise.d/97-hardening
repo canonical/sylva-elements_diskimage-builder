@@ -23,7 +23,7 @@ sed -i 's/name: ubuntu/name: node-admin/' /etc/cloud/cloud.cfg
 sed -i 's/gecos: Ubuntu/gecos: node-admin/' /etc/cloud/cloud.cfg
 
 ### Cleanup
-apt remove --purge iputils-ping netcat wget tcpdump ansible perl gcc strace ltrace -y
+apt remove --purge iputils-ping netcat wget tcpdump ansible perl gcc strace ltrace rpcbind -y
 rm -rf /tmp/requirements.yml /tmp/site.yml ~/.ansible
 apt autoremove -y
 
