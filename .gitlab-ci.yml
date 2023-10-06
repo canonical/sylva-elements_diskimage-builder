@@ -5,6 +5,7 @@ workflow:
     - when: always
 variables:
   REPO_URL: "oci://$CI_REGISTRY_IMAGE"
+  IMAGE_FORMAT: qcow2
 
 stages:
   - test
@@ -42,9 +43,9 @@ build-hardened:
     - export PATH="${HOME}/.local/bin:${PATH}"
     - pip3 install diskimage-builder --break-system-packages
     - python3 -m pip install --user . --break-system-packages
-    - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b cis_remediation -b lvm -b rke2_airgapped -o ubuntu-22.04-hardened.qcow2
-    - sha256sum ubuntu-22.04-hardened.qcow2 | awk '{ print $1 }'
-    - flux push artifact $REPO_URL/diskimage-builder-hardened:$(git tag --points-at HEAD) --timeout 2h --path="ubuntu-22.04-hardened.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
+    - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b cis_remediation -b lvm -b rke2_airgapped --format ${IMAGE_FORMAT} -o ubuntu-22.04-hardened.${IMAGE_FORMAT}
+    - sha256sum ubuntu-22.04-hardened.${IMAGE_FORMAT} | awk '{ print $1 }'
+    - flux push artifact $REPO_URL/diskimage-builder-hardened:$(git tag --points-at HEAD) --timeout 2h --path="ubuntu-22.04-hardened.${IMAGE_FORMAT}" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
   only:
     - tags
 
@@ -60,8 +61,8 @@ build-plain:
     - export PATH="${HOME}/.local/bin:${PATH}"
     - pip3 install diskimage-builder --break-system-packages
     - python3 -m pip install --user . --break-system-packages
-    - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b rke2_airgapped -o ubuntu-22.04-plain.qcow2
-    - sha256sum ubuntu-22.04-plain.qcow2 | awk '{ print $1 }'
-    - flux push artifact $REPO_URL/diskimage-builder-plain:$(git tag --points-at HEAD) --timeout 2h --path="ubuntu-22.04-plain.qcow2" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
+    - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b rke2_airgapped -o ubuntu-22.04-plain.${IMAGE_FORMAT}
+    - sha256sum ubuntu-22.04-plain.${IMAGE_FORMAT} | awk '{ print $1 }'
+    - flux push artifact $REPO_URL/diskimage-builder-plain:$(git tag --points-at HEAD) --timeout 2h --path="ubuntu-22.04-plain.${IMAGE_FORMAT}" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
   only:
     - tags
