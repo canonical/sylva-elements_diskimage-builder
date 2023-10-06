@@ -47,8 +47,9 @@ build-hardened:
     - md5sum=$(md5sum ubuntu-22.04-hardened.${IMAGE_FORMAT} | awk '{ print $1 }')
     - sha256sum=$(sha256sum ubuntu-22.04-hardened.${IMAGE_FORMAT} | awk '{ print $1 }')
     - |
-      echo -n "md5sum: $md5sum\nsha256sum: $sha256sum"
-    - flux push artifact $REPO_URL/diskimage-builder-hardened:$(git tag --points-at HEAD) --timeout 2h --path="ubuntu-22.04-hardened.${IMAGE_FORMAT}" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD --annotations sylvaproject.org/diskimage/sha256=$sha256sum --annotations=sylvaproject.org/diskimage/md5=$md5sum
+      echo -e "md5sum: $md5sum\nsha256sum: $sha256sum"
+    - ls -l ubuntu-22.04-hardened.${IMAGE_FORMAT}
+    - flux push artifact $REPO_URL/diskimage-builder-hardened-${IMAGE_FORMAT}:$(git tag --points-at HEAD) --timeout 2h --path="ubuntu-22.04-hardened.${IMAGE_FORMAT}" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD --annotations sylvaproject.org/diskimage/sha256=$sha256sum --annotations=sylvaproject.org/diskimage/md5=$md5sum
   only:
     - tags
 
@@ -70,7 +71,9 @@ build-plain:
     - sha256sum=$(sha256sum ubuntu-22.04-plain.${IMAGE_FORMAT} | awk '{ print $1 }')
     - |
       echo -n "md5sum: $md5sum\nsha256sum: $sha256sum"
-    - flux push artifact $REPO_URL/diskimage-builder-plain:$(git tag --points-at HEAD) --timeout 2h --path="ubuntu-22.04-plain.${IMAGE_FORMAT}" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD --annotations sylvaproject.org/diskimage/sha256=$sha256sum --annotations=sylvaproject.org/diskimage/md5=$md5sum
+    - ls -l ubuntu-22.04-plain.${IMAGE_FORMAT}
+    - bzip2 ubuntu-22.04-plain.${IMAGE_FORMAT}
+    - flux push artifact $REPO_URL/diskimage-builder-plain-${IMAGE_FORMAT}:$(git tag --points-at HEAD) --timeout 2h --path="ubuntu-22.04-plain.${IMAGE_FORMAT}" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD --annotations sylvaproject.org/diskimage/sha256=$sha256sum --annotations=sylvaproject.org/diskimage/md5=$md5sum
   # only:
   #   - tags
   rules:
