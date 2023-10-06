@@ -64,11 +64,15 @@ build-plain:
     - export PATH="${HOME}/.local/bin:${PATH}"
     - pip3 install diskimage-builder --break-system-packages
     - python3 -m pip install --user . --break-system-packages
-    - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b rke2_airgapped -o ubuntu-22.04-plain.${IMAGE_FORMAT}
+    #- kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b rke2_airgapped -o ubuntu-22.04-plain.${IMAGE_FORMAT}
+    - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -o ubuntu-22.04-plain.${IMAGE_FORMAT}
     - md5sum=$(md5sum ubuntu-22.04-plain.${IMAGE_FORMAT} | awk '{ print $1 }')
     - sha256sum=$(sha256sum plain-22.04-hardened.${IMAGE_FORMAT} | awk '{ print $1 }')
     - |
       echo -n "md5sum: $md5sum\nsha256sum: $sha256sum"
     - flux push artifact $REPO_URL/diskimage-builder-plain:$(git tag --points-at HEAD) --timeout 2h --path="ubuntu-22.04-plain.${IMAGE_FORMAT}" --source="$(git config --get remote.origin.url)" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD --annotations sylvaproject.org/diskimage/sha256=$sha256sum --annotations=sylvaproject.org/diskimage/md5=$md5sum
-  only:
-    - tags
+  # only:
+  #   - tags
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
