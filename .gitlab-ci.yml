@@ -84,8 +84,7 @@ build-plain-raw:
     - export PATH="${HOME}/.local/bin:${PATH}"
     - pip3 install diskimage-builder --break-system-packages
     - python3 -m pip install --user . --break-system-packages
-    #- kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b cis_remediation -b lvm -b rke2_airgapped --format ${IMAGE_FORMAT} -o ${IMAGE_FILENAME}    ### FIXME
-    - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b cis_remediation -b lvm --format ${IMAGE_FORMAT} -o ${IMAGE_FILENAME}
+    - kanod-image-builder -s target=ubuntu -s release=jammy -b no_kanod_network -b cis_remediation -b lvm -b rke2_airgapped --format ${IMAGE_FORMAT} -o ${IMAGE_FILENAME}    ### FIXME
     - date
     - md5sum=$(md5sum ${IMAGE_FILENAME} | awk '{ print $1 }')
     - date
