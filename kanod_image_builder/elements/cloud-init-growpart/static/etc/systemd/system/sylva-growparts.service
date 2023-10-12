@@ -1,0 +1,13 @@
+[Unit]
+Description=Grow partitions
+Wants=systemd-udev-settle.service
+After=systemd-udev-settle.service
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/bin/sylva-growparts
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
