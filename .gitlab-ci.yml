@@ -29,6 +29,9 @@ include:
         changes:
           paths:
             - renovate.json
+  - project: "to-be-continuous/gitleaks"
+    ref: 2.2.2
+    file: "templates/gitlab-ci-gitleaks.yml"
 
 build-hardened:
   stage: "build hardened image"
