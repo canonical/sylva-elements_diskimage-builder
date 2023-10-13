@@ -5,6 +5,9 @@ workflow:
     - when: always
 variables:
   REPO_URL: "oci://$CI_REGISTRY_IMAGE"
+  IMAGE_FORMAT: qcow2
+  DISK_IMAGE_NAME: $OS-$OS_RELEASE-$FLAVOR
+  DISK_IMAGE_FILENAME: $DISK_IMAGE_NAME.$IMAGE_FORMAT
 
 stages:
   - test
@@ -44,23 +47,24 @@ include:
     - export PATH="${HOME}/.local/bin:${PATH}"
     - pip3 install diskimage-builder --break-system-packages
     - python3 -m pip install --user . --break-system-packages
-    - kanod-image-builder -s target=$TARGET_OS -s release=$TARGET_RELEASE  -o $DISK_IMAGE_NAME.qcow2
-    - sha256sum $DISK_IMAGE_NAME.qcow2 | awk '{ print $1 }'
-    - flux push artifact $REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD) --timeout 2h --path="$DISK_IMAGE_NAME.qcow2" --source="${CI_REPOSITORY_URL/gitlab-ci-token*@/}" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
-  variables:
-    TARGET_OS=ubuntu
-    TARGET_RELEASE=jammy
+    - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS -o $DISK_IMAGE_FILENAME
+    - sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }'
+    - flux push artifact $REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD) --timeout 2h --path="$DISK_IMAGE_FILENAME" --source="${CI_REPOSITORY_URL/gitlab-ci-token*@/}" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
   only:
     - tags
 
-build-hardened:
+build-ubuntu-hardened:
   extends: .build-image
   variables:
-    DISK_IMAGE_NAME: diskimage-builder-hardened
+    OS: ubuntu
+    OS_RELEASE: jammy
+    FLAVOR: hardened
     KANOD_OPTIONS: "-b no_kanod_network -b cis_remediation -b lvm -b rke2_airgapped"
 
-build-plain:
+build-ubuntu-plain:
   extends: .build-image
   variables:
-    DISK_IMAGE_NAME: diskimage-builder-plain
+    OS: ubuntu
+    OS_RELEASE: jammy
+    FLAVOR: plain
     KANOD_OPTIONS: "-b no_kanod_network -b rke2_airgapped"
