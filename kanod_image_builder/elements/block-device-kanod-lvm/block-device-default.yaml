@@ -1,6 +1,6 @@
 - local_loop:
     name: image0
-    size: 80G
+    size: 20G
 
 - partitioning:
     base: image0
@@ -54,7 +54,7 @@
 
       - name: lv_varlog
         base: vg
-        size: 6G
+        size: 1G
 
       - name: lv_varlogaudit
         base: vg
@@ -66,15 +66,15 @@
 
       - name: lv_etcd
         base: vg
-        size: 10G
+        size: 1G
 
       - name: lv_containerd
         base: vg
-        size: 25G
+        size: 1G
 
       - name: lv_kubelet
         base: vg
-        size: 20G
+        size: 1G
 
 - mkfs:
     name: fs_root
