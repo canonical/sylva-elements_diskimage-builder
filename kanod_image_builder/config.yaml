@@ -38,6 +38,8 @@ options:
   kind: flag
 - name: rke2_airgapped
   kind: flag
+- name: kubeadm
+  kind: flag
 
 env:
 - name: DIB_TPM2_TOOLS
@@ -285,4 +287,8 @@ recipes:
   - rke2_airgapped
   elements:
   - rke2-airgapped
-
+- when:
+  - target=ubuntu
+  - kubeadm
+  elements:
+  - kubeadm
