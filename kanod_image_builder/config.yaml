@@ -90,7 +90,7 @@ env:
 - name: DIB_RELEASE
   when:
   - target=opensuse
-  value: '{{release | default("15.4")}}'
+  value: '{{release | default("15.5")}}'
 - name: DIB_BOOTLOADER_DEFAULT_CMDLINE
   value: 'nofb nomodeset gfxpayload=text net.ifnames=1'
   when:
@@ -115,7 +115,7 @@ env:
   - 'target=ubuntu'
   - 'release=bionic'
 - name: DIB_PYTHON3
-  value: python3.9
+  value: python3.11
   when:
   - 'target=opensuse'
 - name: YUM
@@ -249,10 +249,10 @@ recipes:
 - when:
   - target=opensuse
   packages:
-  - python39-base
-  - python39-devel
-  - python39-pip
-  - python39-setuptools
+  - python311-base
+  - python311-devel
+  - python311-pip
+  - python311-setuptools
   - cloud-init
   - virtme
   - parted
@@ -269,6 +269,8 @@ recipes:
   - patch
   - curl
   - NetworkManager
+  - gcc
+  - iptables
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
   - block-device-gpt
@@ -292,3 +294,8 @@ recipes:
   - kubeadm
   elements:
   - kubeadm
+- when:
+  - target=opensuse
+  - rke2_airgapped
+  elements:
+  - rke2-airgapped
