@@ -80,3 +80,12 @@ build-kubeadm-plain:
     FLAVOR: plain
     K8S_FLAVOR: kubeadm
     KANOD_OPTIONS: "-b no_kanod_network -b kubeadm"
+
+build-opensuse-plain:
+  extends: .build-image
+  variables:
+    OS: opensuse
+    OS_RELEASE: "15.5"
+    FLAVOR: plain
+    K8S_FLAVOR: rke2
+    KANOD_OPTIONS: "-b no_kanod_network -b rke2_airgapped"

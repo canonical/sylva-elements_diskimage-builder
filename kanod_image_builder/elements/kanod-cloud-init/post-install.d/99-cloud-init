@@ -60,6 +60,8 @@ EOF
 if [ "${DISTRO_NAME}" == 'opensuse' ]; then
   echo "Updating /etc/cloud/cloud.cfg"
   sed -i  's/distro: suse/distro: opensuse/g' /etc/cloud/cloud.cfg
+
+  systemctl enable NetworkManager
 fi
 
 if [ "${DIB_NO_KANOD_NETWORK:-0}" = 1 ]; then
