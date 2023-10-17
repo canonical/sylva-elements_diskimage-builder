@@ -6,7 +6,8 @@ workflow:
 variables:
   REPO_URL: "oci://$CI_REGISTRY_IMAGE"
   IMAGE_FORMAT: qcow2
-  DISK_IMAGE_NAME: $OS-$OS_RELEASE-$FLAVOR
+  K8S_VERSION: "v1.24.17"
+  DISK_IMAGE_NAME: $OS-$OS_RELEASE-$FLAVOR-$K8S_FLAVOR-$K8S_VERSION
   DISK_IMAGE_FILENAME: $DISK_IMAGE_NAME.$IMAGE_FORMAT
 
 stages:
@@ -59,6 +60,7 @@ build-ubuntu-hardened:
     OS: ubuntu
     OS_RELEASE: jammy
     FLAVOR: hardened
+    K8S_FLAVOR: rke2
     KANOD_OPTIONS: "-b no_kanod_network -b cis_remediation -b lvm -b rke2_airgapped"
 
 build-ubuntu-plain:
@@ -67,4 +69,14 @@ build-ubuntu-plain:
     OS: ubuntu
     OS_RELEASE: jammy
     FLAVOR: plain
+    K8S_FLAVOR: rke2
     KANOD_OPTIONS: "-b no_kanod_network -b rke2_airgapped"
+
+build-kubeadm-plain:
+  extends: .build-image
+  variables:
+    OS: ubuntu
+    OS_RELEASE: jammy
+    FLAVOR: plain
+    K8S_FLAVOR: kubeadm
+    KANOD_OPTIONS: "-b no_kanod_network -b kubeadm"
