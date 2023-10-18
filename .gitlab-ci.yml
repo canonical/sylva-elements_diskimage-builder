@@ -49,8 +49,25 @@ include:
     - pip3 install diskimage-builder --break-system-packages
     - python3 -m pip install --user . --break-system-packages
     - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
-    - sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }'
-    - GODEBUG=http2client=0 flux push artifact $REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD) --timeout 3h --path="$DISK_IMAGE_FILENAME" --source="${CI_REPOSITORY_URL/gitlab-ci-token*@/}" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
+    - date
+    - |
+      sha256=$(sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
+      date
+      echo "sha256: $sha256sum"
+      GODEBUG=http2client=0  \
+      flux push artifact $REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD) \
+        --timeout 3h  \
+        --path="$DISK_IMAGE_FILENAME"  \
+        --source="${CI_REPOSITORY_URL/gitlab-ci-token*@/}"  \
+        --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)"  \
+        --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD  \
+        --annotations sylvaproject.org/diskimage/filename=$DISK_IMAGE_FILENAME  \
+        --annotations sylvaproject.org/diskimage/os=$OS  \
+        --annotations sylvaproject.org/diskimage/os-release=$OS_RELEASE  \
+        --annotations sylvaproject.org/diskimage/flavor=$FLAVOR  \
+        --annotations sylvaproject.org/diskimage/k8s-flavor=$K8S_FLAVOR  \
+        --annotations sylvaproject.org/diskimage/k8s-version=$K8S_VERSION  \
+        --annotations sylvaproject.org/diskimage/sha256=$sha256
   only:
     - tags
 
