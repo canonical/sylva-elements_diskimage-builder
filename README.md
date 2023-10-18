@@ -8,7 +8,10 @@ Documentation:
 * core library: https://orange-opensource.gitlab.io/kanod/reference/machines/core/index.html
 
 
-# Latest available images- k8s v1.26.9
+# Available artifacts:
+
+* 0.0.11 (latest)
+  * bump k8s version to v1.26.9
 
 ```bash
 oci://registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-plain-kubeadm-1.26.9:0.0.11
