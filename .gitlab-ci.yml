@@ -43,7 +43,7 @@ include:
   before_script:
     - curl -O http://ports.ubuntu.com/pool/main/d/debootstrap/debootstrap_1.0.126+nmu1_all.deb
     - sudo dpkg -i debootstrap_1.0.126+nmu1_all.deb
-    - sudo apt install zstd -y
+    - sudo apt install zstd zypper -y
   script:
     - export PATH="${HOME}/.local/bin:${PATH}"
     - pip3 install diskimage-builder --break-system-packages
