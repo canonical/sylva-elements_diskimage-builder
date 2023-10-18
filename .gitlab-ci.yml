@@ -71,38 +71,48 @@ include:
   only:
     - tags
 
-build-ubuntu-hardened:
-  extends: .build-image
-  variables:
-    OS: ubuntu
-    OS_RELEASE: jammy
-    FLAVOR: hardened
-    K8S_FLAVOR: rke2
-    KANOD_OPTIONS: "-b no_kanod_network -b cis_remediation -b lvm -b rke2_airgapped -b growpart"
+#build-ubuntu-hardened:
+#  extends: .build-image
+#  variables:
+#    OS: ubuntu
+#    OS_RELEASE: jammy
+#    FLAVOR: hardened
+#    K8S_FLAVOR: rke2
+#    KANOD_OPTIONS: "-b no_kanod_network -b cis_remediation -b lvm -b rke2_airgapped -b growpart"
+#
+# build-ubuntu-plain:
+#   extends: .build-image
+#   variables:
+#     OS: ubuntu
+#     OS_RELEASE: jammy
+#     FLAVOR: plain
+#     K8S_FLAVOR: rke2
+#     KANOD_OPTIONS: "-b no_kanod_network -b rke2_airgapped"
 
-build-ubuntu-plain:
-  extends: .build-image
-  variables:
-    OS: ubuntu
-    OS_RELEASE: jammy
-    FLAVOR: plain
-    K8S_FLAVOR: rke2
-    KANOD_OPTIONS: "-b no_kanod_network -b rke2_airgapped"
+# build-kubeadm-plain:
+#   extends: .build-image
+#   variables:
+#     OS: ubuntu
+#     OS_RELEASE: jammy
+#     FLAVOR: plain
+#     K8S_FLAVOR: kubeadm
+#     KANOD_OPTIONS: "-b no_kanod_network -b kubeadm"
 
-build-kubeadm-plain:
+build-kubeadm-plain-raw:
   extends: .build-image
   variables:
     OS: ubuntu
     OS_RELEASE: jammy
     FLAVOR: plain
     K8S_FLAVOR: kubeadm
+    IMAGE_FORMAT: raw
     KANOD_OPTIONS: "-b no_kanod_network -b kubeadm"
 
-build-opensuse-plain:
-  extends: .build-image
-  variables:
-    OS: opensuse
-    OS_RELEASE: "15.5"
-    FLAVOR: plain
-    K8S_FLAVOR: rke2
-    KANOD_OPTIONS: "-b no_kanod_network -b rke2_airgapped"
+# build-opensuse-plain:
+#   extends: .build-image
+#   variables:
+#     OS: opensuse
+#     OS_RELEASE: "15.5"
+#     FLAVOR: plain
+#     K8S_FLAVOR: rke2
+#     KANOD_OPTIONS: "-b no_kanod_network -b rke2_airgapped"
