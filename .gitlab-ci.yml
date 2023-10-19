@@ -48,7 +48,7 @@ include:
     - export PATH="${HOME}/.local/bin:${PATH}"
     - pip3 install diskimage-builder --break-system-packages
     - python3 -m pip install --user . --break-system-packages
-    - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS -o $DISK_IMAGE_FILENAME
+    - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
     - sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }'
     - flux push artifact $REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD) --timeout 2h --path="$DISK_IMAGE_FILENAME" --source="${CI_REPOSITORY_URL/gitlab-ci-token*@/}" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
   only:
