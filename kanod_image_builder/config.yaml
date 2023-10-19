@@ -44,7 +44,7 @@ options:
   kind: var
 - name: build_commit_ref
   kind: var
-- name: build_commit_trag
+- name: build_commit_tag
   kind: var
 
 env:
