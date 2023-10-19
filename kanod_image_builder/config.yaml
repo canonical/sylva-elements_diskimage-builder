@@ -40,12 +40,6 @@ options:
   kind: flag
 - name: kubeadm
   kind: flag
-- name: build_commit_id
-  kind: var
-- name: build_commit_ref
-  kind: var
-- name: build_commit_tag
-  kind: var
 
 env:
 - name: DIB_TPM2_TOOLS
@@ -137,12 +131,6 @@ env:
   value: '1'
   when:
   - no_kanod_network
-- name: DIB_BUILD_COMMIT_ID
-  value: '{{build_commit_id | default("unset")}}'
-- name: DIB_BUILD_COMMIT_REF
-  value: '{{build_commit_ref | default("unset")}}'
-- name: DIB_BUILD_COMMIT_TAG
-  value: '{{build_commit_tag | default("unset")}}'
 
 recipes:
 - elements:
