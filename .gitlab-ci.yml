@@ -61,7 +61,7 @@ build-ubuntu-hardened:
     OS_RELEASE: jammy
     FLAVOR: hardened
     K8S_FLAVOR: rke2
-    KANOD_OPTIONS: "-b no_kanod_network -b cis_remediation -b lvm -b rke2_airgapped"
+    KANOD_OPTIONS: "-b no_kanod_network -b cis_remediation -b lvm -b rke2_airgapped -b growpart"
 
 build-ubuntu-plain:
   extends: .build-image
