@@ -10,7 +10,7 @@ Documentation:
 
 # Available artifacts:
 
-* 0.0.11 (latest)
+* 0.0.12 (latest)
   * bump k8s version to v1.26.9
 
 ```bash
