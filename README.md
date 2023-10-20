@@ -14,12 +14,25 @@ Documentation:
   * bump k8s version to v1.26.9
 
 ```bash
-oci://registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-plain-kubeadm-1.26.9:0.0.11
-sha256: 0ca896155c9ffacd231e34acd646ab997cca2b1026a370208b01dead12b96d4c
+k8s 1.26.9
+oci://registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-plain-kubeadm-1.26.9:0.0.12
+sha256: 2f63618e0a97b9316e64bc4fc8947524978397b07bc5d23db7ddf325e7d11b9e
 
-oci://registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-hardened-rke2-1.26.9:0.0.11
-sha256: 50b3de2df79c9657eadd7137bee55889d570d4b0f9a699415d55ed2f4366cb92
+oci://registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-hardened-rke2-1.26.9:0.0.12
+sha256: 2b2204746d0ded5515247bf0a410a4956d5202ca42e91a04228d071c07388337
 
-oci://registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-plain-rke2-1.26.9:0.0.11
-sha256: f73ec0b857cf5c325658767dd7d41d2c65ecc2889ed7b2c893e50abbe1310b21
+oci://registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-plain-rke2-1.26.9:0.0.12
+sha256: ffdc81fcdc0104151aa792a508eefe0d47660b18683949edcd734b3a4f938f20
+
+
+
+k8s 1.24.17
+oci://registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-plain-kubeadm-1.26.9:0.0.12
+sha256: 2f63618e0a97b9316e64bc4fc8947524978397b07bc5d23db7ddf325e7d11b9e
+
+oci://registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-hardened-rke2-1.26.9:0.0.12
+sha256: 2b2204746d0ded5515247bf0a410a4956d5202ca42e91a04228d071c07388337
+
+oci://registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-plain-rke2-1.24.17:0.0.12
+sha256: 21471d8064e4518dce8aee643fddcd82386a712d69d8ff863759ef0df9225df0
 ```
