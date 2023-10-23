@@ -66,9 +66,9 @@ Authenticate to the registry before signing because the signature shall be store
 docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder
 ```
 
-Then sign the artifact. In the CI, we can sign by refering the environment variable `COSIGN_PRIVATE_KEY`:
+Then sign the artifact. In the CI, we can sign by referring the environment variable `COSIGN_PRIVATE_KEY`:
 
-> **_NOTE_**: when refering  `COSIGN_PRIVATE_KEY`, the environment variable `COSIGN_PASSWORD` must be set, so that cosign can decrypt the private key
+> **_NOTE_**: when referring `COSIGN_PRIVATE_KEY`, the environment variable `COSIGN_PASSWORD` must be set, so that cosign can decrypt the private key
 
 ```shell
 cosign sign --key env://COSIGN_PRIVATE_KEY registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/diskimage-builder-hardened@sha256:b4affd8071d5c30f302b50a29b524d97cc25727dddc3d1ab9a46275ac5471a3b
@@ -89,7 +89,7 @@ It is also possible to sign by fetching the private key from Gitlab (assuming `G
 cosign sign --key gitlab://43786055 registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/diskimage-builder-hardened@sha256:b4affd8071d5c30f302b50a29b524d97cc25727dddc3d1ab9a46275ac5471a3b
 ```
 
- We can get rif of crane when pushing and signing (`flux push artifact --help`):
+ We can get rid of crane when pushing and signing (`flux push artifact --help`):
 
 ```shell
 digest_url = $(flux push artifact oci://ghcr.io/org/config/app:$(git rev-parse --short HEAD) \
