@@ -1,4 +1,8 @@
 ---
+workflow:
+  rules:
+    - when: always
+
 variables:
   REPO_URL: "oci://$CI_REGISTRY_IMAGE"
   IMAGE_FORMAT: qcow2
@@ -53,7 +57,7 @@ include:
     - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
     - sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }'
     - digest_url=$(
-       flux push artifact
+       GODEBUG=http2client=0 flux push artifact
        $REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD)
        --timeout 2h --path="$DISK_IMAGE_FILENAME"
        --source="${CI_REPOSITORY_URL/gitlab-ci-token*@/}"
@@ -64,7 +68,7 @@ include:
     - |
       if [[ ${CI_COMMIT_TAG} && ${COSIGN_PRIVATE_KEY} ]]; then
         echo "-- Signing $DISK_IMAGE_NAME image"
-        cosign sign $digest_url
+        cosign sign -y --key env://COSIGN_PRIVATE_KEY $digest_url
       fi
     # Can be removed when the CLi will be installed by default in the base image
     - sudo apt install gitlab-runner -y
