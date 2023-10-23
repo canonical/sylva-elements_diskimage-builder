@@ -1,8 +1,8 @@
 ---
-
 workflow:
   rules:
     - when: always
+
 variables:
   REPO_URL: "oci://$CI_REGISTRY_IMAGE"
   IMAGE_FORMAT: qcow2
@@ -13,6 +13,7 @@ variables:
 stages:
   - test
   - build
+  - release
 
 include:
   - project: 'renovate-bot/renovate-runner'
@@ -50,7 +51,14 @@ include:
     - python3 -m pip install --user . --break-system-packages
     - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
     - sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }'
-    - GODEBUG=http2client=0 flux push artifact $REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD) --timeout 3h --path="$DISK_IMAGE_FILENAME" --source="${CI_REPOSITORY_URL/gitlab-ci-token*@/}" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
+    - GODEBUG=http2client=0 flux push artifact $REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD) --timeout 2h --path="$DISK_IMAGE_FILENAME" --source="${CI_REPOSITORY_URL/gitlab-ci-token*@/}" --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)" --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
+    # Can be removed when the CLi will be installed by default in the base image
+    - sudo apt install gitlab-runner -y
+    - echo "BUILD_IMAGE_$CI_JOB_ID=$REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD)" >> variables.env
+    - echo "BUILD_CHECKSUM_$CI_JOB_ID=$(sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')" >> variables.env
+  artifacts:
+    reports:
+      dotenv: variables.env
   only:
     - tags
 
@@ -89,3 +97,38 @@ build-opensuse-plain:
     FLAVOR: plain
     K8S_FLAVOR: rke2
     KANOD_OPTIONS: "-b no_kanod_network -b rke2_airgapped"
+
+prepare_job:
+  stage: release
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED # Run this job when a tag is created for a protected branch
+      when: always
+  script:
+    - |
+      echo "EXTRA_DESCRIPTION=$(for artifact in $(env | grep BUILD_IMAGE); do
+        job_id=$(echo ${artifact/=*/} | cut -d_ -f3)
+        checksum="BUILD_CHECKSUM_$job_id"
+        echo -n "<br /> Image: ${artifact/*=/}<br /> Checksum: ${!checksum}<br />"
+      done
+      )" >> variables.env
+  artifacts:
+    paths:
+      - variables.env
+    reports:
+      dotenv: variables.env
+
+release_job:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs:
+    - job: prepare_job
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED # Run this job when a tag is created for a protected branch
+      when: always
+  script:
+    - echo "running release_job"
+  release:
+    tag_name: '$CI_COMMIT_TAG'
+    description: 'Release content: <br /> $EXTRA_DESCRIPTION'
+    ref: '$CI_COMMIT_SHA'
