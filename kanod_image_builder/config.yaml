@@ -145,6 +145,7 @@ recipes:
   - grub-init
   - kanod-configure
   - chrony
+  - build-info
 - when:
   - tpm
   elements:
