@@ -227,7 +227,7 @@ def main():
         else:
             raise Exception(f'Incorrect binding syntax {decl}')
 
-    modules = ['kanod_image_builder'] + args.modules
+    modules = ['sylva_imagebuilder'] + args.modules
 
     for module in modules:
         image_builder.parse(module)
