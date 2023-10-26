@@ -10,5 +10,12 @@
       "matchStrings": ["https:\/\/github\\.com\/(?<depName>.*?)\\n\\s+version: \"(?<currentValue>.*)\""],
       "datasourceTemplate": "github-tags"
     }
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["renovate-bot/renovate-runner"],
+      "groupName": "renovate",
+      "schedule": ["before 4am on monday"]
+    }
   ]
 }
