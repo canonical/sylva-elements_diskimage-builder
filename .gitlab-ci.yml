@@ -55,10 +55,9 @@ include:
     - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
   script:
     - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
-    - |
-      sha256=$(sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
-      sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }'
-      digest_url=$(
+    - sha256=$(sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
+    - echo ${sha256}
+    - digest_url=$(
        GODEBUG=http2client=0 flux push artifact
        $REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
        --timeout 2h --path="$DISK_IMAGE_FILENAME"
