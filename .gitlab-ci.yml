@@ -85,6 +85,12 @@ include:
   artifacts:
     reports:
       dotenv: variables.env
+  parallel:
+    matrix:
+      - K8S_VERSION:
+        - 1.26.9
+        - 1.25.14
+        - 1.24.17
   rules:
     - if: $CI_COMMIT_TAG
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
