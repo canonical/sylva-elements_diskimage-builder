@@ -96,7 +96,7 @@ include:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: manual
 
-build-ubuntu-hardened:
+build-ubuntu-hardened-rke2:
   extends: .build-image
   variables:
     OS: ubuntu
@@ -105,7 +105,7 @@ build-ubuntu-hardened:
     K8S_FLAVOR: rke2
     KANOD_OPTIONS: "-b no_kanod_network -b cis_remediation -b lvm -b rke2_airgapped -b growpart"
 
-build-ubuntu-plain:
+build-ubuntu-plain-rke2:
   extends: .build-image
   variables:
     OS: ubuntu
@@ -114,7 +114,7 @@ build-ubuntu-plain:
     K8S_FLAVOR: rke2
     KANOD_OPTIONS: "-b no_kanod_network -b rke2_airgapped"
 
-build-kubeadm-plain:
+build-ubuntu-plain-kubeadm:
   extends: .build-image
   variables:
     OS: ubuntu
@@ -123,7 +123,7 @@ build-kubeadm-plain:
     K8S_FLAVOR: kubeadm
     KANOD_OPTIONS: "-b no_kanod_network -b kubeadm"
 
-build-opensuse-plain:
+build-opensuse-plain-rke2:
   extends: .build-image
   image: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/suse:v2.0.0
   before_script:
