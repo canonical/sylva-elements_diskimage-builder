@@ -162,6 +162,7 @@ recipes:
   - kbd
   - lvm2
   - netplan.io
+  - dpdk
   elements:
   - ubuntu{{ "" if image is defined else "-minimal" }}
   - ubuntu-fix
@@ -272,6 +273,7 @@ recipes:
   - NetworkManager
   - gcc
   - iptables
+  - dpdk
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
   - block-device-gpt
