@@ -6,12 +6,9 @@
     base: image0
     label: gpt
     partitions:
-      - name: BSP
-        type: 'EF02'
-        size: 4MiB
       - name: ESP
         type: 'EF00'
-        size: 106MiB
+        size: 250MiB
         mkfs:
           type: vfat
           mount:
@@ -19,12 +16,16 @@
             fstab:
               options: "defaults"
               fsck-passno: 1
+      - name: BSP
+        type: 'EF02'
+        size: 8MiB
       - name: root
         type: 8E00
         size: 100%
 
 - lvm:
     name: lvm
+    base: [ root ]
     pvs:
       - name: pv
         options: ["--force"]
