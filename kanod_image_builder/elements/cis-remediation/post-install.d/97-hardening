@@ -7,6 +7,14 @@ apt install gpg-agent -y
 apt install python3-jinja2 -y
 add-apt-repository --yes --update ppa:ansible/ansible
 apt install ansible -y
+if apt-get install -y ansible; then : # success
+else
+  # Failed to install Ansible, try workaround based on
+  # https://github.com/ansible-community/ppa/issues/77#issuecomment-1802847056
+  sed -i -e '1s/^[^#]*//' /usr/lib/python3/dist-packages/ansible_collections/netapp/ontap/plugins/modules/na_ontap_s3_users.py
+  apt-get install -y --fix-broken
+  ansible-galaxy collection install -p /usr/lib/python3/dist-packages/ --force netapp.ontap
+fi
 export LC_ALL="en_US.UTF-8"
 export LC_CTYPE="en_US.UTF-8"
 
