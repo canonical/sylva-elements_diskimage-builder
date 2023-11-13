@@ -1,1 +1,3 @@
-recursive-include sylva_imagebuilder *
+include sylva_imagebuilder/**/*
+include sylva_imagebuilder/*
+recursive-include sylva_imagebuilder/elements *
