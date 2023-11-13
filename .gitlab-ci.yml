@@ -10,9 +10,10 @@ workflow:
         OCI_TAG_FORMAT: "0.0.0-git-$CI_COMMIT_SHORT_SHA"
 
 variables:
-  REPO_URL: "oci://$CI_REGISTRY_IMAGE"
+  REPO_URL: "$CI_REGISTRY_IMAGE"
+  REPO_IMAGE: $REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
+  REPO_IMAGE_SNAPSHOT: $REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
   IMAGE_FORMAT: qcow2
-  K8S_VERSION: ""
   DISK_IMAGE_NAME: $OS-$OS_RELEASE-$FLAVOR-$K8S_FLAVOR
   GITLEAKS_ARGS: '--verbose --log-opts=$CI_COMMIT_SHA'
   DIB_SHOW_IMAGE_USAGE: 1
@@ -22,7 +23,6 @@ stages:
   - test
   - build
   - release
-  - sign
 
 include:
   - project: 'renovate-bot/renovate-runner'
@@ -46,82 +46,23 @@ include:
     ref: 2.2.3
     file: "templates/gitlab-ci-gitleaks.yml"
 
-.build-image:
-  stage: build
-  needs: []
-  tags:
-    - saas-linux-medium-amd64
-  image: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu:v2.0.1
-  before_script:
-    - python3 -m pip install --user . --break-system-packages
-    - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
-  script:
-    - export DISK_IMAGE_NAME=$DISK_IMAGE_NAME-${K8S_VERSION%-*}
-    - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
-    - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
-    - export sha256=$(sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
-    - export md5=$(md5sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
-    - |
-      echo "md5: $md5"
-      echo "sha256: $sha256"
-    - |
-      echo "Image format: $IMAGE_FORMAT"
-      if [ $IMAGE_FORMAT = raw ]; then
-        echo "Producing a raw image"
-        export ARTIFACT_DISK_IMAGE_FILENAME=$DISK_IMAGE_FILENAME.gz
-        export COMPRESSION=gz
-        echo "$(date -Iseconds): Compressing to $ARTIFACT_DISK_IMAGE_FILENAME"
-        gzip --fast $DISK_IMAGE_FILENAME
-        echo "$(date -Iseconds): Done."
-      else
-        echo "Producing a QCOW2 image"
-        export ARTIFACT_DISK_IMAGE_FILENAME=$DISK_IMAGE_FILENAME
-        export COMPRESSION=none
-      fi
-    - digest_url=$(
-       GODEBUG=http2client=0 flux push artifact
-       $REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
-       --timeout 2h --path="$ARTIFACT_DISK_IMAGE_FILENAME"
-       --source="${CI_REPOSITORY_URL/gitlab-ci-token*@/}"
-       --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)"
-       --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
-       --annotations sylvaproject.org/diskimage/filename=$DISK_IMAGE_FILENAME
-       --annotations sylvaproject.org/diskimage/os=$OS
-       --annotations sylvaproject.org/diskimage/os-release=$OS_RELEASE
-       --annotations sylvaproject.org/diskimage/flavor=$FLAVOR
-       --annotations sylvaproject.org/diskimage/k8s-flavor=$K8S_FLAVOR
-       --annotations sylvaproject.org/diskimage/k8s-version=$K8S_VERSION
-       --annotations sylvaproject.org/diskimage/sha256=$sha256
-       --annotations sylvaproject.org/diskimage/md5=$md5    
-       --annotations sylvaproject.org/diskimage/image-format=$IMAGE_FORMAT
-       --annotations sylvaproject.org/diskimage/compression=$COMPRESSION
-       --output json |
-       jq -r '. | .repository + "@" + .digest')
-    - |
-      if [[ ${CI_COMMIT_TAG} && ${COSIGN_PRIVATE_KEY} ]]; then
-        echo "-- Signing $DISK_IMAGE_NAME image"
-        cosign login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
-        cosign sign -y --key env://COSIGN_PRIVATE_KEY "$digest_url"
-      fi
-    - echo "Image pushed at $REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT"
-    - echo "BUILD_IMAGE_$CI_JOB_ID=$REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD)" >> variables.env
-    - echo "BUILD_CHECKSUM_$CI_JOB_ID=$sha256" >> variables.env
-  artifacts:
-    reports:
-      dotenv: variables.env
+.default-trigger:
+  trigger:
+    include: .gitlab/ci/pipeline-build-and-test.yml
+    strategy: depend
   parallel:
     matrix:
       - K8S_VERSION:
-        - 1.26.9-rke2r1
-        - 1.25.14-rke2r1
-        - 1.24.17-rke2r1
+          - 1.26.9-rke2r1
+          - 1.25.14-rke2r1
+          - 1.24.17-rke2r1
   rules:
     - if: $CI_COMMIT_TAG
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: manual
 
 build-ubuntu-hardened-rke2:
-  extends: .build-image
+  extends: .default-trigger
   variables:
     OS: ubuntu
     OS_RELEASE: jammy
@@ -131,7 +72,7 @@ build-ubuntu-hardened-rke2:
     KANOD_OPTIONS: "-b no_kanod_network -b cis_remediation -b lvm -b rke2_airgapped -b growpart"
 
 build-ubuntu-plain-rke2:
-  extends: .build-image
+  extends: .default-trigger
   variables:
     OS: ubuntu
     OS_RELEASE: jammy
@@ -141,7 +82,7 @@ build-ubuntu-plain-rke2:
     KANOD_OPTIONS: "-b no_kanod_network -b rke2_airgapped"
 
 build-ubuntu-plain-kubeadm:
-  extends: .build-image
+  extends: .default-trigger
   variables:
     OS: ubuntu
     OS_RELEASE: jammy
@@ -151,11 +92,10 @@ build-ubuntu-plain-kubeadm:
     KANOD_OPTIONS: "-b no_kanod_network -b kubeadm"
 
 build-opensuse-plain-rke2:
-  extends: .build-image
-  image: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/suse:v2.0.1
-  before_script:
-    - python3 -m pip install --user . --ignore-requires-python
-    - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
+  extends: .default-trigger
+  trigger:
+    include: .gitlab/ci/pipeline-build-and-test-suse.yml
+    strategy: depend
   variables:
     OS: opensuse
     OS_RELEASE: "15.5"
