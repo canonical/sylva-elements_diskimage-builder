@@ -49,7 +49,7 @@ include:
   needs: []
   tags:
     - saas-linux-medium-amd64
-  image: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu:v2.0.0
+  image: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu:v2.0.1
   before_script:
     - python3 -m pip install --user . --break-system-packages
     - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
