@@ -13,6 +13,7 @@ variables:
   REPO_URL: "oci://$CI_REGISTRY_IMAGE"
   IMAGE_FORMAT: qcow2
   K8S_VERSION: ""
+  DISK_IMAGE_NAME: $OS-$OS_RELEASE-$FLAVOR-$K8S_FLAVOR
 
 stages:
   - test
@@ -54,7 +55,6 @@ include:
   script:
     - export DISK_IMAGE_NAME=$DISK_IMAGE_NAME-${K8S_VERSION%-*}
     - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
-    - env
     - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
     - export sha256=$(sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
     - echo $sha256
