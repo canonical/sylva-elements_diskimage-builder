@@ -13,6 +13,7 @@ variables:
   REPO_URL: "oci://$CI_REGISTRY_IMAGE"
   IMAGE_FORMAT: qcow2
   K8S_VERSION: ""
+  DISK_IMAGE_NAME: $OS-$OS_RELEASE-$FLAVOR-$K8S_FLAVOR
 
 stages:
   - test
