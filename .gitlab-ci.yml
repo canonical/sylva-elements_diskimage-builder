@@ -89,8 +89,8 @@ include:
   parallel:
     matrix:
       - K8S_VERSION:
-        - 1.26.10-rke2r2
-        - 1.25.15-rke2r2
+        - 1.26.9-rke2r1
+        - 1.25.14-rke2r1
         - 1.24.17-rke2r1
   rules:
     - if: $CI_COMMIT_TAG
