@@ -31,4 +31,5 @@ apt-add-repository -y "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 apt -y install containerd
 mkdir /etc/containerd
 containerd config default | sed 's/SystemdCgroup = false/SystemdCgroup = true/' | tee /etc/containerd/config.toml
+export K8S_VERSION=${K8S_VERSION%-*}
 apt install -y kubelet=$K8S_VERSION-00 kubeadm=$K8S_VERSION-00 kubectl=$K8S_VERSION-00
