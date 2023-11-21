@@ -13,6 +13,7 @@ options:
 recipes:
 - elements:
   - '!block-device-kanod-lvm'
+  - build-info
 - when:
   - target=ubuntu
   - lvm
