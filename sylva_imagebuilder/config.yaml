@@ -3,7 +3,7 @@ options:
   kind: flag
 - name: growpart
   kind: flag
-- name: cis_remediation
+- name: cis_hardening
   kind: flag
 - name: rke2_airgapped
   kind: flag
@@ -11,18 +11,20 @@ options:
   kind: flag
 
 recipes:
+- elements:
+  - '!block-device-kanod-lvm'
 - when:
   - target=ubuntu
   - lvm
   elements:
-  - block-device-kanod-lvm
+  - block-device-sylva-lvm
 - when:
   - target=ubuntu
-  - cis_remediation
+  - cis_hardening
   packages:
   - git
   elements:
-  - cis-remediation
+  - cis-hardening
 - when:
   - target=ubuntu
   - release=jammy
@@ -36,7 +38,7 @@ recipes:
   - target=ubuntu
   - growpart
   elements:
-  - cloud-init-growpart
+  - sylva-growpart
 - when:
   - target=ubuntu
   - rke2_airgapped
