@@ -50,7 +50,6 @@ include:
     - saas-linux-medium-amd64
   image: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu:v2.0.0
   before_script:
-    - pip3 install kanod-image-builder --index-url https://gitlab.com/api/v4/projects/29509688/packages/pypi/files/6823d8d3eb88dae38922006b2ec068233e79916d18c5e3d1a97a46684d08744c/kanod-image-builder
     - python3 -m pip install --user .
     - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
   script:
