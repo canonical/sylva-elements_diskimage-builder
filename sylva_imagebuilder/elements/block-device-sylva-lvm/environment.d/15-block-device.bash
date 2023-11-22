@@ -8,4 +8,3 @@ if [[ "ppc64 ppc64le ppc64el" =~ "$ARCH" ]]; then
 fi
 
 export DIB_BLOCK_DEVICE=efi
-export DIB_KANOD_LVM=1
