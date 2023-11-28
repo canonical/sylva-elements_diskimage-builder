@@ -8,12 +8,13 @@ workflow:
     - when: always
       variables:
         OCI_TAG_FORMAT: "0.0.0-git-$CI_COMMIT_SHORT_SHA"
-  
+
 variables:
   REPO_URL: "oci://$CI_REGISTRY_IMAGE"
   IMAGE_FORMAT: qcow2
   K8S_VERSION: ""
   DISK_IMAGE_NAME: $OS-$OS_RELEASE-$FLAVOR-$K8S_FLAVOR
+  GITLEAKS_ARGS: '--verbose --log-opts=$CI_COMMIT_SHA'
 
 stages:
   - test
