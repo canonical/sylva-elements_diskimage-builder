@@ -20,6 +20,11 @@ if [ -z "$1" ]; then
 fi
 if [ ! -f "/var/lib/grub-init" ]; then
     touch "/var/lib/grub-init"
+    if type grub2-mkconfig >/dev/null; then
+        GRUB_MKCONFIG="grub2-mkconfig"
+    else
+        GRUB_MKCONFIG="grub-mkconfig"
+    fi
     current_grub=$(grep '^GRUB_CMDLINE_LINUX_DEFAULT=' /etc/default/grub | tail -1 | sed -e "s/^[^=]*=[\"']\\?//" -e "s/['\"]$//")
     next_grub="$current_grub $1"
     # No need for a timeout. Nobody attends
@@ -36,11 +41,11 @@ if [ ! -f "/var/lib/grub-init" ]; then
     else
         # Update an EFI configuration if it exists
         if [ -f '/boot/efi/EFI/centos/grub.cfg' ]; then
-            grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg
+            $GRUB_MKCONFIG -o /boot/efi/EFI/centos/grub.cfg
         fi
         # Update a legacy bios configuration if it exists
         if [ -f '/boot/grub2/grub.cfg' ]; then
-            grub2-mkconfig -o /boot/grub2/grub.cfg
+            $GRUB_MKCONFIG -o /boot/grub2/grub.cfg
         fi
     fi
     # Reboot with cloud-init running again

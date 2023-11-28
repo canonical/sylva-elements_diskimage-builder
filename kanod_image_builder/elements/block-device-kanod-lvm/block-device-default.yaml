@@ -11,7 +11,7 @@
         size: 4MiB
       - name: ESP
         type: 'EF00'
-        size: 106MiB
+        size: 250MiB
         mkfs:
           type: vfat
           mount:
