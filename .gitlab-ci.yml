@@ -15,6 +15,8 @@ variables:
   K8S_VERSION: ""
   DISK_IMAGE_NAME: $OS-$OS_RELEASE-$FLAVOR-$K8S_FLAVOR
   GITLEAKS_ARGS: '--verbose --log-opts=$CI_COMMIT_SHA'
+  DIB_SHOW_IMAGE_USAGE: 1
+  DIB_DEBUG_TRACE: 1
 
 stages:
   - test
