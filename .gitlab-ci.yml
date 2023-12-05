@@ -13,7 +13,7 @@ variables:
   REPO_URL: "oci://$CI_REGISTRY_IMAGE"
   IMAGE_FORMAT: qcow2
   K8S_VERSION: ""
-  DISK_IMAGE_NAME: $OS-$OS_RELEASE-$FLAVOR-$K8S_FLAVOR
+  DISK_IMAGE_NAME_BASE: $OS-$OS_RELEASE-$FLAVOR-$K8S_FLAVOR  # k8s version is appended to that dynamically
   GITLEAKS_ARGS: '--verbose --log-opts=$CI_COMMIT_SHA'
   DIB_SHOW_IMAGE_USAGE: 1
   DIB_DEBUG_TRACE: 1
@@ -56,7 +56,7 @@ include:
     - python3 -m pip install --user . --break-system-packages
     - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
   script:
-    - export DISK_IMAGE_NAME=$DISK_IMAGE_NAME-${K8S_VERSION%-*}
+    - export DISK_IMAGE_NAME=$DISK_IMAGE_NAME_BASE-${K8S_VERSION%-*}
     - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
     - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
     - export sha256=$(sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
