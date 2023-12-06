@@ -90,7 +90,7 @@ include:
        --annotations sylvaproject.org/diskimage/os-release=$OS_RELEASE
        --annotations sylvaproject.org/diskimage/flavor=$FLAVOR
        --annotations sylvaproject.org/diskimage/k8s-flavor=$K8S_FLAVOR
-       --annotations sylvaproject.org/diskimage/k8s-version=$K8S_VERSION
+       --annotations sylvaproject.org/diskimage/k8s-version=$([ $K8S_FLAVOR == kubeadm ] && echo ${K8S_VERSION%-*} || echo $K8S_VERSION)
        --annotations sylvaproject.org/diskimage/sha256=$sha256
        --annotations sylvaproject.org/diskimage/md5=$md5    
        --annotations sylvaproject.org/diskimage/image-format=$IMAGE_FORMAT
