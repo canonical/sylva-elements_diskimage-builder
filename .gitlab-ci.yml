@@ -53,7 +53,8 @@ include:
     - saas-linux-medium-amd64
   image: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu:v2.0.1
   before_script:
-    - python3 -m pip install --user . --break-system-packages
+    - pip3 install kanod-image-builder --index-url https://gitlab.com/api/v4/projects/29509688/packages/pypi/simple
+    - python3 -m pip install --user sylva/ --break-system-packages
     - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
   script:
     - export DISK_IMAGE_NAME=$DISK_IMAGE_NAME_BASE-${K8S_VERSION%-*}
@@ -128,7 +129,7 @@ build-ubuntu-hardened-rke2:
     FLAVOR: hardened
     K8S_FLAVOR: rke2
     IMAGE_FORMAT: raw
-    KANOD_OPTIONS: "-b no_kanod_network -b cis_remediation -b lvm -b rke2_airgapped -b growpart"
+    KANOD_OPTIONS: "-b no_kanod_network -b cis_hardening -b lvm -b rke2_airgapped -b growpart"
 
 build-ubuntu-plain-rke2:
   extends: .build-image
@@ -154,7 +155,8 @@ build-opensuse-plain-rke2:
   extends: .build-image
   image: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/suse:v2.0.1
   before_script:
-    - python3 -m pip install --user . --ignore-requires-python
+    - pip3 install kanod-image-builder --index-url https://gitlab.com/api/v4/projects/29509688/packages/pypi/simple
+    - python3 -m pip install --user sylva/ --ignore-requires-python
     - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
   variables:
     OS: opensuse
