@@ -1,0 +1,57 @@
+options:
+- name: lvm
+  kind: flag
+- name: growpart
+  kind: flag
+- name: cis_hardening
+  kind: flag
+- name: rke2_airgapped
+  kind: flag
+- name: kubeadm
+  kind: flag
+
+recipes:
+- elements:
+  - '!block-device-kanod-lvm'
+  - build-info
+- when:
+  - target=ubuntu
+  - lvm
+  elements:
+  - block-device-sylva-lvm
+- when:
+  - target=ubuntu
+  - cis_hardening
+  packages:
+  - git
+  elements:
+  - cis-hardening
+- when:
+  - target=ubuntu
+  - release=jammy
+  packages:
+  - vim
+  - iputils-ping
+  - rsyslog
+  - nfs-common
+  - iptables
+- when:
+  - target=ubuntu
+  - growpart
+  elements:
+  - sylva-growpart
+- when:
+  - target=ubuntu
+  - rke2_airgapped
+  elements:
+  - rke2-airgapped
+- when:
+  - target=ubuntu
+  - kubeadm
+  elements:
+  - kubeadm
+- when:
+  - target=opensuse
+  - rke2_airgapped
+  elements:
+  - rke2-airgapped
