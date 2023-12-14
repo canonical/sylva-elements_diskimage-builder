@@ -162,6 +162,7 @@ recipes:
   - kbd
   - lvm2
   - netplan.io
+  - cryptsetup
   elements:
   - ubuntu{{ "" if image is defined else "-minimal" }}
   - ubuntu-fix
@@ -180,6 +181,7 @@ recipes:
   - nmap
   - iputils-ping
   - python3-setuptools
+  - cryptsetup
 - when:
   - target=centos
   packages:
@@ -230,6 +232,7 @@ recipes:
   - rsyslog
   - nfs-common
   - iptables
+  - cryptsetup
 - when:
   - target=ubuntu
   - rename_interface_names
@@ -273,6 +276,7 @@ recipes:
   - NetworkManager
   - gcc
   - iptables
+  - cryptsetup
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
   - block-device-gpt
