@@ -59,6 +59,7 @@ include:
     - export DISK_IMAGE_NAME=$DISK_IMAGE_NAME_BASE-${K8S_VERSION%-*}
     - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
     - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
+    - ls -lsh $DISK_IMAGE_FILENAME
     - export sha256=$(sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
     - export md5=$(md5sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
     - |
@@ -68,15 +69,15 @@ include:
       echo "Image format: $IMAGE_FORMAT"
       if [ $IMAGE_FORMAT = raw ]; then
         echo "Producing a raw image"
-        export ARTIFACT_DISK_IMAGE_FILENAME=$DISK_IMAGE_FILENAME.gz
-        export COMPRESSION=gz
-        echo "$(date -Iseconds): Compressing to $ARTIFACT_DISK_IMAGE_FILENAME"
-        gzip --fast $DISK_IMAGE_FILENAME
+        export ARTIFACT_DISK_IMAGE_FILENAME=$DISK_IMAGE_FILENAME.tar
+        export ARCHIVE=tar
+        echo "$(date -Iseconds): Archiving to $ARTIFACT_DISK_IMAGE_FILENAME"
+        tar cSf $ARTIFACT_DISK_IMAGE_FILENAME $DISK_IMAGE_FILENAME
         echo "$(date -Iseconds): Done."
       else
         echo "Producing a QCOW2 image"
         export ARTIFACT_DISK_IMAGE_FILENAME=$DISK_IMAGE_FILENAME
-        export COMPRESSION=none
+        export ARCHIVE=none
       fi
     - digest_url=$(
        GODEBUG=http2client=0 flux push artifact
@@ -94,7 +95,7 @@ include:
        --annotations sylvaproject.org/diskimage/sha256=$sha256
        --annotations sylvaproject.org/diskimage/md5=$md5    
        --annotations sylvaproject.org/diskimage/image-format=$IMAGE_FORMAT
-       --annotations sylvaproject.org/diskimage/compression=$COMPRESSION
+       --annotations sylvaproject.org/diskimage/archive=$ARCHIVE
        --output json |
        jq -r '. | .repository + "@" + .digest')
     - |
