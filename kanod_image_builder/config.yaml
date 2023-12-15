@@ -163,6 +163,7 @@ recipes:
   - lvm2
   - netplan.io
   - cryptsetup
+  - less
   elements:
   - ubuntu{{ "" if image is defined else "-minimal" }}
   - ubuntu-fix
