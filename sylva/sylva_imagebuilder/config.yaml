@@ -55,3 +55,8 @@ recipes:
   - rke2_airgapped
   elements:
   - rke2-airgapped
+- when:
+  - target=ubuntu
+  packages:
+  - cryptsetup
+  - less
