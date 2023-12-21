@@ -1,0 +1,30 @@
+---
+include:
+  - local: .gitlab/ci/templates-build-tests.yml
+
+workflow:
+  rules:
+    - when: always
+
+stages:
+  - build
+  - boot-image
+  - promote-image
+
+build-image:
+  stage: build
+  extends: .build-image
+
+boot-image:
+  stage: boot-image
+  extends: .boot-image
+  parallel:
+    matrix:
+      - VM_BOOT_MODE:
+          - legacy
+          - uefi
+
+promote:
+  stage: promote-image
+  extends: .promote-image
+
