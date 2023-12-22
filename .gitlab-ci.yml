@@ -115,7 +115,7 @@ prepare_job:
       echo "EXTRA_DESCRIPTION=$(for artifact in $(env | grep BUILD_IMAGE); do
         job_id=$(echo ${artifact/=*/} | cut -d_ -f3)
         checksum="BUILD_CHECKSUM_$job_id"
-        echo -n "<br /> Image: ${artifact/*=/}<br /> Checksum: ${!checksum}<br />"
+        echo -n "<br /> Image: ${artifact/*=/}<br /> ${!checksum}<br />"
       done
       )" >> variables.env
   artifacts:
