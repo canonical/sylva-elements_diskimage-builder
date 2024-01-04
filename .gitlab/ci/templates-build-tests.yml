@@ -20,6 +20,7 @@
     - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
     - export sha256=$(sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
     - export md5=$(md5sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
+    - export size=$(ls -ls $DISK_IMAGE_FILENAME |  awk '{ print $6 }')
     - |
       echo "md5: $md5" | tee artifacts/checksum.md5
       echo "sha256: $sha256" | tee artifacts/checksum.sha256
@@ -32,10 +33,12 @@
         echo "$(date -Iseconds): Compressing to $ARTIFACT_DISK_IMAGE_FILENAME"
         gzip --fast $DISK_IMAGE_FILENAME
         echo "$(date -Iseconds): Done."
+        export archive_size=$(ls -ls $ARTIFACT_DISK_IMAGE_FILENAME | awk '{ print $6 }')
       else
         echo "Producing a QCOW2 image"
         export ARTIFACT_DISK_IMAGE_FILENAME=$DISK_IMAGE_FILENAME
         export COMPRESSION=none
+        export archive_size=0
       fi
     - digest_url=$(
         GODEBUG=http2client=0 flux push artifact
@@ -52,6 +55,8 @@
           --annotations sylvaproject.org/diskimage/k8s-version=$K8S_VERSION
           --annotations sylvaproject.org/diskimage/sha256=$sha256
           --annotations sylvaproject.org/diskimage/md5=$md5
+          --annotations sylvaproject.org/diskimage/size=$size
+          --annotations sylvaproject.org/diskimage/archive-size=$archive_size
           --annotations sylvaproject.org/diskimage/image-format=$IMAGE_FORMAT
           --annotations sylvaproject.org/diskimage/compression=$COMPRESSION
           --output json |
