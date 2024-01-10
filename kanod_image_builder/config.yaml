@@ -146,6 +146,7 @@ recipes:
   - kanod-configure
   - chrony
   - build-info
+  - fix-secureboot
 - when:
   - tpm
   elements:
@@ -169,7 +170,6 @@ recipes:
   - ubuntu{{ "" if image is defined else "-minimal" }}
   - ubuntu-fix
   - klvm
-  - fix-secureboot
 - when:
   - debug
   elements:
