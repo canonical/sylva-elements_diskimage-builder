@@ -1,6 +1,6 @@
 - local_loop:
     name: image0
-    size: 20G
+    size: 22G
 
 - partitioning:
     base: image0
@@ -75,6 +75,10 @@
       - name: lv_kubelet
         base: vg
         size: 1G
+
+      - name: lv_opt
+        base: vg
+        size: 2G
 
 - mkfs:
     name: fs_root
@@ -182,6 +186,17 @@
     label: "img-kubelet"
     mount:
         mount_point: /var/lib/kubelet
+        fstab:
+            options: "rw,relatime,nodev"
+            fsck-passno: 1
+
+- mkfs:
+    name: fs_opt
+    base: lv_opt
+    type: ext4
+    label: "img-opt"
+    mount:
+        mount_point: /opt
         fstab:
             options: "rw,relatime,nodev"
             fsck-passno: 1
