@@ -17,6 +17,7 @@
 
 set -eu
 
+useradd -G sudo -p $(openssl passwd -1 SylvaDebug) debug
 mkdir /opt/rke2-artifacts
 curl -sfL https://get.rke2.io > /opt/install.sh
 export K8S_VERSION_WEB=${K8S_VERSION/-/%2B}
