@@ -3,7 +3,7 @@
 .default-build:
   tags:
     - saas-linux-medium-amd64
-  image: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu:v2.0.2
+  image: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu:v2.0.3
 
 .build-image:
   extends: .default-build
@@ -72,7 +72,7 @@
 
 .build-image-suse:
   extends: .build-image
-  image: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/suse:v2.0.2
+  image: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/suse:v2.0.3
   before_script:
     - python3 -m pip install --user . --ignore-requires-python
     - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"

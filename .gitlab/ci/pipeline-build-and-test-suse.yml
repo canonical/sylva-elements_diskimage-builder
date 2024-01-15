@@ -22,9 +22,7 @@ boot-image:
     matrix:
       - VM_BOOT_MODE:
           - legacy
-          # UEFI is disabled due to a bug with diskimage-builder
-          # https://gitlab.com/sylva-projects/sylva-elements/diskimage-builder/-/issues/47
-          #- uefi
+          - uefi
 
 promote:
   stage: promote-image

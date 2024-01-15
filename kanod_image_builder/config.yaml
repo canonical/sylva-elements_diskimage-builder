@@ -282,7 +282,7 @@ recipes:
   - tuned
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
-  - block-device-gpt
+  - block-device-efi
 - when:
   - target=ubuntu
   - kanod_admin
