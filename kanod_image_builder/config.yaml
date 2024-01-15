@@ -164,6 +164,7 @@ recipes:
   - netplan.io
   - cryptsetup
   - less
+  - tuned
   elements:
   - ubuntu{{ "" if image is defined else "-minimal" }}
   - ubuntu-fix
@@ -278,6 +279,7 @@ recipes:
   - gcc
   - iptables
   - cryptsetup
+  - tuned
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
   - block-device-gpt
