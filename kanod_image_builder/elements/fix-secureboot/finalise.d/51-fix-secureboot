@@ -6,11 +6,6 @@ fi
 set -eu
 set -o pipefail
 
-if [ "$DISTRO_NAME" == "opensuse" ]; then
-  echo "Unsupported distribution. A bug in element block-device-efi prevents EFI/SecureBoot."
-  exit 1
-fi
-
 if type grub2-mkconfig >/dev/null; then
     GRUB_MKCONFIG="grub2-mkconfig"
 else
@@ -34,4 +29,10 @@ $GRUB_MKCONFIG -o $GRUB_CFG
 if [[ ${DISTRO_NAME} =~ (ubuntu|debian) ]]; then
   apt install -y shim-signed grub-efi-amd64-signed
   update-grub
+fi
+
+# Support only OpenSuSE distro
+if [ "$DISTRO_NAME" == "opensuse" ]; then
+  zypper install -y shim
+  shim-install --config-file=$GRUB_CFG --removable
 fi
