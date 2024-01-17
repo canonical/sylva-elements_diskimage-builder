@@ -106,22 +106,26 @@ build-opensuse-plain-rke2:
 
 prepare_job:
   stage: release
+  image: alpine:latest
+  script:
+    - apk add curl bash jq
+    - |
+      curl -sS --header "PRIVATE-TOKEN: $CI_READ_ONLY_TOKEN" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${CI_PIPELINE_ID}/bridges" \
+        | jq ".[].downstream_pipeline.id" \
+        | grep -v null \
+        | xargs -i curl -sS --header "PRIVATE-TOKEN: $CI_READ_ONLY_TOKEN" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/{}/jobs" \
+        | jq '.[] | select(.name == "promote") | .id' \
+        | xargs -i curl --location --header "PRIVATE-TOKEN: $CI_READ_ONLY_TOKEN" --output artifacts-{}.zip "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/jobs/{}/artifacts"
+    - ls
+    - for z in *.zip; do unzip -o $z; done
+    - cat *release.md
+    - cat *release.md >> release-final.md
   rules:
     - if: $CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED # Run this job when a tag is created for a protected branch
       when: always
-  script:
-    - |
-      echo "EXTRA_DESCRIPTION=$(for artifact in $(env | grep BUILD_IMAGE); do
-        job_id=$(echo ${artifact/=*/} | cut -d_ -f3)
-        checksum="BUILD_CHECKSUM_$job_id"
-        echo -n "<br /> Image: ${artifact/*=/}<br /> ${!checksum}<br />"
-      done
-      )" >> variables.env
   artifacts:
     paths:
-      - variables.env
-    reports:
-      dotenv: variables.env
+      - release-final.md
 
 release_job:
   stage: release
@@ -136,5 +140,5 @@ release_job:
     - echo "running release_job"
   release:
     tag_name: '$CI_COMMIT_TAG'
-    description: 'Release content: <br /> $EXTRA_DESCRIPTION'
+    description: 'release-final.md'
     ref: '$CI_COMMIT_SHA'

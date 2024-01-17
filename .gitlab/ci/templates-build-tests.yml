@@ -124,9 +124,10 @@
         cosign sign -y --key env://COSIGN_PRIVATE_KEY $digest_url
       fi
     - echo "Image pushed at oci://${REPO_IMAGE}"
-    - echo "BUILD_IMAGE_$CI_JOB_ID=\"oci://$REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD)\"" >> variables.env
-    - echo "BUILD_CHECKSUM_$CI_JOB_ID=\"${sha256}\"" >> variables.env
-    - cat variables.env
+    - |
+      echo "<br /><br /> Image: \"oci://$REPO_URL/$DISK_IMAGE_NAME:$(git tag --points-at HEAD)\"" >> ${CI_PIPELINE_ID}-release.md
+      echo "<br /> \"${sha256}\"" >> ${CI_PIPELINE_ID}-release.md
+    - cat ${CI_PIPELINE_ID}-release.md
   artifacts:
-    reports:
-      dotenv: variables.env
+    paths:
+      - ${CI_PIPELINE_ID}-release.md
