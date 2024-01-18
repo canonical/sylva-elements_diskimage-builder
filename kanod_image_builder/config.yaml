@@ -24,6 +24,8 @@ options:
   kind: flag
 - name: cis_remediation
   kind: flag
+- name: cis_remediation_opensuse
+  kind: flag
 - name: rename_interface_names
   kind: flag
 - name: grub_config
@@ -283,6 +285,11 @@ recipes:
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
   - block-device-efi
+- when:
+  - target=opensuse
+  - cis_remediation_opensuse
+  elements:
+  - cis-remediation-opensuse
 - when:
   - target=ubuntu
   - kanod_admin
