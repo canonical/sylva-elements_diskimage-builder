@@ -104,6 +104,19 @@ build-opensuse-plain-rke2:
     IMAGE_FORMAT: raw
     KANOD_OPTIONS: "-b no_kanod_network -b rke2_airgapped"
 
+build-opensuse-hardened-rke2:
+  extends: .default-trigger
+  trigger:
+    include: .gitlab/ci/pipeline-build-and-test-suse.yml
+    strategy: depend
+  variables:
+    OS: opensuse
+    OS_RELEASE: "15.5"
+    FLAVOR: hardened
+    K8S_FLAVOR: rke2
+    IMAGE_FORMAT: raw
+    KANOD_OPTIONS: "-b no_kanod_network -b cis_remediation_opensuse -b rke2_airgapped"
+
 prepare_job:
   stage: release
   image: alpine:latest
