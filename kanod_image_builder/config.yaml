@@ -168,6 +168,7 @@ recipes:
   - cryptsetup
   - less
   - tuned
+  - jq
   elements:
   - ubuntu{{ "" if image is defined else "-minimal" }}
   - ubuntu-fix
@@ -282,6 +283,7 @@ recipes:
   - iptables
   - cryptsetup
   - tuned
+  - jq
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
   - block-device-efi
