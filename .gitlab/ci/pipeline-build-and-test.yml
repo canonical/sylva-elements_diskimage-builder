@@ -27,4 +27,3 @@ boot-image:
 promote:
   stage: promote-image
   extends: .promote-image
-
