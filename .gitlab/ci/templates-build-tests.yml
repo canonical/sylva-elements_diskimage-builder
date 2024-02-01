@@ -12,7 +12,8 @@
     - python3 -m pip install --user . --break-system-packages
     - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
   script:
-    - export DISK_IMAGE_NAME=$DISK_IMAGE_NAME-${K8S_VERSION%-*}
+    - export K8S_VERSION_SHORT=${K8S_VERSION%-*}
+    - export DISK_IMAGE_NAME=$DISK_IMAGE_NAME-${K8S_VERSION_SHORT//./-}
     - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
     - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
     - export REPO_IMAGE_SNAPSHOT=$REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
@@ -81,7 +82,8 @@
   extends: .default-build
   stage: boot
   script:
-    - export DISK_IMAGE_NAME=$DISK_IMAGE_NAME-${K8S_VERSION%-*}
+    - export K8S_VERSION_SHORT=${K8S_VERSION%-*}
+    - export DISK_IMAGE_NAME=$DISK_IMAGE_NAME-${K8S_VERSION_SHORT//./-}
     - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
     - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
     - export REPO_IMAGE_SNAPSHOT=$REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
@@ -104,7 +106,8 @@
   extends: .default-build
   stage: promote
   script:
-    - export DISK_IMAGE_NAME=$DISK_IMAGE_NAME-${K8S_VERSION%-*}
+    - export K8S_VERSION_SHORT=${K8S_VERSION%-*}
+    - export DISK_IMAGE_NAME=$DISK_IMAGE_NAME-${K8S_VERSION_SHORT//./-}
     - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
     - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
     - export REPO_IMAGE_SNAPSHOT=$REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
