@@ -55,6 +55,8 @@ include:
   trigger:
     include: .gitlab/ci/pipeline-build-and-test.yml
     strategy: depend
+    forward:
+      pipeline_variables: true
   parallel:
     matrix:
       - K8S_VERSION:
@@ -64,6 +66,8 @@ include:
   rules:
     - if: $CI_COMMIT_TAG
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
+    - if: $CI_PIPELINE_SOURCE == 'pipeline'
       when: manual
 
 build-ubuntu-hardened-rke2:
