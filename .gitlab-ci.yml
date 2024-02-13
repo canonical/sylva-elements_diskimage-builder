@@ -19,9 +19,9 @@ variables:
   DIB_SHOW_IMAGE_USAGE: 1
   DIB_DEBUG_TRACE: 1
   # renovate: datasource=docker
-  UBUNTU_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu:v2.0.3
+  UBUNTU_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu:v2.0.4
   # renovate: datasource=docker
-  SUSE_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/suse:v2.0.3
+  SUSE_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/suse:v2.0.4
 
 stages:
   - test
