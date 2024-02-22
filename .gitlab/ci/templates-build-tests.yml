@@ -60,6 +60,8 @@
           --annotations sylvaproject.org/diskimage/archive-size=$archive_size
           --annotations sylvaproject.org/diskimage/image-format=$IMAGE_FORMAT
           --annotations sylvaproject.org/diskimage/compression=$COMPRESSION
+          --annotations sylvaproject.org/diskimage/commit-id=$CI_COMMIT_SHA
+          --annotations sylvaproject.org/diskimage/commit-tag=$OCI_TAG_FORMAT
           --output json |
         jq -r '. | .repository + "@" + .digest')
     - echo $digest_url | tee artifacts/snapshot.digest_url
