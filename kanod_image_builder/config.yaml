@@ -264,6 +264,7 @@ recipes:
   - python311-pip
   - python311-setuptools
   - cloud-init
+  - cloud-init-config-suse
   - virtme
   - parted
   - kbd
@@ -278,12 +279,13 @@ recipes:
   - chrony
   - patch
   - curl
-  - NetworkManager
   - gcc
   - iptables
   - cryptsetup
   - tuned
   - jq
+  - wicked
+  - wicked-service
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
   - block-device-efi
@@ -303,17 +305,10 @@ recipes:
   elements:
   - cloud-init-growpart
 - when:
-  - target=ubuntu
   - rke2_airgapped
   elements:
   - rke2-airgapped
 - when:
-  - target=ubuntu
   - kubeadm
   elements:
   - kubeadm
-- when:
-  - target=opensuse
-  - rke2_airgapped
-  elements:
-  - rke2-airgapped

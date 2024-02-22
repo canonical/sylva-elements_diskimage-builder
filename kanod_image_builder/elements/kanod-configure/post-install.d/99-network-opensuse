@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ "$DISTRO_NAME" == "opensuse" ]; then
+    echo "Enable wicked"
+    systemctl enable wicked.service
+    systemctl enable wickedd.service
+fi
+
