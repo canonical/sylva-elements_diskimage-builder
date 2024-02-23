@@ -50,6 +50,25 @@ include:
     ref: 2.4.1
     file: "templates/gitlab-ci-gitleaks.yml"
 
+.kubeadm_settings:
+  variables:
+    K8S_FLAVOR: kubeadm
+  parallel:
+    matrix:
+      - K8S_VERSION:
+          - 1.27.10
+          - 1.26.9
+          - 1.25.14
+
+.rke2_settings:
+  variables:
+    K8S_FLAVOR: rke2
+  parallel:
+    matrix:
+      - K8S_VERSION:
+          - 1.27.10-rke2r1
+          - 1.26.9-rke2r1
+          - 1.25.14-rke2r1
 
 .default-trigger:
   trigger:
@@ -57,12 +76,6 @@ include:
     strategy: depend
     forward:
       pipeline_variables: true
-  parallel:
-    matrix:
-      - K8S_VERSION:
-          - 1.27.10-rke2r1
-          - 1.26.9-rke2r1
-          - 1.25.14-rke2r1
   rules:
     - if: $CI_COMMIT_TAG
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -71,37 +84,42 @@ include:
       when: manual
 
 build-ubuntu-hardened-rke2:
-  extends: .default-trigger
+  extends:
+    - .default-trigger
+    - .rke2_settings
   variables:
     OS: ubuntu
     OS_RELEASE: jammy
     FLAVOR: hardened
-    K8S_FLAVOR: rke2
     IMAGE_FORMAT: raw
     KANOD_OPTIONS: "-b no_kanod_network -b cis_remediation -b lvm -b rke2_airgapped -b growpart"
 
 build-ubuntu-plain-rke2:
-  extends: .default-trigger
+  extends:
+    - .default-trigger
+    - .rke2_settings
   variables:
     OS: ubuntu
     OS_RELEASE: jammy
     FLAVOR: plain
-    K8S_FLAVOR: rke2
     IMAGE_FORMAT: raw
     KANOD_OPTIONS: "-b no_kanod_network -b rke2_airgapped"
 
 build-ubuntu-plain-kubeadm:
-  extends: .default-trigger
+  extends:
+    - .default-trigger
+    - .kubeadm_settings
   variables:
     OS: ubuntu
     OS_RELEASE: jammy
     FLAVOR: plain
-    K8S_FLAVOR: kubeadm
     IMAGE_FORMAT: raw
     KANOD_OPTIONS: "-b no_kanod_network -b kubeadm"
 
 build-opensuse-plain-rke2:
-  extends: .default-trigger
+  extends:
+    - .default-trigger
+    - .rke2_settings
   trigger:
     include: .gitlab/ci/pipeline-build-and-test-suse.yml
     strategy: depend
@@ -109,12 +127,13 @@ build-opensuse-plain-rke2:
     OS: opensuse
     OS_RELEASE: "15.5"
     FLAVOR: plain
-    K8S_FLAVOR: rke2
     IMAGE_FORMAT: raw
     KANOD_OPTIONS: "-b no_kanod_network -b rke2_airgapped"
 
 build-opensuse-hardened-rke2:
-  extends: .default-trigger
+  extends:
+    - .default-trigger
+    - .rke2_settings
   trigger:
     include: .gitlab/ci/pipeline-build-and-test-suse.yml
     strategy: depend
@@ -122,7 +141,6 @@ build-opensuse-hardened-rke2:
     OS: opensuse
     OS_RELEASE: "15.5"
     FLAVOR: hardened
-    K8S_FLAVOR: rke2
     IMAGE_FORMAT: raw
     KANOD_OPTIONS: "-b no_kanod_network -b cis_remediation_opensuse -b rke2_airgapped"
 
