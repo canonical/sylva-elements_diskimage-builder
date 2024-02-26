@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "gitlab>sylva-projects/sylva-elements/renovate-config:default"
   ],
   "customManagers": [
     {
@@ -21,11 +21,6 @@
     }
   ],
   "packageRules": [
-    {
-      "matchPackageNames": ["renovate-bot/renovate-runner"],
-      "groupName": "renovate",
-      "schedule": ["before 4am on monday"]
-    },
     {
       "matchPackagePatterns": [
         ".*ci-disk-image-builder.*"
