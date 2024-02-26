@@ -18,7 +18,16 @@
         "\\s+# renovate: datasource=(?<datasource>.*?)\\s+.*?CI_IMAGE: (?<registryUrl>.*?)\/(?<depName>.*?):(?<currentValue>.*)"
       ],
       "registryUrlTemplate": "https://{{{ registryUrl }}}"
-    }
+    },
+    {
+      "description": "Match Kubernetes version",
+      "customType": "regex",
+      "fileMatch": [".gitlab-ci.yml"],
+      "matchStrings": [
+        "\\s+# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)\\s+.*? (?<currentValue>.*)"
+      ],
+      "registryUrlTemplate": "https://{{{ registryUrl }}}"
+    }  
   ],
   "packageRules": [
     {
