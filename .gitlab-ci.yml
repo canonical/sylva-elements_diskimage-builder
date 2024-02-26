@@ -69,8 +69,11 @@ include:
   parallel:
     matrix:
       - K8S_VERSION:
+          # renovate: datasource=github-releases depName=kubernetes/kubernetes  
           - 1.27.10-rke2r1
+          # renovate: datasource=github-releases depName=kubernetes/kubernetes
           - 1.26.9-rke2r1
+          # renovate: datasource=github-releases depName=kubernetes/kubernetes
           - 1.25.14-rke2r1
 
 .default-trigger:

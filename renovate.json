@@ -20,11 +20,20 @@
       "registryUrlTemplate": "https://{{{ registryUrl }}}"
     },
     {
-      "description": "Match Kubernetes version",
+      "description": "Match Kubernetes kubeadm version",
       "customType": "regex",
       "fileMatch": [".gitlab-ci.yml"],
       "matchStrings": [
         "\\s+# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)\\s+.*? (?<currentValue>.*)"
+      ],
+      "registryUrlTemplate": "https://{{{ registryUrl }}}"
+    },
+    {
+      "description": "Match Kubernetes rke2 version",
+      "customType": "regex",
+      "fileMatch": [".gitlab-ci.yml"],
+      "matchStrings": [
+        "\\s+# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)\\s+.*? (?<currentValue>.*)-rke2"
       ],
       "registryUrlTemplate": "https://{{{ registryUrl }}}"
     }  
