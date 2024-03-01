@@ -286,6 +286,8 @@ recipes:
   - jq
   - wicked
   - wicked-service
+  - kernel-default
+  - kernel-firmware-all
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
   - block-device-efi
