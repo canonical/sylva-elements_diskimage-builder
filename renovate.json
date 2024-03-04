@@ -18,9 +18,34 @@
         "\\s+# renovate: datasource=(?<datasource>.*?)\\s+.*?CI_IMAGE: (?<registryUrl>.*?)\/(?<depName>.*?):(?<currentValue>.*)"
       ],
       "registryUrlTemplate": "https://{{{ registryUrl }}}"
-    }
+    },
+    {
+      "description": "Match Kubernetes version",
+      "customType": "regex",
+      "fileMatch": [".gitlab-ci.yml"],
+      "matchStrings": [
+        "\\s+# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( VersionTemplate=(?<VersionTemplate>.*?))?\\s+.*? (?<currentValue>[^\"\\-\n]+)"
+      ]
+    } 
   ],
   "packageRules": [
+    {
+      "matchPackagePatterns": [
+        "kubernetes/kubernetes",
+        "rancher/rke2"
+      ],
+      "matchUpdateTypes": ["major", "minor"],
+      "description": "disabling major and minor version to only keep the patch updates",
+      "enabled": false
+    },
+    {
+      "matchPackagePatterns": [
+        "kubernetes/kubernetes",
+        "rancher/rke2"
+      ],
+      "description": "renovate to propose only patch update without grouping them with minor update",
+      "separateMinorPatch": true
+    },
     {
       "matchPackagePatterns": [
         ".*ci-disk-image-builder.*"
