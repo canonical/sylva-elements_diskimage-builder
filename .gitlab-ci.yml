@@ -13,11 +13,12 @@ variables:
   REPO_URL: "$CI_REGISTRY_IMAGE"
   REPO_IMAGE: $REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
   REPO_IMAGE_SNAPSHOT: $REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
-  IMAGE_FORMAT: qcow2
+  IMAGE_FORMAT: raw
   DISK_IMAGE_NAME: $OS-$OS_RELEASE-$FLAVOR-$K8S_FLAVOR
   GITLEAKS_ARGS: '--verbose --log-opts=$CI_COMMIT_SHA'
   DIB_SHOW_IMAGE_USAGE: 1
   DIB_DEBUG_TRACE: 1
+  KANOD_OPTIONS_BASE: "-b no_kanod_network"
   # renovate: datasource=docker
   UBUNTU_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu:v2.0.4
   # renovate: datasource=docker
@@ -53,6 +54,7 @@ include:
 .kubeadm_settings:
   variables:
     K8S_FLAVOR: kubeadm
+    KANOD_OPTIONS_K8S: "-b kubeadm"
   parallel:
     matrix:
       - K8S_VERSION:
@@ -66,6 +68,7 @@ include:
 .rke2_settings:
   variables:
     K8S_FLAVOR: rke2
+    KANOD_OPTIONS_K8S: "-b rke2_airgapped"
   parallel:
     matrix:
       - K8S_VERSION:
@@ -75,6 +78,16 @@ include:
           - 1.26.9-rke2r1
           # renovate: datasource=github-releases depName=rancher/rke2 VersionTemplate=-rke2
           - 1.25.14-rke2r1
+
+.ubuntu_settings:
+  variables:
+    OS: ubuntu
+    OS_RELEASE: jammy
+
+.opensuse_settings:
+  variables:
+    OS: opensuse
+    OS_RELEASE: "15.5"
 
 .default-trigger:
   trigger:
@@ -93,62 +106,52 @@ build-ubuntu-hardened-rke2:
   extends:
     - .default-trigger
     - .rke2_settings
+    - .ubuntu_settings
   variables:
-    OS: ubuntu
-    OS_RELEASE: jammy
     FLAVOR: hardened
-    IMAGE_FORMAT: raw
-    KANOD_OPTIONS: "-b no_kanod_network -b cis_remediation -b lvm -b rke2_airgapped -b growpart"
+    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S -b cis_remediation -b lvm -b growpart"
 
 build-ubuntu-plain-rke2:
   extends:
     - .default-trigger
     - .rke2_settings
+    - .ubuntu_settings
   variables:
-    OS: ubuntu
-    OS_RELEASE: jammy
     FLAVOR: plain
-    IMAGE_FORMAT: raw
-    KANOD_OPTIONS: "-b no_kanod_network -b rke2_airgapped"
+    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S"
 
 build-ubuntu-plain-kubeadm:
   extends:
     - .default-trigger
     - .kubeadm_settings
+    - .ubuntu_settings
   variables:
-    OS: ubuntu
-    OS_RELEASE: jammy
     FLAVOR: plain
-    IMAGE_FORMAT: raw
-    KANOD_OPTIONS: "-b no_kanod_network -b kubeadm"
+    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S"
 
 build-opensuse-plain-rke2:
   extends:
     - .default-trigger
     - .rke2_settings
+    - .opensuse_settings
   trigger:
     include: .gitlab/ci/pipeline-build-and-test-suse.yml
     strategy: depend
   variables:
-    OS: opensuse
-    OS_RELEASE: "15.5"
     FLAVOR: plain
-    IMAGE_FORMAT: raw
-    KANOD_OPTIONS: "-b no_kanod_network -b rke2_airgapped"
+    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S"
 
 build-opensuse-hardened-rke2:
   extends:
     - .default-trigger
     - .rke2_settings
+    - .opensuse_settings
   trigger:
     include: .gitlab/ci/pipeline-build-and-test-suse.yml
     strategy: depend
   variables:
-    OS: opensuse
-    OS_RELEASE: "15.5"
     FLAVOR: hardened
-    IMAGE_FORMAT: raw
-    KANOD_OPTIONS: "-b no_kanod_network -b cis_remediation_opensuse -b rke2_airgapped"
+    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S -b cis_remediation_opensuse"
 
 prepare_job:
   stage: release
