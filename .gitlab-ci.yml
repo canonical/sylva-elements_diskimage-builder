@@ -141,6 +141,18 @@ build-opensuse-plain-rke2:
     FLAVOR: plain
     KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S"
 
+build-opensuse-plain-kubeadm:
+  extends:
+    - .default-trigger
+    - .kubeadm_settings
+    - .opensuse_settings
+  trigger:
+    include: .gitlab/ci/pipeline-build-and-test-suse.yml
+    strategy: depend
+  variables:
+    FLAVOR: plain
+    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S"
+
 build-opensuse-hardened-rke2:
   extends:
     - .default-trigger
