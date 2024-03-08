@@ -25,44 +25,36 @@ if [ "${DISTRO_NAME}" == 'ubuntu' ]; then
   if [ "${DIB_RELEASE}" == "bionic" ]; then
     "${PYTHON}" -m pip install wheel
   fi
-else
-  if [ "${DIB_RELEASE}" != "7" ]; then
-    OPTIONS=('install' '--prefix=/usr')
-  fi 
+
+  cd /opt/cloud-init
+  tar -zxvf "cloud-init.tgz"
+
+  cd "cloud-init-${DIB_CLOUD_INIT_VERSION}"
+
+  "${PYTHON}" -m pip install --upgrade pip
+  "${PYTHON}" -m pip "${OPTIONS[@]}" -r requirements.txt .
+  "${PYTHON}" setup.py "${OPTIONS[@]}"
+  cd ..
+  rm -rf cloud-init-*
+
+  if [ -f /usr/local/bin/cloud-init ]; then
+    mv /usr/local/bin/cloud-init /usr/bin
+  fi
+
+  if [ -f /usr/libexec/cloud-init/ds-identify ]; then
+    mv /usr/libexec/cloud-init/ds-identify /usr/libexec/cloud-init/ds-identify.bak
+  fi
+
 fi
 
-cd /opt/cloud-init
-tar -zxvf "cloud-init.tgz"
-
-cd "cloud-init-${DIB_CLOUD_INIT_VERSION}"
-
-"${PYTHON}" -m pip install --upgrade pip
-"${PYTHON}" -m pip "${OPTIONS[@]}" -r requirements.txt .
-"${PYTHON}" setup.py "${OPTIONS[@]}" 
-cd ..
-rm -rf cloud-init-*
-
-if [ -f /usr/local/bin/cloud-init ]; then
-  mv /usr/local/bin/cloud-init /usr/bin
-fi
-
-if [ -f /usr/libexec/cloud-init/ds-identify ]; then
-  mv /usr/libexec/cloud-init/ds-identify /usr/libexec/cloud-init/ds-identify.bak
-fi
 systemctl enable cloud-config
 systemctl enable cloud-init
 systemctl enable cloud-init-local
 systemctl enable cloud-final
+
 cat > /etc/cloud/cloud.cfg.d/91-cloud-init-datasources.cfg <<EOF
 datasource_list: [ NoCloud, ConfigDrive, OpenStack, None ]
 EOF
-
-if [ "${DISTRO_NAME}" == 'opensuse' ]; then
-  echo "Updating /etc/cloud/cloud.cfg"
-  sed -i  's/distro: suse/distro: opensuse/g' /etc/cloud/cloud.cfg
-
-  systemctl enable NetworkManager
-fi
 
 if [ "${DIB_NO_KANOD_NETWORK:-0}" = 1 ]; then
   exit 0
