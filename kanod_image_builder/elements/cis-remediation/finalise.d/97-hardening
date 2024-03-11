@@ -19,9 +19,10 @@ echo 'GRUB_CMDLINE_LINUX="apparmor=1 security=apparmor audit=1 audit_backlog_lim
 update-grub2
 
 # Change the default username
-sed -i 's/name: ubuntu/name: node-admin/' /etc/cloud/cloud.cfg
-sed -i 's/gecos: Ubuntu/gecos: node-admin/' /etc/cloud/cloud.cfg
-sed -i 's/ubuntu/node-admin/g' /etc/sudoers.d/90-cloud-init-users
+# ==> moved to kanod-cloud-init element
+# sed -i 's/name: ubuntu/name: node-admin/' /etc/cloud/cloud.cfg
+# sed -i 's/gecos: Ubuntu/gecos: node-admin/' /etc/cloud/cloud.cfg
+# sed -i 's/ubuntu/node-admin/g' /etc/sudoers.d/90-cloud-init-users
 
 ### Cleanup
 apt remove --purge iputils-ping netcat wget tcpdump ansible perl gcc strace ltrace rpcbind -y
