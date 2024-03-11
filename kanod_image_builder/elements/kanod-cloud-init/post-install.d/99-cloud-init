@@ -51,12 +51,12 @@ fi
 if [ "${DISTRO_NAME}" == 'ubuntu' ]; then
   sed -i 's/name: ubuntu/name: node-admin/' /etc/cloud/cloud.cfg
   sed -i 's/gecos: Ubuntu/gecos: node-admin/' /etc/cloud/cloud.cfg
-  sed -i 's/ubuntu/node-admin/g' /etc/sudoers.d/90-cloud-init-users
+  # sed -i 's/ubuntu/node-admin/g' /etc/sudoers.d/90-cloud-init-users
 fi
 if [ "${DISTRO_NAME}" == "opensuse" ]; then
   sed -i 's/name: sles/name: node-admin/' /etc/cloud/cloud.cfg
   sed -i 's/gecos: Ubuntu/gecos: node-admin/' /etc/cloud/cloud.cfg
-  sed -i 's/sles/node-admin/g' /etc/sudoers.d/90-cloud-init-users
+  # sed -i 's/sles/node-admin/g' /etc/sudoers.d/90-cloud-init-users
 fi
 
 systemctl enable cloud-config
