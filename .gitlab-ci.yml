@@ -118,7 +118,7 @@ build-ubuntu-plain-rke2:
     - .ubuntu_settings
   variables:
     FLAVOR: plain
-    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S"
+    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S -b lvm -b growpart"
 
 build-ubuntu-plain-kubeadm:
   extends:
@@ -127,7 +127,7 @@ build-ubuntu-plain-kubeadm:
     - .ubuntu_settings
   variables:
     FLAVOR: plain
-    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S"
+    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S -b lvm -b growpart"
 
 build-opensuse-plain-rke2:
   extends:
