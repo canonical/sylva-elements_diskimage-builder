@@ -90,7 +90,7 @@ include:
       when: manual
 
 build-ubuntu-hardened-rke2:
- extends:
+  extends:
     - .default-trigger
     - .rke2_settings
   variables:
