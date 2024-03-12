@@ -47,6 +47,11 @@ if [ "${DISTRO_NAME}" == 'ubuntu' ]; then
 
 fi
 
+systemctl enable cloud-config
+systemctl enable cloud-init
+systemctl enable cloud-init-local
+systemctl enable cloud-final
+
 # Change the default username
 if [ "${DISTRO_NAME}" == 'ubuntu' ]; then
   sed -i 's/name: ubuntu/name: node-admin/' /etc/cloud/cloud.cfg
@@ -58,11 +63,6 @@ if [ "${DISTRO_NAME}" == "opensuse" ]; then
   sed -i 's/gecos: Ubuntu/gecos: node-admin/' /etc/cloud/cloud.cfg
   # sed -i 's/sles/node-admin/g' /etc/sudoers.d/90-cloud-init-users
 fi
-
-systemctl enable cloud-config
-systemctl enable cloud-init
-systemctl enable cloud-init-local
-systemctl enable cloud-final
 
 cat > /etc/cloud/cloud.cfg.d/91-cloud-init-datasources.cfg <<EOF
 datasource_list: [ NoCloud, ConfigDrive, OpenStack, None ]
