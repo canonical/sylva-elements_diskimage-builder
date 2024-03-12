@@ -90,7 +90,7 @@ include:
       when: manual
 
 build-ubuntu-hardened-rke2:
-  extends:
+ extends:
     - .default-trigger
     - .rke2_settings
   variables:
@@ -109,7 +109,7 @@ build-ubuntu-plain-rke2:
     OS_RELEASE: jammy
     FLAVOR: plain
     IMAGE_FORMAT: raw
-    KANOD_OPTIONS: "-b no_kanod_network -b rke2_airgapped"
+    KANOD_OPTIONS: "-b no_kanod_network -b rke2_airgapped -b lvm -b growpart"
 
 build-ubuntu-plain-kubeadm:
   extends:
@@ -120,7 +120,7 @@ build-ubuntu-plain-kubeadm:
     OS_RELEASE: jammy
     FLAVOR: plain
     IMAGE_FORMAT: raw
-    KANOD_OPTIONS: "-b no_kanod_network -b kubeadm"
+    KANOD_OPTIONS: "-b no_kanod_network -b kubeadm -b lvm -b growpart"
 
 build-opensuse-plain-rke2:
   extends:
