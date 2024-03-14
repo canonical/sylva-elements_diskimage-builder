@@ -56,6 +56,11 @@ cat > /etc/cloud/cloud.cfg.d/91-cloud-init-datasources.cfg <<EOF
 datasource_list: [ NoCloud, ConfigDrive, OpenStack, None ]
 EOF
 
+if [ "${DISTRO_NAME}" == 'opensuse' ]; then
+  echo "Updating /etc/cloud/cloud.cfg"
+  sed -i  's/distro: ubuntu/distro: opensuse/g' /etc/cloud/cloud.cfg
+fi
+
 if [ "${DIB_NO_KANOD_NETWORK:-0}" = 1 ]; then
   exit 0
 fi
