@@ -286,6 +286,7 @@ recipes:
   - jq
   - wicked
   - wicked-service
+  - vim
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
   - block-device-efi
