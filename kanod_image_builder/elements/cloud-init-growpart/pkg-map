@@ -5,6 +5,9 @@
     },
     "debian": {
       "growpart_package": "cloud-guest-utils"
+    },
+    "suse": {
+      "growpart_package": "growpart"
     }
   }
 }

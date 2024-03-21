@@ -217,7 +217,6 @@ recipes:
   elements:
   - block-device-efi
 - when:
-  - target=ubuntu
   - lvm
   elements:
   - block-device-kanod-lvm
@@ -289,6 +288,10 @@ recipes:
   - vim
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
+- when:
+  - target=opensuse
+  - '!lvm'
+  elements:
   - block-device-efi
 - when:
   - target=opensuse
@@ -301,7 +304,6 @@ recipes:
   elements:
   - kanod-admin
 - when:
-  - target=ubuntu
   - growpart
   elements:
   - cloud-init-growpart
