@@ -18,11 +18,11 @@ variables:
   GITLEAKS_ARGS: '--verbose --log-opts=$CI_COMMIT_SHA'
   DIB_SHOW_IMAGE_USAGE: 1
   DIB_DEBUG_TRACE: 1
-  KANOD_OPTIONS_BASE: "-b no_kanod_network"
+  KANOD_OPTIONS_BASE: "-b no_kanod_network -b lvm -b growpart"
   # renovate: datasource=docker
-  UBUNTU_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu:v2.0.4
+  UBUNTU_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu:v2.0.5
   # renovate: datasource=docker
-  SUSE_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/suse:v2.0.4
+  SUSE_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/suse:v2.0.5
 
 stages:
   - test
@@ -109,7 +109,7 @@ build-ubuntu-hardened-rke2:
     - .ubuntu_settings
   variables:
     FLAVOR: hardened
-    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S -b cis_remediation -b lvm -b growpart"
+    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S -b cis_remediation"
 
 build-ubuntu-plain-rke2:
   extends:
