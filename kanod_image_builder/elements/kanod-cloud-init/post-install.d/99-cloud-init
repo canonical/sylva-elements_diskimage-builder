@@ -57,8 +57,10 @@ datasource_list: [ NoCloud, ConfigDrive, OpenStack, None ]
 EOF
 
 if [ "${DISTRO_NAME}" == 'opensuse' ]; then
-  echo "Updating /etc/cloud/cloud.cfg"
-  sed -i  's/distro: ubuntu/distro: opensuse/g' /etc/cloud/cloud.cfg
+  # Fix a bug in OpenSUSE package cloud-init-config-suse where the configuration
+  # is not tailored for a SuSE OS but for Ubuntu one.
+  # Minor version 71.1 containing the correct version
+  zypper install --oldpackage -y cloud-init-config-suse=23.3-150100.8.71.1
 fi
 
 if [ "${DIB_NO_KANOD_NETWORK:-0}" = 1 ]; then
