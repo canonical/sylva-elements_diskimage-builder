@@ -69,4 +69,3 @@ TCPKeepAlive no
 UseLogin no
 X11Forwarding no
 X11UseLocalhost yes
-AllowUsers node-admin

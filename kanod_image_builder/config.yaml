@@ -73,8 +73,8 @@ env:
   value: '{{image_size}}'
   when:
   - image_size
-- name: DIB_CLOUD_INIT_VERSION
-  value: '{{cloud_init_version}}'
+- name: DIB_CLOUD_INIT_DEFAULT_USERNAME
+  value: 'node-admin'
 - name: DIB_CLOUD_INIT_ETC_HOSTS
   value: 'true'
 - name: DIB_CLOUD_INIT_DATASOURCES
@@ -262,8 +262,6 @@ recipes:
   - python311-devel
   - python311-pip
   - python311-setuptools
-  - cloud-init
-  - cloud-init-config-suse
   - virtme
   - parted
   - kbd
