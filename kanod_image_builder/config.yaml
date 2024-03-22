@@ -22,9 +22,7 @@ options:
   kind: var
 - name: lvm
   kind: flag
-- name: cis_remediation
-  kind: flag
-- name: cis_remediation_opensuse
+- name: hardening
   kind: flag
 - name: rename_interface_names
   kind: flag
@@ -133,6 +131,34 @@ env:
   value: '1'
   when:
   - no_kanod_network
+- name: HARDENING_SSHD_LOGLEVEL
+  value: 'VERBOSE'
+- name: HARDENING_SSHD_CLIENTALIVEINTERVAL
+  value: '300'
+- name: HARDENING_SSHD_CLIENTALIVECOUNTMAX
+  value: '3'
+- name: HARDENING_SSHD_LOGINGRACETIME
+  value: '30'
+- name: HARDENING_SSHD_MAXAUTHTRIES
+  value: '2'
+- name: HARDENING_SSHD_MAXSESSIONS
+  value: '4'
+- name: HARDENING_SSHD_MAXSTARTUPS
+  value: '10:30:60'
+- name: HARDENING_SSHD_CIPHERS
+  value: 'chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr'
+- name: HARDENING_SSHD_MACS
+  value: 'hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256'
+- name: HARDENING_SSHD_KEXALGORITHMS
+  value: 'curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group14-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256'
+- name: HARDENING_SSHD_ALLOWGROUPS
+  value: 'sudo'
+  when:
+  - target=ubuntu
+- name: HARDENING_SSHD_ALLOWGROUPS
+  value: 'users'
+  when:
+  - target=opensuse
 
 recipes:
 - elements:
@@ -213,12 +239,21 @@ recipes:
   packages:
   - '{{packages}}'
 - when:
+  - hardening
+  elements:
+  - kanod-hardening-base
+- when:
   - target=ubuntu
-  - cis_remediation
+  - hardening
   packages:
   - git
   elements:
   - cis-remediation
+- when:
+  - target=opensuse
+  - hardening
+  elements:
+  - cis-remediation-opensuse
 - when:
   - target=ubuntu
   - release=jammy
@@ -278,11 +313,6 @@ recipes:
   - vim
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
-- when:
-  - target=opensuse
-  - cis_remediation_opensuse
-  elements:
-  - cis-remediation-opensuse
 - when:
   - target=ubuntu
   - kanod_admin

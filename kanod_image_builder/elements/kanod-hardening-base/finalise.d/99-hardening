@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+if [ "${DISTRO_NAME}" == 'ubuntu' ]; then
+  # Ubuntu specific sshd configuration
+  cat >> /etc/ssh/sshd_config <<EOF
+DebianBanner no
+EOF
+fi
+
+if [ "${DISTRO_NAME}" == 'opensuse' ]; then
+  LC_ALL=C sed -i 's|^Banner /etc/issue$|Banner /etc/issue.net|g' "/etc/ssh/sshd_config"
+fi
+
+cat >> /etc/ssh/sshd_config <<EOF
+AllowGroups ${HARDENING_SSHD_ALLOWGROUPS}
+EOF
+
+
+echo DEBUG
+cat /etc/ssh/sshd_config | egrep -ive '^$|^#' | sort

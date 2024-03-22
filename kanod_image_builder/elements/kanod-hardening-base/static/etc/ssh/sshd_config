@@ -25,14 +25,12 @@
 
 AddressFamily any
 AllowAgentForwarding no
-AllowGroups sudo wheel
 AllowTcpForwarding no
 Banner /etc/issue.net
 ChallengeResponseAuthentication no
 Ciphers
 ClientAliveCountMax 3
 ClientAliveInterval 300
-DebianBanner no
 GatewayPorts no
 GSSAPIAuthentication no
 GSSAPICleanupCredentials yes

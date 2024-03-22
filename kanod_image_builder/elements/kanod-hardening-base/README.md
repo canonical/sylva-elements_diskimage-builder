@@ -1,0 +1,1 @@
+Element `kanod-hardening-base` is a generic element which allows hardening the target OS.

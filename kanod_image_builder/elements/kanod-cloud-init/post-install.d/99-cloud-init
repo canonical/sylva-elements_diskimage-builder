@@ -67,10 +67,6 @@ cat > /etc/cloud/cloud.cfg.d/91-cloud-init-datasources.cfg <<EOF
 datasource_list: [ NoCloud, ConfigDrive, OpenStack, None ]
 EOF
 
-cat >> /etc/ssh/sshd_config <<EOF
-AllowUsers ${DIB_CLOUD_INIT_DEFAULT_USERNAME}
-EOF
-
 if [ "${DIB_NO_KANOD_NETWORK:-0}" = 1 ]; then
   exit 0
 fi
