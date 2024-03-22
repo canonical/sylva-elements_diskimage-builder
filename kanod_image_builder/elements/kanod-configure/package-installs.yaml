@@ -5,3 +5,4 @@ python38:
   when:
   - DIB_RELEASE = 8-stream
 python3-setuptools:
+python3-pip:

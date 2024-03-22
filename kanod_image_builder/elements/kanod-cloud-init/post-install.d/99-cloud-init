@@ -14,37 +14,48 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
 set -eu
-
-declare -a OPTIONS
-OPTIONS=('install')
-PYTHON=${DIB_PYTHON3:-python3}
+set -o pipefail
 
 if [ "${DISTRO_NAME}" == 'ubuntu' ]; then
-  if [ "${DIB_RELEASE}" == "bionic" ]; then
-    "${PYTHON}" -m pip install wheel
-  fi
 
-  cd /opt/cloud-init
-  tar -zxvf "cloud-init.tgz"
+  # Update cache
+  apt update
+  # Package software-properties-common provides add-apt-repository
+  apt install -y software-properties-common
+  # Add the Ubuntu openstack Antelope repo
+  add-apt-repository cloud-archive:antelope
+  # Install cloud-init package
+  apt install -y cloud-init
+  # Remove Ubuntu openstack Antelope repo
+  add-apt-repository -r -y cloud-archive:antelope
+  # Remove the tool
+  apt remove --purge -y software-properties-common
 
-  cd "cloud-init-${DIB_CLOUD_INIT_VERSION}"
+  mv /etc/cloud/cloud.cfg.d/90_dpkg.cfg /etc/cloud/cloud.cfg.d/90_dpkg.cfg.orig
 
-  "${PYTHON}" -m pip install --upgrade pip
-  "${PYTHON}" -m pip "${OPTIONS[@]}" -r requirements.txt .
-  "${PYTHON}" setup.py "${OPTIONS[@]}"
-  cd ..
-  rm -rf cloud-init-*
+  # Replace the default Ubuntu user
+  sed -i "s/name: ubuntu/name: ${DIB_CLOUD_INIT_DEFAULT_USERNAME}/" /etc/cloud/cloud.cfg
+  sed -i "s/gecos: Ubuntu/gecos: ${DIB_CLOUD_INIT_DEFAULT_USERNAME}/" /etc/cloud/cloud.cfg
+fi
 
-  if [ -f /usr/local/bin/cloud-init ]; then
-    mv /usr/local/bin/cloud-init /usr/bin
-  fi
+if [ "${DISTRO_NAME}" == 'opensuse' ]; then
 
-  if [ -f /usr/libexec/cloud-init/ds-identify ]; then
-    mv /usr/libexec/cloud-init/ds-identify /usr/libexec/cloud-init/ds-identify.bak
-  fi
+  # Install the cloud-init package from main repo
+  zypper install -y cloud-init
+  # Fix a bug in OpenSUSE package cloud-init-config-suse where the configuration
+  # is not tailored for a SuSE OS but for Ubuntu one.
+  # Minor version 71.1 containing the correct version
+  zypper install --oldpackage -y cloud-init-config-suse=23.3-150100.8.71.1
 
+  # Align distro
+  sed -i "s/distro: sles/distro: opensuse/" /etc/cloud/cloud.cfg
+  # Replace the default suse user
+  sed -i "s/name: sles/name: ${DIB_CLOUD_INIT_DEFAULT_USERNAME}/" /etc/cloud/cloud.cfg
+  sed -i "s/gecos: sles Cloud User/gecos: ${DIB_CLOUD_INIT_DEFAULT_USERNAME}/" /etc/cloud/cloud.cfg
 fi
 
 systemctl enable cloud-config
@@ -56,12 +67,9 @@ cat > /etc/cloud/cloud.cfg.d/91-cloud-init-datasources.cfg <<EOF
 datasource_list: [ NoCloud, ConfigDrive, OpenStack, None ]
 EOF
 
-if [ "${DISTRO_NAME}" == 'opensuse' ]; then
-  # Fix a bug in OpenSUSE package cloud-init-config-suse where the configuration
-  # is not tailored for a SuSE OS but for Ubuntu one.
-  # Minor version 71.1 containing the correct version
-  zypper install --oldpackage -y cloud-init-config-suse=23.3-150100.8.71.1
-fi
+cat >> /etc/ssh/sshd_config <<EOF
+AllowUsers ${DIB_CLOUD_INIT_DEFAULT_USERNAME}
+EOF
 
 if [ "${DIB_NO_KANOD_NETWORK:-0}" = 1 ]; then
   exit 0

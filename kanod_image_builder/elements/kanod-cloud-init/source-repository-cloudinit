@@ -1,1 +1,0 @@
-cloudinit file /opt/cloud-init/cloud-init.tgz https://github.com/canonical/cloud-init/archive/refs/tags/${DIB_CLOUD_INIT_VERSION}.tar.gz
