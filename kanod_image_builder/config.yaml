@@ -213,15 +213,6 @@ recipes:
   - '{{packages}}'
 - when:
   - target=ubuntu
-  - '!lvm'
-  elements:
-  - block-device-efi
-- when:
-  - lvm
-  elements:
-  - block-device-kanod-lvm
-- when:
-  - target=ubuntu
   - cis_remediation
   packages:
   - git
@@ -290,11 +281,6 @@ recipes:
   - opensuse{{ "" if image is defined else "-minimal" }}
 - when:
   - target=opensuse
-  - '!lvm'
-  elements:
-  - block-device-efi
-- when:
-  - target=opensuse
   - cis_remediation_opensuse
   elements:
   - cis-remediation-opensuse
@@ -315,3 +301,17 @@ recipes:
   - kubeadm
   elements:
   - kubeadm
+- when:
+  - '!lvm'
+  elements:
+  - block-device-efi
+- when:
+  - lvm
+  - rke2_airgapped
+  elements:
+  - block-device-rke2-lvm
+- when:
+  - lvm
+  - kubeadm
+  elements:
+  - block-device-kubeadm-lvm

@@ -79,6 +79,7 @@
   before_script:
     - python3 -m pip install --user . --ignore-requires-python
     - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
+    - zypper install -y xfsprogs
 
 .boot-image:
   extends: .default-build
