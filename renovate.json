@@ -44,7 +44,8 @@
         "rancher/rke2"
       ],
       "description": "renovate to propose only patch update without grouping them with minor update",
-      "separateMinorPatch": true
+      "separateMinorPatch": true,
+      "separateMajorMinor": true
     },
     {
       "matchPackagePatterns": [
