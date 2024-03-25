@@ -48,6 +48,14 @@
       "separateMajorMinor": true
     },
     {
+      "description": "Regroup kubernetes updates",
+      "matchPackagePatterns": [
+        "kubernetes/kubernetes",
+        "rancher/rke2"
+      ],
+      "groupName": "Kubernetes updates"
+    },
+    {
       "matchPackagePatterns": [
         ".*ci-disk-image-builder.*"
       ],
