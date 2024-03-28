@@ -3,7 +3,7 @@ export LC_ALL="en_US.UTF-8"
 export LC_CTYPE="en_US.UTF-8"
 
 # Generate tailoring file to remove not compatible rules
-autotailor -v sysctl_net_ipv6_conf_all_forwarding_value=1 -v sysctl_net_ipv4_conf_all_forwarding_value=1 -v sysctl_net_ipv4_conf_all_rp_filter_value=2 -v sysctl_net_ipv4_conf_default_rp_filter_value=2 --unselect package_firewalld_installed --unselect service_firewalld_enabled --unselect package_dhcp_client_removed --unselect banner_etc_issue --unselect banner_etc_issue_net --output tailoring_file.xml --new-profile-id xccdf_org.ssgproject.content_profile_cis_custom /usr/share/xml/scap/ssg/content/ssg-sle15-ds-1.2.xml xccdf_org.ssgproject.content_profile_cis
+autotailor -v sysctl_net_ipv6_conf_all_forwarding_value=1 -v sysctl_net_ipv4_conf_all_forwarding_value=1 -v sysctl_net_ipv4_conf_all_rp_filter_value=2 -v sysctl_net_ipv4_conf_default_rp_filter_value=2 --unselect package_firewalld_installed --unselect service_firewalld_enabled --unselect package_dhcp_client_removed --unselect banner_etc_issue --unselect banner_etc_issue_net --unselect kernel_module_vfat_disabled --output tailoring_file.xml --new-profile-id xccdf_org.ssgproject.content_profile_cis_custom /usr/share/xml/scap/ssg/content/ssg-sle15-ds-1.2.xml xccdf_org.ssgproject.content_profile_cis
 
 # Reformat tailoring XML file (bug on OpenSCAP version < 1.39)
 xmllint --format tailoring_file.xml > tailoring_file_correct.xml
