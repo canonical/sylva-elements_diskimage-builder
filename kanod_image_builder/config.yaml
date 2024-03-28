@@ -149,6 +149,7 @@ recipes:
   - chrony
   - build-info
   - fix-secureboot
+  - gtp5g
 - when:
   - tpm
   elements:

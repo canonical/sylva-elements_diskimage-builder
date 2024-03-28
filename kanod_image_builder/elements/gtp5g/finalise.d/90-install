@@ -1,0 +1,49 @@
+#!/bin/bash
+
+export LC_ALL="en_US.UTF-8"
+export LC_CTYPE="en_US.UTF-8"
+
+gtp5g_version="v0.8.6"
+
+# Install module on Debian/Ubuntu OS
+if [[ ${DISTRO_NAME} =~ (ubuntu|debian) ]]; then
+
+  export target_kernel=5.15.0-97-generic
+
+  ## Install required packages to build the system
+  apt update
+  apt install -y git make gcc gcc-12 autoconf linux-headers-generic
+
+  ## Clone, make and install
+  git clone https://github.com/free5gc/gtp5g.git -b $gtp5g_version gtp5g
+  cd gtp5g
+  KVER=$target_kernel ARCH=x86 make
+  # Can't invoke make install in chroot env
+  cp gtp5g.ko /lib/modules/$target_kernel/kernel/drivers/net
+  /sbin/depmod -v -a $target_kernel
+  cd -
+  rm -rf gtp5g
+  apt remove --purge -y git make gcc gcc-12 autoconf linux-headers-generic
+
+fi
+
+# Install module on SuSE OS
+if [[ ${DISTRO_NAME} =~ (opensuse|sle) ]]; then
+
+  export target_kernel=5.14.21-150500.55.49-default
+
+  # Install required packages
+  zypper install -y git make gcc autoconf kernel-default-devel
+
+  ## Clone, make and install
+  git clone https://github.com/free5gc/gtp5g.git -b $gtp5g_version gtp5g
+  cd gtp5g
+  KDIR=/usr/src/linux-obj/x86_64/default ARCH=x86 make
+  # Can't involke the module install, chroot env
+  mkdir -p /lib/modules/$target_kernel/extra/
+  cp gtp5g.ko /lib/modules/$target_kernel/extra/
+  /sbin/depmod -v -a $target_kernel
+  cd -
+  rm -rf gtp5g
+  zypper remove -y git make gcc autoconf kernel-default-devel
+fi
