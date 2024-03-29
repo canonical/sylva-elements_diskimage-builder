@@ -59,6 +59,8 @@ include:
     matrix:
       - K8S_VERSION:
             # renovate: datasource=github-releases depName=kubernetes/kubernetes
+          - 1.28.8
+            # renovate: datasource=github-releases depName=kubernetes/kubernetes
           - 1.27.10
             # renovate: datasource=github-releases depName=kubernetes/kubernetes
           - 1.26.9
@@ -72,6 +74,8 @@ include:
   parallel:
     matrix:
       - K8S_VERSION:
+          # renovate: datasource=github-releases depName=rancher/rke2 VersionTemplate=-rke2
+          - 1.28.8-rke2r1
           # renovate: datasource=github-releases depName=rancher/rke2 VersionTemplate=-rke2
           - 1.27.10-rke2r1
           # renovate: datasource=github-releases depName=rancher/rke2 VersionTemplate=-rke2
