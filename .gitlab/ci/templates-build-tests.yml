@@ -17,6 +17,7 @@
     - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
     - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
     - export REPO_IMAGE_SNAPSHOT=$REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
+    - export HARDENED=$([[ "$FLAVOR" == "hardened" ]] && echo "true" || echo "false")
     - mkdir -p artifacts
     - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
     - export sha256=$(sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
@@ -52,6 +53,7 @@
           --annotations sylvaproject.org/diskimage/os=$OS
           --annotations sylvaproject.org/diskimage/os-release=$OS_RELEASE
           --annotations sylvaproject.org/diskimage/flavor=$FLAVOR
+          --annotations sylvaproject.org/diskimage/hardened=$HARDENED
           --annotations sylvaproject.org/diskimage/k8s-flavor=$K8S_FLAVOR
           --annotations sylvaproject.org/diskimage/k8s-version=$K8S_VERSION
           --annotations sylvaproject.org/diskimage/sha256=$sha256
