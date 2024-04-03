@@ -3,6 +3,7 @@
   "extends": [
     "gitlab>sylva-projects/sylva-elements/renovate-config:default"
   ],
+  "ignorePaths": ["demo/**"],
   "customManagers": [
     {
       "customType": "regex",
