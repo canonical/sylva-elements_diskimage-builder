@@ -24,11 +24,16 @@
       "customType": "regex",
       "fileMatch": [".gitlab-ci.yml"],
       "matchStrings": [
-        "\\s+# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( VersionTemplate=(?<VersionTemplate>.*?))?\\s+.*? (?<currentValue>[^\"\\-\n]+)"
-      ]
+        "\\s+# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( VersionTemplate=(?<VersionTemplate>.*?))?\\s+-\\s+(?<currentValue>\\d+.\\d+.\\d+).*\"?\\n"
+      ],
+      "extractVersionTemplate": "{{#if VersionTemplate}}^{{{VersionTemplate}}}(?<version>.*)${{/if}}"
     } 
   ],
   "packageRules": [
+    {
+        "matchPackageNames": ["rancher/rke2"],
+        "extractVersion": "v(?<version>.*)\\+"
+    },
     {
       "matchPackagePatterns": [
         "kubernetes/kubernetes",
