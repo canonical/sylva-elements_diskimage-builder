@@ -11,6 +11,9 @@ xmllint --format tailoring_file.xml > tailoring_file_correct.xml
 # Generate the bash script with all the rules to apply including the customization from the tailoring file
 oscap xccdf generate fix --profile xccdf_org.ssgproject.content_profile_cis_custom --tailoring-file tailoring_file_correct.xml  --output fix.sh /usr/share/xml/scap/ssg/content/ssg-sle15-ds-1.2.xml
 
+# Fix potential issues in the openscap hardening script
+sed -i 's|/usr/sbin/aide|/usr/bin/aide|g' fix.sh
+
 # Execute the bash scripts
 chmod +x fix.sh
 ./fix.sh || true
