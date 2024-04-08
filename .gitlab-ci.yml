@@ -5,11 +5,14 @@ workflow:
     - if: $CI_COMMIT_TAG
       variables:
         OCI_TAG_FORMAT: "$CI_COMMIT_TAG"
-    - when: always
+    - if: '$CI_MERGE_REQUEST_TITLE =~ /^Draft:.*/'
       variables:
-        OCI_TAG_FORMAT: "0.0.0-git-$CI_COMMIT_SHORT_SHA"
+        KANOD_OPTIONS_BASE: "-b no_kanod_network -b lvm -b growpart -s debug=debug"
+    - when: always
 
 variables:
+  OCI_TAG_FORMAT: "0.0.0-git-$CI_COMMIT_SHORT_SHA"
+  KANOD_OPTIONS_BASE: "-b no_kanod_network -b lvm -b growpart"
   REPO_URL: "$CI_REGISTRY_IMAGE"
   REPO_IMAGE: $REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
   REPO_IMAGE_SNAPSHOT: $REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
@@ -18,7 +21,6 @@ variables:
   GITLEAKS_ARGS: '--verbose --log-opts=$CI_COMMIT_SHA'
   DIB_SHOW_IMAGE_USAGE: 1
   DIB_DEBUG_TRACE: 1
-  KANOD_OPTIONS_BASE: "-b no_kanod_network -b lvm -b growpart"
   # renovate: datasource=docker
   UBUNTU_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu:v2.0.8
   # renovate: datasource=docker
