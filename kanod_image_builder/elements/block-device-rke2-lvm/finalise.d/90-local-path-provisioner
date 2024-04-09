@@ -6,8 +6,11 @@ fi
 set -eu
 set -o pipefail
 
-# Create the local-path-provisioner folders
-mkdir -p /var/lib/kubelet/local-path-provisioner /opt/local-path-provisioner
+# Create folders for bind mount points from LVM volume lv_k8s
+mkdir -p /var/lib/sylva/etcd /var/lib/rancher/rke2/server/db /var/lib/sylva/containerd /var/lib/rancher/rke2/agent/containerd /var/lib/sylva/kubelet /var/lib/kubelet /var/lib/sylva/local-path-provisioner /opt/local-path-provisioner
 
 # Add the bind mount in fstab
-echo "/var/lib/kubelet/local-path-provisioner /opt/local-path-provisioner none defaults,bind 0 0" >> /etc/fstab
+echo "/var/lib/sylva/etcd /var/lib/rancher/rke2/server/db none defaults,bind 0 0" >> /etc/fstab
+echo "/var/lib/sylva/containerd /var/lib/rancher/rke2/agent/containerd none defaults,bind 0 0" >> /etc/fstab
+echo "/var/lib/sylva/kubelet /var/lib/kubelet none defaults,bind 0 0" >> /etc/fstab
+echo "/var/lib/sylva/local-path-provisioner /opt/local-path-provisioner none defaults,bind 0 0" >> /etc/fstab

@@ -64,21 +64,13 @@
         base: vg
         size: 1G
 
-      - name: lv_etcd
-        base: vg
-        size: 1G
-
-      - name: lv_containerd
-        base: vg
-        size: 1G
-
-      - name: lv_kubelet
-        base: vg
-        size: 1G
-
       - name: lv_opt
         base: vg
         size: 2G
+
+      - name: lv_k8s
+        base: vg
+        size: 3G
 
 - mkfs:
     name: fs_root
@@ -158,45 +150,23 @@
             fsck-passno: 1
 
 - mkfs:
-    name: fs_etcd
-    base: lv_etcd
-    type: xfs
-    label: "img-etcd"
-    mount:
-        mount_point: /var/lib/etcd
-        fstab:
-            options: "rw,relatime,nodev"
-            fsck-passno: 1
-
-- mkfs:
-    name: fs_containerd
-    base: lv_containerd
-    type: ext4
-    label: "img-containerd"
-    mount:
-        mount_point: /var/lib/containerd
-        fstab:
-            options: "rw,relatime,nodev"
-            fsck-passno: 1
-
-- mkfs:
-    name: fs_kubelet
-    base: lv_kubelet
-    type: ext4
-    label: "img-kubelet"
-    mount:
-        mount_point: /var/lib/kubelet
-        fstab:
-            options: "rw,relatime,nodev"
-            fsck-passno: 1
-
-- mkfs:
     name: fs_opt
     base: lv_opt
     type: ext4
     label: "img-opt"
     mount:
         mount_point: /opt
+        fstab:
+            options: "rw,relatime,nodev"
+            fsck-passno: 1
+
+- mkfs:
+    name: fs_k8s
+    base: lv_k8s
+    type: ext4
+    label: "img-k8s"
+    mount:
+        mount_point: /var/lib/sylva
         fstab:
             options: "rw,relatime,nodev"
             fsck-passno: 1
