@@ -142,7 +142,6 @@ recipes:
   - vm
   - openssh-server
   - runtime-ssh-host-keys
-  - growroot
   - bootloader
   - grub-init
   - kanod-configure
