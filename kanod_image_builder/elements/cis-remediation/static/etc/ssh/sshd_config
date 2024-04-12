@@ -25,7 +25,7 @@
 
 AddressFamily any
 AllowAgentForwarding no
-AllowGroups sudo wheel
+AllowGroups sylva
 AllowTcpForwarding no
 Banner /etc/issue.net
 ChallengeResponseAuthentication no

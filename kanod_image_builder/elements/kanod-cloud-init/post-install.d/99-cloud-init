@@ -39,7 +39,7 @@ if [ "${DISTRO_NAME}" == 'ubuntu' ]; then
 
   # Replace the default Ubuntu user
   sed -i "s/name: ubuntu/name: ${DIB_CLOUD_INIT_DEFAULT_USERNAME}/" /etc/cloud/cloud.cfg
-  sed -i "s/gecos: Ubuntu/gecos: ${DIB_CLOUD_INIT_DEFAULT_USERNAME}/" /etc/cloud/cloud.cfg
+  sed -i "s/gecos: Ubuntu/gecos: sylva/" /etc/cloud/cloud.cfg
 fi
 
 if [ "${DISTRO_NAME}" == 'opensuse' ]; then
@@ -52,7 +52,7 @@ if [ "${DISTRO_NAME}" == 'opensuse' ]; then
   sed -i "s/distro: sles/distro: opensuse/" /etc/cloud/cloud.cfg
   # Replace the default suse user
   sed -i "s/name: sles/name: ${DIB_CLOUD_INIT_DEFAULT_USERNAME}/" /etc/cloud/cloud.cfg
-  sed -i "s/gecos: sles Cloud User/gecos: ${DIB_CLOUD_INIT_DEFAULT_USERNAME}/" /etc/cloud/cloud.cfg
+  sed -i "s/gecos: sles Cloud User/gecos: sylva/" /etc/cloud/cloud.cfg
 fi
 
 systemctl enable cloud-config
