@@ -1,13 +1,16 @@
 {
   "family": {
     "redhat": {
-      "growpart_package": "cloud-utils-growpart"
+      "growpart_package": "cloud-utils-growpart",
+      "xfsprogs": "xfsprogs"
     },
     "debian": {
-      "growpart_package": "cloud-guest-utils"
+      "growpart_package": "cloud-guest-utils",
+      "xfsprogs": "xfsprogs"
     },
     "suse": {
-      "growpart_package": "growpart"
+      "growpart_package": "growpart",
+      "xfsprogs": "xfsprogs"
     }
   }
 }
