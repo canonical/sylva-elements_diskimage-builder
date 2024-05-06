@@ -48,7 +48,7 @@ include:
           paths:
             - renovate.json
   - project: "to-be-continuous/gitleaks"
-    ref: 2.5.1
+    ref: 2.5.2
     file: "templates/gitlab-ci-gitleaks.yml"
 
 .kubeadm_settings:
