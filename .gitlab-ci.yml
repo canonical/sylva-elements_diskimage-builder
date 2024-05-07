@@ -59,13 +59,13 @@ include:
     matrix:
       - K8S_VERSION:
             # renovate: datasource=github-releases depName=kubernetes/kubernetes VersionTemplate=v
-          - 1.28.8
+          - 1.28.9
             # renovate: datasource=github-releases depName=kubernetes/kubernetes VersionTemplate=v
-          - 1.27.10
+          - 1.27.13
             # renovate: datasource=github-releases depName=kubernetes/kubernetes VersionTemplate=v
-          - 1.26.9
+          - 1.26.15
             # renovate: datasource=github-releases depName=kubernetes/kubernetes VersionTemplate=v
-          - 1.25.14
+          - 1.25.16
           
 .rke2_settings:
   variables:
@@ -75,13 +75,13 @@ include:
     matrix:
       - K8S_VERSION:
           # renovate: datasource=github-releases depName=rancher/rke2 VersionTemplate=v
-          - 1.28.8-rke2r1
+          - 1.28.9-rke2r1
           # renovate: datasource=github-releases depName=rancher/rke2 VersionTemplate=v
-          - 1.27.10-rke2r1
+          - 1.27.13-rke2r1
           # renovate: datasource=github-releases depName=rancher/rke2 VersionTemplate=v
-          - 1.26.9-rke2r1
+          - 1.26.15-rke2r1
           # renovate: datasource=github-releases depName=rancher/rke2 VersionTemplate=v
-          - 1.25.14-rke2r1
+          - 1.25.16-rke2r1
 
 .ubuntu_settings:
   variables:
