@@ -42,31 +42,34 @@
         export COMPRESSION=none
         export archive_size=0
       fi
-    - digest_url=$(
-        GODEBUG=http2client=0 flux push artifact
-          oci://${REPO_IMAGE_SNAPSHOT}
-          --timeout 2h --path="$ARTIFACT_DISK_IMAGE_FILENAME"
-          --source="${CI_REPOSITORY_URL/gitlab-ci-token*@/}"
-          --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)"
-          --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
-          --annotations sylvaproject.org/diskimage/filename=$DISK_IMAGE_FILENAME
-          --annotations sylvaproject.org/diskimage/os=$OS
-          --annotations sylvaproject.org/diskimage/os-release=$OS_RELEASE
-          --annotations sylvaproject.org/diskimage/flavor=$FLAVOR
-          --annotations sylvaproject.org/diskimage/hardened=$HARDENED
-          --annotations sylvaproject.org/diskimage/k8s-flavor=$K8S_FLAVOR
-          --annotations sylvaproject.org/diskimage/k8s-version=$K8S_VERSION
-          --annotations sylvaproject.org/diskimage/sha256=$sha256
-          --annotations sylvaproject.org/diskimage/md5=$md5
-          --annotations sylvaproject.org/diskimage/size=$size
-          --annotations sylvaproject.org/diskimage/archive-size=$archive_size
-          --annotations sylvaproject.org/diskimage/image-format=$IMAGE_FORMAT
-          --annotations sylvaproject.org/diskimage/compression=$COMPRESSION
-          --annotations sylvaproject.org/diskimage/commit-id=$CI_COMMIT_SHA
-          --annotations sylvaproject.org/diskimage/commit-tag=$OCI_TAG_FORMAT
-          --output json |
-        jq -r '. | .repository + "@" + .digest')
-    - echo $digest_url | tee artifacts/snapshot.digest_url
+    - mkdir ./oci_tmp
+    - mv $ARTIFACT_DISK_IMAGE_FILENAME ./oci_tmp
+    - oras login --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - pushd ./oci_tmp
+    - digest=$(
+        oras push ${REPO_IMAGE_SNAPSHOT}
+          --image-spec v1.0
+          --annotation org.opencontainers.image.created="$(date -uIs)"
+          --annotation org.opencontainers.image.revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)"
+          --annotation org.opencontainers.image.source="${CI_REPOSITORY_URL/gitlab-ci-token*@/}"
+          --annotation sylvaproject.org/diskimage/filename=$DISK_IMAGE_FILENAME
+          --annotation sylvaproject.org/diskimage/os=$OS
+          --annotation sylvaproject.org/diskimage/os-release=$OS_RELEASE
+          --annotation sylvaproject.org/diskimage/flavor=$FLAVOR
+          --annotation sylvaproject.org/diskimage/hardened=$HARDENED
+          --annotation sylvaproject.org/diskimage/k8s-flavor=$K8S_FLAVOR
+          --annotation sylvaproject.org/diskimage/k8s-version=$K8S_VERSION
+          --annotation sylvaproject.org/diskimage/sha256=$sha256
+          --annotation sylvaproject.org/diskimage/md5=$md5
+          --annotation sylvaproject.org/diskimage/size=$size
+          --annotation sylvaproject.org/diskimage/archive-size=$archive_size
+          --annotation sylvaproject.org/diskimage/image-format=$IMAGE_FORMAT
+          --annotation sylvaproject.org/diskimage/compression=$COMPRESSION
+          --annotation sylvaproject.org/diskimage/commit-id=$CI_COMMIT_SHA
+          --annotation sylvaproject.org/diskimage/commit-tag=$OCI_TAG_FORMAT
+          . | awk '$1 == "Digest:" {print $2}')
+    - popd
+    - echo "${REPO_IMAGE_SNAPSHOT}@${digest}" | tee artifacts/snapshot.digest_url
   artifacts:
     when: always
     expire_in: 6h
