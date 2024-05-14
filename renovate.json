@@ -12,6 +12,13 @@
       "datasourceTemplate": "github-tags"
     },
     {
+      "customType": "regex",
+      "fileMatch": "kanod_image_builder/elements/gtp5g/finalise.d/90-install",
+      "depNameTemplate": "free5gc/gtp5g",
+      "matchStrings": ["\\s+gtp5g_version=\"?(?<currentValue>v?\\d+.\\d+.\\d+)\"?"],
+      "datasourceTemplate": "github-tags"
+    },
+    {
       "description": "Match docker image define in CI_IMAGE variables for gitlab-ci",
       "customType": "regex",
       "fileMatch": [".gitlab-ci.yml"],
@@ -28,7 +35,7 @@
         "\\s+# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( VersionTemplate=(?<VersionTemplate>.*?))?\\s+-\\s+(?<currentValue>\\d+.\\d+.\\d+).*\"?\\n"
       ],
       "extractVersionTemplate": "{{#if VersionTemplate}}^{{{VersionTemplate}}}(?<version>.*)${{/if}}"
-    } 
+    }
   ],
   "packageRules": [
     {
