@@ -212,12 +212,9 @@ recipes:
   packages:
   - '{{packages}}'
 - when:
-  - target=ubuntu
   - cis_remediation
-  packages:
-  - git
   elements:
-  - cis-remediation
+  - cis-remediation-openscap
 - when:
   - target=ubuntu
   - release=jammy
@@ -278,10 +275,9 @@ recipes:
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
 - when:
-  - target=opensuse
   - cis_remediation_opensuse
   elements:
-  - cis-remediation-opensuse
+  - cis-remediation-openscap
 - when:
   - target=ubuntu
   - kanod_admin

@@ -20,7 +20,7 @@ variables:
   DIB_DEBUG_TRACE: 1
   KANOD_OPTIONS_BASE: "-b no_kanod_network -b lvm -b growpart"
   # renovate: datasource=docker
-  UBUNTU_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu:v2.0.5
+  UBUNTU_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu/snapshot:0.0.0-git-2c778a70
   # renovate: datasource=docker
   SUSE_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/suse:v2.0.5
 

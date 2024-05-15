@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# WARNING:
+#  All actions done here are outside the chroot/target image.
+#  It means we generate the OSCAP rules and the hardening script
+#  outside the image itself. The hardening script is dropped inside
+#  the image to be executed in the final stage (finalise.d).
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+export LC_ALL="en_US.UTF-8"
+export LC_CTYPE="en_US.UTF-8"
+
+# Global vars
+HARDENING_SCRIPT="$TMP_BUILD_DIR/mnt/fix.sh"
+
+# Debian variants parameters
+if [[ ${DISTRO_NAME} =~ (ubuntu|debian) ]]; then
+	SSG_FILE="/usr/share/xml/scap/ssg/content/ssg-ubuntu2204-ds-1.2.xml"
+	SSG_RULE="xccdf_org.ssgproject.content_profile_cis_level2_server"
+	PKG_TOOL="apt"
+	PKG_ADD="install -y "
+	PKG_REMOVE="remove -y"
+	OSCAP_PKGS="openscap-common=1.3.9+dfsg-1build2 openscap-scanner openscap-utils ssg-debderived libxml2-utils"
+	# Pkg manager specific
+	${PKG_TOOL} update
+fi
+
+# SuSE parameters
+if [[ ${DISTRO_NAME} =~ (opensuse|sle) ]]; then
+	SSG_FILE="/usr/share/xml/scap/ssg/content/ssg-sle15-ds-1.2.xml"
+	SSG_RULE="xccdf_org.ssgproject.content_profile_cis"
+	PKG_TOOL="zypper"
+	PKG_ADD="install -y "
+	PKG_REMOVE="-n remove"
+	OSCAP_PKGS="openscap-utils openscap scap-security-guide libopenscap25 libxml2-tools"
+fi
+
+# Install requires scripts
+${PKG_TOOL} ${PKG_ADD} ${OSCAP_PKGS}
+
+# Generate tailoring file to remove not compatible rules
+autotailor -v sysctl_net_ipv6_conf_all_forwarding_value=1 -v sysctl_net_ipv4_conf_all_forwarding_value=1 -v sysctl_net_ipv4_conf_all_rp_filter_value=2 -v sysctl_net_ipv4_conf_default_rp_filter_value=2 --unselect package_firewalld_installed --unselect service_firewalld_enabled --unselect package_dhcp_client_removed --unselect banner_etc_issue --unselect banner_etc_issue_net --unselect kernel_module_vfat_disabled --output tailoring_file.xml --new-profile-id xccdf_org.ssgproject.content_profile_cis_custom ${SSG_FILE} ${SSG_RULE}
+
+# Reformat tailoring XML file (bug on OpenSCAP version < 1.39)
+xmllint --format tailoring_file.xml > tailoring_file_correct.xml
+
+# Generate the bash script with all the rules to apply including the customization from the tailoring file
+# The final script is dropped in the target image
+oscap xccdf generate fix --profile xccdf_org.ssgproject.content_profile_cis_custom --tailoring-file tailoring_file_correct.xml  --output ${HARDENING_SCRIPT} ${SSG_FILE}
+
+# Execute the bash scripts
+chmod +x ${HARDENING_SCRIPT}
