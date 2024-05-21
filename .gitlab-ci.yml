@@ -22,7 +22,7 @@ variables:
   # renovate: datasource=docker
   UBUNTU_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu:v2.0.6
   # renovate: datasource=docker
-  SUSE_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/suse:v2.0.6
+  SUSE_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/suse/snapshot:0.0.0-git-051e7626
 
 stages:
   - test
