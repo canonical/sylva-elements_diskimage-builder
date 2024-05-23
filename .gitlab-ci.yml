@@ -28,6 +28,7 @@ stages:
   - test
   - build
   - release
+  - gitleaks
 
 include:
   - project: 'renovate-bot/renovate-runner'
@@ -50,6 +51,29 @@ include:
   - project: "to-be-continuous/gitleaks"
     ref: 2.5.2
     file: "templates/gitlab-ci-gitleaks.yml"
+
+gitleaks:
+  rules:
+    - when: never
+
+# Customize gitleak job imported from to-be-continuous in order to checkout main
+# (needed for git to be able to retrieve commits from this branch not in main)
+gitleaks-custom:
+  stage: gitleaks
+  extends: gitleaks
+  needs: []
+  before_script:
+    - echo GITLEAKS_ARGS=$GITLEAKS_ARGS
+    - !reference [gitleaks, before_script]
+  variables:
+    GITLEAKS_ARGS: '--verbose --log-opts=origin/main..HEAD'
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "pipeline"'   # Do not trigger gitleaks for cross-repo pipelines
+      when: never
+    - if: $CI_BRANCH_NAME == "main"
+      variables:
+        GITLEAKS_ARGS: '--verbose'    # on main, detect leaks on whole repo
+    - when: always
 
 .kubeadm_settings:
   variables:
