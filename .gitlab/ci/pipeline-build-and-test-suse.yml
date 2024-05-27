@@ -9,6 +9,7 @@ workflow:
 stages:
   - build
   - boot-image
+  - generate-sbom
   - promote-image
 
 build-image:
@@ -23,6 +24,10 @@ boot-image:
       - VM_BOOT_MODE:
           - legacy
           - uefi
+
+generate-sbom:
+  stage: generate-sbom
+  extends: .generate-sbom
 
 promote:
   stage: promote-image
