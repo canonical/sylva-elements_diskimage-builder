@@ -107,6 +107,33 @@
     paths:
       - artifacts/serial.log
 
+.generate-sbom:
+  extends: .default-build
+  image: registry.gitlab.com/sylva-projects/sylva-elements/container-images/trivy-libguestfs:1.0.0
+  stage: generate-sbom
+  script:
+    - export K8S_VERSION_SHORT=${K8S_VERSION%-*}
+    - export DISK_IMAGE_NAME=${DISK_IMAGE_NAME//./-}-${K8S_VERSION_SHORT//./-}
+    - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
+    - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
+    - export REPO_IMAGE_SNAPSHOT=$REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
+    - mkdir -p mountpoint artifacts
+    - flux pull artifact oci://${REPO_IMAGE_SNAPSHOT} --timeout 20m -o .
+    - |
+      if [ -f $DISK_IMAGE_FILENAME.gz ]; then
+        echo "Uncompressing $DISK_IMAGE_FILENAME"
+        gunzip $DISK_IMAGE_FILENAME.gz
+      fi
+    - guestmount -a $DISK_IMAGE_FILENAME -i mountpoint
+    - trivy rootfs mountpoint -f cyclonedx -o artifacts/${DISK_IMAGE_FILENAME}.cdx
+  artifacts:
+    name: "${DISK_IMAGE_NAME}.cdx"
+    paths:
+      - artifacts/*.cdx
+    reports:
+      cyclonedx:
+        - artifacts/*.cdx
+
 .promote-image:
   extends: .default-build
   stage: promote
@@ -118,7 +145,7 @@
     - export REPO_IMAGE_SNAPSHOT=$REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
     - export sha256=$(cat artifacts/checksum.sha256)
     - echo $sha256
-    - skopeo copy 
+    - skopeo copy
         --dest-creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
         --digestfile digest
         docker://${REPO_IMAGE_SNAPSHOT}
