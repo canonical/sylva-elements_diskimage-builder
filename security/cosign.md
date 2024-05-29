@@ -34,14 +34,14 @@ On success, three variables are added to the project:
 
 ![variable](./img/cosign-gitlab-variables.png)
 
-The public key can be retrieved with:
+The public key is available in this repository:
+
+* https://gitlab.com/sylva-projects/sylva-elements/diskimage-builder/raw/main/security/cosign.pub
+
+or, if the environment variable `GITLAB_TOKEN` has appropriate privilages, the public key can be retrieved as well with:
 
 ```shell
-$ cosign public-key --key gitlab://43786055
------BEGIN PUBLIC KEY-----
-MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAESbuSEUBFW0yndQABomJKA3dQwbKD
-cSWbGpnECsZ7IvdUj9GGGlmPpYl8H0WCHCRuWGSGX58ZiiSuUQRDQoHAxw==
------END PUBLIC KEY-----
+cosign public-key --key gitlab://43786055
 ```
 
 ## Signing
@@ -105,7 +105,7 @@ cosign sign $digest_url
 The signature is verified against the public key fetched from an environment variable or from the Gitlab project hosting the registry:
 
 ```shell
-$ cosign verify --key env://COSIGN_PUBLIC_KEY registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/diskimage-builder-hardened@sha256:b4affd8071d5c30f302b50a29b524d97cc25727dddc3d1ab9a46275ac5471a3b
+$ cosign verify --key env://COSIGN_PUBLIC_KEY registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-hardened-rke2-1-28-9:0.2.7
 ```
 
 When using the Gitlab provider, set the environment varioable `GITLAB_TOKEN` with read access on Gitlab CI/CD variable:
@@ -113,36 +113,57 @@ When using the Gitlab provider, set the environment varioable `GITLAB_TOKEN` wit
 ```shell
 $ export GITLAB_TOKEN=glpat-..... 
 
-$ cosign verify --key gitlab://43786055 registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/diskimage-builder-hardened@sha256:b4affd8071d5c30f302b50a29b524d97cc25727dddc3d1ab9a46275ac5471a3b
+$ cosign verify --key gitlab://43786055 registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-hardened-rke2-1-28-9:0.2.7
 
-Verification for registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/diskimage-builder-hardened@sha256:b4affd8071d5c30f302b50a29b524d97cc25727dddc3d1ab9a46275ac5471a3b --
+Verification for registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-hardened-rke2-1-28-9:0.2.7 --
 The following checks were performed on each of these signatures:
   - The cosign claims were validated
   - Existence of the claims in the transparency log was verified offline
   - The signatures were verified against the specified public key
 
-[{"critical":{"identity":{"docker-reference":"registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/diskimage-builder-hardened"},"image":{"docker-manifest-digest":"sha256:b4affd8071d5c30f302b50a29b524d97cc25727dddc3d1ab9a46275ac5471a3b"},"type":"cosign container image signature"},"optional":{"Bundle":{"SignedEntryTimestamp":"MEQCIA3H+hWtfxrNLP/3kQh4wqrpaZmRZyi+Asr2c8mSCFqJAiBJR0OdX+hXvvMegZgOpVhflvOXgCu8gowh+tiHY/CD4g==","Payload":{"body":"eyJhcGlWZXJzaW9uIjoiMC4wLjEiLCJraW5kIjoiaGFzaGVkcmVrb3JkIiwic3BlYyI6eyJkYXRhIjp7Imhhc2giOnsiYWxnb3JpdGhtIjoic2hhMjU2IiwidmFsdWUiOiI0MDMxNmU4YzE2ZjBkNTE2YjQyYzU2NDZlMWM2MDhkN2JmMGU0YTIyODdlNmE3ZTJkY2QwMDZkY2JmNjgyYTJmIn19LCJzaWduYXR1cmUiOnsiY29udGVudCI6Ik1FVUNJUURpa3EwOEpVNzFaR0lZaGp2UHRnV2prbTdSLzNNS3RGU21qcDZwWGM4dkN3SWdXWmxRVjJSVUV1dFljQ0JaVEZJVDNWQkZIN3p1ZHBkK3V6dktSZGppQm5rPSIsInB1YmxpY0tleSI6eyJjb250ZW50IjoiTFMwdExTMUNSVWRKVGlCUVZVSk1TVU1nUzBWWkxTMHRMUzBLVFVacmQwVjNXVWhMYjFwSmVtb3dRMEZSV1VsTGIxcEplbW93UkVGUlkwUlJaMEZGVTJKMVUwVlZRa1pYTUhsdVpGRkJRbTl0U2t0Qk0yUlJkMkpMUkFwalUxZGlSM0J1UlVOeldqZEpkbVJWYWpsSFIwZHNiVkJ3V1d3NFNEQlhRMGhEVW5WWFIxTkhXRFU0V21scFUzVlZVVkpFVVc5SVFYaDNQVDBLTFMwdExTMUZUa1FnVUZWQ1RFbERJRXRGV1MwdExTMHRDZz09In19fX0=","integratedTime":1689609607,"logIndex":27773186,"logID":"c0d23d6ad406973f9559f3ba2d1ca01f84147d8ffc5b8445c224f98b9591801d"}}}}]
-```
+[{"critical":{"identity":{"docker-reference":"registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-hardened-rke2-1-28-9"},"image":{"docker-manifest-digest":"sha256:26c25b45429d63539ff975f9e9914acb57f1f11f40dfc167963a555534fed504"},"type":"cosign container image signature"},"optional":{"Bundle":{"SignedEntryTimestamp":"MEUCIQDG8pgp0VTJUrfnL+Wz9nPqW6DRgHIHPNYalsBcgC32PAIgSJi7b8vvQDMmb8mTsUqjpSTpn3hs2W+axgPnGQAl4UA=","Payload":{"body":"eyJhcGlWZXJzaW9uIjoiMC4wLjEiLCJraW5kIjoiaGFzaGVkcmVrb3JkIiwic3BlYyI6eyJkYXRhIjp7Imhhc2giOnsiYWxnb3JpdGhtIjoic2hhMjU2IiwidmFsdWUiOiI2YTY2OGJhNzE4YmNkY2NhOWRhMTZmOGRmMGRjMThiMGIzZGEyNzIwMzM2MDdjODgzOWUzMzU5ZTJjOTVjNzZiIn19LCJzaWduYXR1cmUiOnsiY29udGVudCI6Ik1FVUNJUURSZDh5dmZYWDFXT2dSK0ErSU5abTFDeGZQbFIxaFhiWEl2NHA3MzVMRnRRSWdUbFBXejVlZ2ZnQlV4NHArNjlqTE95UTZIVzVSM09VRUFDanRpODlGNVk0PSIsInB1YmxpY0tleSI6eyJjb250ZW50IjoiTFMwdExTMUNSVWRKVGlCUVZVSk1TVU1nUzBWWkxTMHRMUzBLVFVacmQwVjNXVWhMYjFwSmVtb3dRMEZSV1VsTGIxcEplbW93UkVGUlkwUlJaMEZGWTNWMVRITjZkM2t3ZFRkNU16azBTMWsyUjFjeFFtZHFabUZWTmdwaFN6ZGxPVFZOVml0cGExcHVVbVpTTlVWSWRIRkZhekYwVTJOT2FFMXhVVXBOY0hWR2N6TlJTREZVVmtKeU5sUkpWMVpNZURWalZYUm5QVDBLTFMwdExTMUZUa1FnVUZWQ1RFbERJRXRGV1MwdExTMHRDZz09In19fX0=","integratedTime":1715701994,"logIndex":93773388,"logID":"c0d23d6ad406973f9559f3ba2d1ca01f84147d8ffc5b8445c224f98b9591801d"}}}}]
+``` 
 
-The payload is actually a [Hashed Rekord](https://github.com/sigstore/rekor/blob/main/types.md#hashed-rekord) which can be decoded as a [JWT](https://jwt.io/):
 
-```json
-{
-  "apiVersion": "0.0.1",
-  "kind": "hashedrekord",
-  "spec": {
-    "data": {
-      "hash": {
-        "algorithm": "sha256",
-        "value": "40316e8c16f0d516b42c5646e1c608d7bf0e4a2287e6a7e2dcd006dcbf682a2f"
-      }
+> **_NOTE_**: use the option `--insecure-ignore-tlog=true` in air-gap environment.
+
+The signature can be verified against the public key stored in the directory `security` of the project `sylva-projects/sylva-elements/diskimage-builder/`:
+
+```shell
+$ cosign verify --key https://gitlab.com/sylva-projects/sylva-elements/diskimage-builder/raw/main/security/cosign.pub \
+--insecure-ignore-tlog=true \
+registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-hardened-rke2-1-28-9:0.2.7 \
+| jq
+WARNING: Skipping tlog verification is an insecure practice that lacks of transparency and auditability verification for the signature.
+
+Verification for registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-hardened-rke2-1-28-9:0.2.7 --
+The following checks were performed on each of these signatures:
+  - The cosign claims were validated
+  - The signatures were verified against the specified public key
+[
+  {
+    "critical": {
+      "identity": {
+        "docker-reference": "registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-hardened-rke2-1-28-9"
+      },
+      "image": {
+        "docker-manifest-digest": "sha256:26c25b45429d63539ff975f9e9914acb57f1f11f40dfc167963a555534fed504"
+      },
+      "type": "cosign container image signature"
     },
-    "signature": {
-      "content": "MEUCIQDikq08JU71ZGIYhjvPtgWjkm7R/3MKtFSmjp6pXc8vCwIgWZlQV2RUEutYcCBZTFIT3VBFH7zudpd+uzvKRdjiBnk=",
-      "publicKey": {
-        "content": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFU2J1U0VVQkZXMHluZFFBQm9tSktBM2RRd2JLRApjU1diR3BuRUNzWjdJdmRVajlHR0dsbVBwWWw4SDBXQ0hDUnVXR1NHWDU4WmlpU3VVUVJEUW9IQXh3PT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=="
+    "optional": {
+      "Bundle": {
+        "SignedEntryTimestamp": "MEUCIQDG8pgp0VTJUrfnL+Wz9nPqW6DRgHIHPNYalsBcgC32PAIgSJi7b8vvQDMmb8mTsUqjpSTpn3hs2W+axgPnGQAl4UA=",
+        "Payload": {
+          "body": "eyJhcGlWZXJzaW9uIjoiMC4wLjEiLCJraW5kIjoiaGFzaGVkcmVrb3JkIiwic3BlYyI6eyJkYXRhIjp7Imhhc2giOnsiYWxnb3JpdGhtIjoic2hhMjU2IiwidmFsdWUiOiI2YTY2OGJhNzE4YmNkY2NhOWRhMTZmOGRmMGRjMThiMGIzZGEyNzIwMzM2MDdjODgzOWUzMzU5ZTJjOTVjNzZiIn19LCJzaWduYXR1cmUiOnsiY29udGVudCI6Ik1FVUNJUURSZDh5dmZYWDFXT2dSK0ErSU5abTFDeGZQbFIxaFhiWEl2NHA3MzVMRnRRSWdUbFBXejVlZ2ZnQlV4NHArNjlqTE95UTZIVzVSM09VRUFDanRpODlGNVk0PSIsInB1YmxpY0tleSI6eyJjb250ZW50IjoiTFMwdExTMUNSVWRKVGlCUVZVSk1TVU1nUzBWWkxTMHRMUzBLVFVacmQwVjNXVWhMYjFwSmVtb3dRMEZSV1VsTGIxcEplbW93UkVGUlkwUlJaMEZGWTNWMVRITjZkM2t3ZFRkNU16azBTMWsyUjFjeFFtZHFabUZWTmdwaFN6ZGxPVFZOVml0cGExcHVVbVpTTlVWSWRIRkZhekYwVTJOT2FFMXhVVXBOY0hWR2N6TlJTREZVVmtKeU5sUkpWMVpNZURWalZYUm5QVDBLTFMwdExTMUZUa1FnVUZWQ1RFbERJRXRGV1MwdExTMHRDZz09In19fX0=",
+          "integratedTime": 1715701994,
+          "logIndex": 93773388,
+          "logID": "c0d23d6ad406973f9559f3ba2d1ca01f84147d8ffc5b8445c224f98b9591801d"
+        }
       }
     }
   }
-}
-```
+]
+```shell
+
+The payload is actually a [Hashed Rekord](https://github.com/sigstore/rekor/blob/main/types.md#hashed-rekord) 
