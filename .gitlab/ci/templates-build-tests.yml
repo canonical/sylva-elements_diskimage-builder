@@ -109,7 +109,7 @@
 
 .generate-sbom:
   extends: .default-build
-  image: registry.gitlab.com/sylva-projects/sylva-elements/container-images/trivy-libguestfs:1.0.0
+  image: $GENERATE_OS_SBOM_CI_IMAGE
   stage: generate-sbom
   script:
     - export K8S_VERSION_SHORT=${K8S_VERSION%-*}
