@@ -9,6 +9,7 @@
   extends: .default-build
   stage: build
   before_script:
+    - pip3 install kanod-image-builder --index-url https://gitlab.com/api/v4/projects/29509688/packages/pypi/simple --break-system-packages
     - python3 -m pip install --user . --break-system-packages
     - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
   script:
