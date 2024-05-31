@@ -134,7 +134,7 @@ build-ubuntu-hardened-rke2:
     - .ubuntu_settings
   variables:
     FLAVOR: hardened
-    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S -b cis_remediation"
+    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S -b cis_hardening"
 
 build-ubuntu-plain-rke2:
   extends:
@@ -188,7 +188,7 @@ build-opensuse-hardened-rke2:
     strategy: depend
   variables:
     FLAVOR: hardened
-    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S -b cis_remediation_opensuse"
+    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S -b cis_hardening_opensuse"
 
 prepare_job:
   stage: release
