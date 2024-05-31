@@ -22,9 +22,9 @@ options:
   kind: var
 - name: lvm
   kind: flag
-- name: cis_remediation
+- name: cis_hardening
   kind: flag
-- name: cis_remediation_opensuse
+- name: cis_hardening_opensuse
   kind: flag
 - name: rename_interface_names
   kind: flag
@@ -136,16 +136,8 @@ env:
 
 recipes:
 - elements:
-  - kanod-mirror
-  - kanod-cloud-init
-  - kanod-admin
-  - vm
-  - openssh-server
-  - runtime-ssh-host-keys
-  - bootloader
-  - grub-init
-  - kanod-configure
-  - chrony
+  - '!ubuntu-minimal'
+  - '!block-device-kanod-lvm'
   - build-info
   - fix-secureboot
   - gtp5g
@@ -213,11 +205,11 @@ recipes:
   - '{{packages}}'
 - when:
   - target=ubuntu
-  - cis_remediation
+  - cis_hardening
   packages:
   - git
   elements:
-  - cis-remediation
+  - cis-hardening
 - when:
   - target=ubuntu
   - release=jammy
@@ -279,9 +271,9 @@ recipes:
   - opensuse{{ "" if image is defined else "-minimal" }}
 - when:
   - target=opensuse
-  - cis_remediation_opensuse
+  - cis_hardening_opensuse
   elements:
-  - cis-remediation-opensuse
+  - cis-hardening-opensuse
 - when:
   - target=ubuntu
   - kanod_admin
@@ -290,7 +282,7 @@ recipes:
 - when:
   - growpart
   elements:
-  - cloud-init-growpart
+  - sylva-growpart
 - when:
   - rke2_airgapped
   elements:
