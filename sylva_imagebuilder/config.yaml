@@ -136,8 +136,8 @@ env:
 
 recipes:
 - elements:
-  - '!ubuntu-minimal'
   - '!block-device-kanod-lvm'
+  - '!block-device-gpt'
   - build-info
   - fix-secureboot
   - gtp5g
@@ -162,7 +162,6 @@ recipes:
   - tuned
   - jq
   elements:
-  - ubuntu{{ "" if image is defined else "-minimal" }}
   - ubuntu-fix
   - klvm
 - when:
@@ -241,6 +240,10 @@ recipes:
 - when:
   - target=opensuse
   packages:
+  - '!python39-base'
+  - '!python39-devel'
+  - '!python39-pip'
+  - '!python39-setuptools'
   - python311-base
   - python311-devel
   - python311-pip
@@ -267,8 +270,6 @@ recipes:
   - wicked
   - wicked-service
   - vim
-  elements:
-  - opensuse{{ "" if image is defined else "-minimal" }}
 - when:
   - target=opensuse
   - cis_hardening_opensuse
