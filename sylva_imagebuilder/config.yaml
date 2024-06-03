@@ -244,6 +244,8 @@ recipes:
   - '!python39-devel'
   - '!python39-pip'
   - '!python39-setuptools'
+  - '!cloud-init'
+  - '!NetworkManager'
   - python311-base
   - python311-devel
   - python311-pip
