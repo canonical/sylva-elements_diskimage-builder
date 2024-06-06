@@ -22,9 +22,9 @@ options:
   kind: var
 - name: lvm
   kind: flag
-- name: cis_remediation
+- name: cis_hardening
   kind: flag
-- name: cis_remediation_opensuse
+- name: cis_hardening_opensuse
   kind: flag
 - name: rename_interface_names
   kind: flag
@@ -136,16 +136,8 @@ env:
 
 recipes:
 - elements:
-  - kanod-mirror
-  - kanod-cloud-init
-  - kanod-admin
-  - vm
-  - openssh-server
-  - runtime-ssh-host-keys
-  - bootloader
-  - grub-init
-  - kanod-configure
-  - chrony
+  - '!block-device-kanod-lvm'
+  - '!block-device-gpt'
   - build-info
   - fix-secureboot
   - gtp5g
@@ -170,7 +162,6 @@ recipes:
   - tuned
   - jq
   elements:
-  - ubuntu{{ "" if image is defined else "-minimal" }}
   - ubuntu-fix
   - klvm
 - when:
@@ -213,11 +204,11 @@ recipes:
   - '{{packages}}'
 - when:
   - target=ubuntu
-  - cis_remediation
+  - cis_hardening
   packages:
   - git
   elements:
-  - cis-remediation
+  - cis-hardening
 - when:
   - target=ubuntu
   - release=jammy
@@ -249,6 +240,12 @@ recipes:
 - when:
   - target=opensuse
   packages:
+  - '!python39-base'
+  - '!python39-devel'
+  - '!python39-pip'
+  - '!python39-setuptools'
+  - '!cloud-init'
+  - '!NetworkManager'
   - python311-base
   - python311-devel
   - python311-pip
@@ -275,13 +272,11 @@ recipes:
   - wicked
   - wicked-service
   - vim
-  elements:
-  - opensuse{{ "" if image is defined else "-minimal" }}
 - when:
   - target=opensuse
-  - cis_remediation_opensuse
+  - cis_hardening_opensuse
   elements:
-  - cis-remediation-opensuse
+  - cis-hardening-opensuse
 - when:
   - target=ubuntu
   - kanod_admin
@@ -290,7 +285,7 @@ recipes:
 - when:
   - growpart
   elements:
-  - cloud-init-growpart
+  - sylva-growpart
 - when:
   - rke2_airgapped
   elements:

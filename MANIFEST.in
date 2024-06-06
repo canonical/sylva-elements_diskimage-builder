@@ -1,3 +1,1 @@
-include kanod_image_builder/**/*
-include kanod_image_builder/*
-recursive-include kanod_image_builder/elements *
+recursive-include sylva_imagebuilder *

@@ -9,6 +9,7 @@
   extends: .default-build
   stage: build
   before_script:
+    - pip3 install kanod-image-builder --index-url https://gitlab.com/api/v4/projects/29509688/packages/pypi/simple --break-system-packages
     - python3 -m pip install --user . --break-system-packages
     - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
   script:
@@ -19,7 +20,7 @@
     - export REPO_IMAGE_SNAPSHOT=$REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
     - export HARDENED=$([[ "$FLAVOR" == "hardened" ]] && echo "true" || echo "false")
     - mkdir -p artifacts
-    - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
+    - kanod-image-builder sylva_imagebuilder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
     - export sha256=$(sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
     - export md5=$(md5sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
     - export size=$(ls -ls $DISK_IMAGE_FILENAME |  awk '{ print $6 }')
@@ -79,7 +80,9 @@
   extends: .build-image
   image: $SUSE_CI_IMAGE
   before_script:
-    - python3 -m pip install --user . --ignore-requires-python
+    - zypper --non-interactive install python311 python311-pip
+    - pip3.11 install kanod-image-builder --index-url https://gitlab.com/api/v4/projects/29509688/packages/pypi/simple
+    - pip3.11 install --user . --ignore-requires-python
     - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
     - zypper install -y xfsprogs
 
