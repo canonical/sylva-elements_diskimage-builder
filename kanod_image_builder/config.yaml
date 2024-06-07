@@ -277,6 +277,7 @@ recipes:
   - vim
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
+  - opensuse-fix
 - when:
   - target=opensuse
   - cis_remediation_opensuse

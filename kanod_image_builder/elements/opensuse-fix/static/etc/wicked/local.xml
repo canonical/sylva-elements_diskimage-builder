@@ -1,0 +1,11 @@
+<config>
+  <addrconf>
+    <arp>
+      <verify>
+        <count>2</count>
+        <interval>2000</interval>
+        <retries>7</retries>
+      </verify>
+    </arp>
+  </addrconf>
+</config>
