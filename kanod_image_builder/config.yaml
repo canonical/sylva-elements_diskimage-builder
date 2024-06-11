@@ -169,6 +169,7 @@ recipes:
   - less
   - tuned
   - jq
+  - nfs-common
   elements:
   - ubuntu{{ "" if image is defined else "-minimal" }}
   - ubuntu-fix
@@ -275,6 +276,7 @@ recipes:
   - wicked
   - wicked-service
   - vim
+  - nfs-client
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
 - when:
