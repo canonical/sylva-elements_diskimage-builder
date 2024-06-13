@@ -102,6 +102,8 @@ echo blacklist udf >> /etc/modprobe.d/udf.conf
 # CIS 1.1.1.10
 echo blacklist usb-storage >> /etc/modprobe.d/usb_storage.conf
 
+echo "dm_crypt" >> /etc/modules-load.d/dm_crypt.conf
+
 sed -i "s/^UMASK.*/UMASK 027/g" /etc/login.defs
 sed -i "/umask/d" /etc/login.defs
 echo "session optional  pam_mkhomedir.so  umask=0027" |sudo tee -a  /etc/pam.d/common-session
