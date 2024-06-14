@@ -53,6 +53,34 @@ include:
   - project: "to-be-continuous/gitleaks"
     ref: 2.5.2
     file: "templates/gitlab-ci-gitleaks.yml"
+  - project: 'sylva-projects/sylva-elements/ci-tooling/ci-templates'
+    ref: 1.0.13
+    file:
+      - 'templates/release-notes.yml'
+
+# Override the release notes suffix to add the images produced during the build
+.release-notes-after-script:
+    - |
+      apk add curl bash jq
+      curl -sS --header "PRIVATE-TOKEN: $RELEASE_NOTES_READ_API_TOKEN" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${CI_PIPELINE_ID}/bridges" \
+        | jq ".[].downstream_pipeline.id" \
+        | grep -v null \
+        | xargs -i curl -sS --header "PRIVATE-TOKEN: $RELEASE_NOTES_READ_API_TOKEN" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/{}/jobs" \
+        | jq '.[] | select(.name == "promote") | .id' \
+        | xargs -i curl --location --header "PRIVATE-TOKEN: $RELEASE_NOTES_READ_API_TOKEN" --output artifacts-{}.zip "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/jobs/{}/artifacts"
+      ls
+      for z in *.zip; do unzip -o $z; done
+      echo "## Produced images:" >> release-notes.md
+      echo " " >> release-notes.md
+      cat *release.md | tee -a release-notes.md
+
+# Override the stage to run the release notes creation after the build of the images
+prepare-release-notes:
+  stage: release
+
+# Override the stage to run the release notes creation after the build of the images
+create-release-notes:
+  stage: release
 
 gitleaks:
   rules:
@@ -191,42 +219,3 @@ build-opensuse-hardened-rke2:
   variables:
     FLAVOR: hardened
     KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S -b cis_remediation_opensuse"
-
-prepare_job:
-  stage: release
-  image: alpine:latest
-  script:
-    - apk add curl bash jq
-    - |
-      curl -sS --header "PRIVATE-TOKEN: $CI_READ_ONLY_TOKEN" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${CI_PIPELINE_ID}/bridges" \
-        | jq ".[].downstream_pipeline.id" \
-        | grep -v null \
-        | xargs -i curl -sS --header "PRIVATE-TOKEN: $CI_READ_ONLY_TOKEN" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/{}/jobs" \
-        | jq '.[] | select(.name == "promote") | .id' \
-        | xargs -i curl --location --header "PRIVATE-TOKEN: $CI_READ_ONLY_TOKEN" --output artifacts-{}.zip "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/jobs/{}/artifacts"
-    - ls
-    - for z in *.zip; do unzip -o $z; done
-    - cat *release.md
-    - cat *release.md >> release-final.md
-  rules:
-    - if: $CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED # Run this job when a tag is created for a protected branch
-      when: always
-  artifacts:
-    paths:
-      - release-final.md
-
-release_job:
-  stage: release
-  image: registry.gitlab.com/gitlab-org/release-cli:latest
-  needs:
-    - job: prepare_job
-      artifacts: true
-  rules:
-    - if: $CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED # Run this job when a tag is created for a protected branch
-      when: always
-  script:
-    - echo "running release_job"
-  release:
-    tag_name: '$CI_COMMIT_TAG'
-    description: 'release-final.md'
-    ref: '$CI_COMMIT_SHA'
