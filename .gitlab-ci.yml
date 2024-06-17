@@ -127,7 +127,7 @@ gitleaks-custom:
     matrix:
       - K8S_VERSION:
           # renovate: datasource=github-releases depName=rancher/rke2 VersionTemplate=v
-          - 1.28.9-rke2r1
+          - 1.28.11-rc5-rke2r1
           # renovate: datasource=github-releases depName=rancher/rke2 VersionTemplate=v
           - 1.27.13-rke2r1
           # renovate: datasource=github-releases depName=rancher/rke2 VersionTemplate=v
