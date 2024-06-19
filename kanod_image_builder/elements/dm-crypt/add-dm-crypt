@@ -1,0 +1,3 @@
+cat > /etc/modules-load.d/modules.conf <<EOF
+dm-crypt
+EOF

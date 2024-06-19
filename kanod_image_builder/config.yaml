@@ -149,6 +149,7 @@ recipes:
   - build-info
   - fix-secureboot
   - gtp5g
+  - dm-crypt
 - when:
   - tpm
   elements:
@@ -174,6 +175,7 @@ recipes:
   - ubuntu{{ "" if image is defined else "-minimal" }}
   - ubuntu-fix
   - klvm
+  - dm-crypt
 - when:
   - debug
   elements:
@@ -188,6 +190,8 @@ recipes:
   - iputils-ping
   - python3-setuptools
   - cryptsetup
+  elements:
+  - dm-crypt
 - when:
   - target=centos
   packages:
@@ -197,6 +201,7 @@ recipes:
   - centos{{ "" if image is defined else "-minimal" }}
   - yum
   - selinux-permissive
+  - dm-crypt
 - when:
   - target=centos
   - '!release=9-stream'
@@ -229,6 +234,8 @@ recipes:
   - nfs-common
   - iptables
   - cryptsetup
+  elements:
+  - dm-crypt
 - when:
   - target=ubuntu
   - rename_interface_names
@@ -280,6 +287,7 @@ recipes:
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
   - opensuse-fix
+  - dm-crypt
 - when:
   - target=opensuse
   - cis_remediation_opensuse
