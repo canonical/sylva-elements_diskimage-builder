@@ -1,4 +1,5 @@
 #!/bin/bash
+
 cat > /etc/modules-load.d/modules.conf <<EOF
 dm_crypt
 EOF
