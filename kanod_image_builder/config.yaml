@@ -170,6 +170,7 @@ recipes:
   - tuned
   - jq
   - nfs-common
+  - nfs-client
   elements:
   - ubuntu{{ "" if image is defined else "-minimal" }}
   - ubuntu-fix
@@ -188,6 +189,7 @@ recipes:
   - iputils-ping
   - python3-setuptools
   - cryptsetup
+  - nfs-client
 - when:
   - target=centos
   packages:
@@ -229,6 +231,7 @@ recipes:
   - nfs-common
   - iptables
   - cryptsetup
+  - nfs-client
 - when:
   - target=ubuntu
   - rename_interface_names
