@@ -170,6 +170,7 @@ recipes:
   - tuned
   - jq
   - nfs-common
+  - hwloc
   elements:
   - ubuntu{{ "" if image is defined else "-minimal" }}
   - ubuntu-fix
@@ -277,6 +278,7 @@ recipes:
   - wicked-service
   - vim
   - nfs-client
+  - hwloc
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
   - opensuse-fix
