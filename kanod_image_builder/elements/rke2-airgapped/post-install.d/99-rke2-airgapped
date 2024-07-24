@@ -19,7 +19,7 @@ set -eu
 
 mkdir /opt/rke2-artifacts
 curl -sfL https://get.rke2.io > /opt/install.sh
-export K8S_VERSION_WEB=${K8S_VERSION/-/%2B}
+export K8S_VERSION_WEB=$(echo -n "$K8S_VERSION" | sed -e 's/.rke2/+rke2/' | sed -e 's/-/%2d/; s/+/%2b/')
 curl -sfL https://github.com/rancher/rke2/releases/download/v$K8S_VERSION_WEB/rke2-images.linux-amd64.tar.zst -o /opt/rke2-artifacts/rke2-images.linux-amd64.tar.zst
 curl -sfL https://github.com/rancher/rke2/releases/download/v$K8S_VERSION_WEB/rke2.linux-amd64.tar.gz -o /opt/rke2-artifacts/rke2.linux-amd64.tar.gz
 curl -sfL https://github.com/rancher/rke2/releases/download/v$K8S_VERSION_WEB/sha256sum-amd64.txt -o /opt/rke2-artifacts/sha256sum-amd64.txt
