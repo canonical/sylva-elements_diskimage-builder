@@ -34,7 +34,7 @@ stages:
 
 include:
   - project: 'renovate-bot/renovate-runner'
-    ref: v18.7.0
+    ref: v18.31.2
     file: '/templates/renovate-config-validator.gitlab-ci.yml'
     rules:
       - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
