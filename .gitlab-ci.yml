@@ -152,6 +152,7 @@ gitleaks-custom:
       pipeline_variables: true
   rules:
     - if: $CI_COMMIT_TAG
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_MERGE_REQUEST_LABELS =~ /AutoMerge/
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: manual
     - if: $CI_PIPELINE_SOURCE == 'pipeline'
