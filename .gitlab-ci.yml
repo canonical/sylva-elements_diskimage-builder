@@ -116,8 +116,6 @@ gitleaks-custom:
           - 1.28.12
             # renovate: datasource=github-releases depName=kubernetes/kubernetes VersionTemplate=v
           - 1.27.16
-            # renovate: datasource=github-releases depName=kubernetes/kubernetes VersionTemplate=v
-          - 1.26.15
 
 .rke2_settings:
   variables:
@@ -130,9 +128,6 @@ gitleaks-custom:
           - 1.28.12-rke2r1
           # renovate: datasource=github-releases depName=rancher/rke2 VersionTemplate=v
           - 1.27.16-rke2r1
-          # renovate: datasource=github-releases depName=rancher/rke2 VersionTemplate=v
-          - 1.26.15-rke2r1
-
 
 .ubuntu_settings:
   variables:
