@@ -66,6 +66,12 @@
           --annotations sylvaproject.org/diskimage/commit-tag=$OCI_TAG_FORMAT
           --output json |
         jq -r '. | .repository + "@" + .digest')
+    - |
+      if [[ ${COSIGN_PRIVATE_KEY} ]]; then
+        echo "-- Signing $DISK_IMAGE_NAME image"
+        cosign login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+        cosign sign -y --tlog-upload=false --key env://COSIGN_PRIVATE_KEY $digest_url
+      fi
     - echo $digest_url | tee artifacts/snapshot.digest_url
   artifacts:
     when: always
@@ -153,10 +159,14 @@
     - digest_url=$REPO_URL/$DISK_IMAGE_NAME@$(cat digest)
     - echo ${digest_url}
     - |
-      if [[ ${CI_COMMIT_TAG} && ${COSIGN_PRIVATE_KEY} ]]; then
-        echo "-- Signing $DISK_IMAGE_NAME image"
-        cosign login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
-        cosign sign -y --key env://COSIGN_PRIVATE_KEY $digest_url
+      if [[ ${COSIGN_PRIVATE_KEY} ]]; then
+        echo "Check if artifact $digest_url is signed with the correct key"
+        if cosign verify --insecure-ignore-tlog=true --key env://COSIGN_PUBLIC_KEY $digest_url; then
+          echo "Artifact $digest_url exists and is already signed with the correct key, skipping it"
+        else
+          echo "[ERROR] Artifact $digest_url exists and is not signed with the correct key"
+          exit 1
+        fi
       fi
     - echo "Image pushed at oci://${REPO_IMAGE}"
     - |
