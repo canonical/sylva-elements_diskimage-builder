@@ -32,7 +32,7 @@
       "customType": "regex",
       "fileMatch": [".gitlab-ci.yml"],
       "matchStrings": [
-        "\\s+# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( VersionTemplate=(?<VersionTemplate>.*?))?\\s+-\\s+(?<currentValue>\\d+.\\d+.\\d+).*\"?\\n"
+        "\\s+# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( VersionTemplate=(?<VersionTemplate>.*?))?\\s+-\\s+(?<currentValue>\\d+.\\d+.\\d+).*"
       ],
       "extractVersionTemplate": "{{#if VersionTemplate}}^{{{VersionTemplate}}}(?<version>.*)${{/if}}"
     }
