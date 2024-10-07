@@ -12,7 +12,7 @@
     - python3 -m pip install --user . --break-system-packages
     - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
   script:
-    - export K8S_VERSION_SHORT=${K8S_VERSION%-*}
+    - export K8S_VERSION_SHORT=${K8S_VERSION%+*}
     - export DISK_IMAGE_NAME=${DISK_IMAGE_NAME//./-}-${K8S_VERSION_SHORT//./-}
     - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
     - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
@@ -55,7 +55,7 @@
           --annotations sylvaproject.org/diskimage/flavor=$FLAVOR
           --annotations sylvaproject.org/diskimage/hardened=$HARDENED
           --annotations sylvaproject.org/diskimage/k8s-flavor=$K8S_FLAVOR
-          --annotations sylvaproject.org/diskimage/k8s-version=$K8S_VERSION
+          --annotations sylvaproject.org/diskimage/k8s-version=${K8S_VERSION}
           --annotations sylvaproject.org/diskimage/sha256=$sha256
           --annotations sylvaproject.org/diskimage/md5=$md5
           --annotations sylvaproject.org/diskimage/size=$size
@@ -93,7 +93,7 @@
   extends: .default-build
   stage: boot
   script:
-    - export K8S_VERSION_SHORT=${K8S_VERSION%-*}
+    - export K8S_VERSION_SHORT=${K8S_VERSION%+*}
     - export DISK_IMAGE_NAME=${DISK_IMAGE_NAME//./-}-${K8S_VERSION_SHORT//./-}
     - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
     - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
@@ -118,7 +118,7 @@
   image: $GENERATE_OS_SBOM_CI_IMAGE
   stage: generate-sbom
   script:
-    - export K8S_VERSION_SHORT=${K8S_VERSION%-*}
+    - export K8S_VERSION_SHORT=${K8S_VERSION%+*}
     - export DISK_IMAGE_NAME=${DISK_IMAGE_NAME//./-}-${K8S_VERSION_SHORT//./-}
     - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
     - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
@@ -148,7 +148,7 @@
   extends: .default-build
   stage: promote
   script:
-    - export K8S_VERSION_SHORT=${K8S_VERSION%-*}
+    - export K8S_VERSION_SHORT=${K8S_VERSION%+*}
     - export DISK_IMAGE_NAME=${DISK_IMAGE_NAME//./-}-${K8S_VERSION_SHORT//./-}
     - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
     - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
