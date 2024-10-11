@@ -92,7 +92,7 @@ env:
 - name: DIB_RELEASE
   when:
   - target=opensuse
-  value: '{{release | default("15.5")}}'
+  value: '{{release | default("15.6")}}'
 - name: DIB_BOOTLOADER_DEFAULT_CMDLINE
   value: 'nofb nomodeset gfxpayload=text net.ifnames=1'
   when:

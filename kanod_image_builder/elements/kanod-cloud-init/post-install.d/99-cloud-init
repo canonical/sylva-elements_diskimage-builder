@@ -46,10 +46,7 @@ if [ "${DISTRO_NAME}" == 'opensuse' ]; then
 
   # Install the cloud-init package from main repo
   zypper install -y cloud-init
-  # Fix a bug in OpenSUSE package cloud-init-config-suse where the configuration
-  # is not tailored for a SuSE OS but for Ubuntu one.
-  # Minor version 71.1 containing the correct version
-  zypper install --oldpackage -y cloud-init-config-suse=23.3-150100.8.71.1
+  zypper install -y cloud-init-config-suse
 
   # Align distro
   sed -i "s/distro: sles/distro: opensuse/" /etc/cloud/cloud.cfg
