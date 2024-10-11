@@ -141,7 +141,7 @@ gitleaks-custom:
 .opensuse_settings:
   variables:
     OS: opensuse
-    OS_RELEASE: "15.5"
+    OS_RELEASE: "15.6"
 
 .default-trigger:
   trigger:
