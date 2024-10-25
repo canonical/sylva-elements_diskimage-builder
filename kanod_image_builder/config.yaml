@@ -170,6 +170,10 @@ recipes:
   - tuned
   - jq
   - nfs-common
+  - vim
+  - iputils-ping
+  - rsyslog
+  - iptables
   elements:
   - ubuntu{{ "" if image is defined else "-minimal" }}
   - ubuntu-fix
@@ -182,12 +186,9 @@ recipes:
   - target=ubuntu
   - debug
   packages:
-  - vim
   - tcpdump
   - nmap
-  - iputils-ping
   - python3-setuptools
-  - cryptsetup
 - when:
   - target=centos
   packages:
@@ -219,16 +220,6 @@ recipes:
   - git
   elements:
   - cis-remediation
-- when:
-  - target=ubuntu
-  - release=jammy
-  packages:
-  - vim
-  - iputils-ping
-  - rsyslog
-  - nfs-common
-  - iptables
-  - cryptsetup
 - when:
   - target=ubuntu
   - rename_interface_names
