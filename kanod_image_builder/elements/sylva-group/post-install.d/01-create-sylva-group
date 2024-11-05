@@ -6,4 +6,4 @@ fi
 set -eu
 set -o pipefail
 
-groupadd --system sylva
+groupadd --system ${DIB_CLOUD_INIT_SYLVA_GROUP}

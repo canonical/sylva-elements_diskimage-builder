@@ -25,7 +25,6 @@
 
 AddressFamily any
 AllowAgentForwarding no
-AllowGroups sylva
 AllowTcpForwarding no
 Banner /etc/issue.net
 ChallengeResponseAuthentication no
