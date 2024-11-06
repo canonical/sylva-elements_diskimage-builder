@@ -25,6 +25,8 @@ variables:
   SUSE_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/suse:v2.0.8
   # renovate: datasource=docker
   GENERATE_OS_SBOM_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/trivy-libguestfs:1.0.0
+  # renovate: datasource=docker
+  OPENSCAP_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/openscap/snapshot:0.0.0-git-8eb70feb
 
 stages:
   - test

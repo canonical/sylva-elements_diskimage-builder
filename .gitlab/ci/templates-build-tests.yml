@@ -171,3 +171,30 @@
   artifacts:
     paths:
       - ${CI_PIPELINE_ID}-release.md
+
+.openscap-scan:
+  extends: .default-build
+  image: $OPENSCAP_CI_IMAGE
+  stage: build
+  script:
+    - export K8S_VERSION_SHORT=${K8S_VERSION%+*}
+    - export DISK_IMAGE_NAME=${DISK_IMAGE_NAME//./-}-${K8S_VERSION_SHORT//./-}
+    - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
+    - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
+    - export REPORT_FILE_NAME=$DISK_IMAGE_NAME.openscap.html
+    - export OSCAP_OPTION="xccdf eval --profile cis --fetch-remote-resources"
+    - export OSCAP_DEFINITION_FILE="/usr/share/xml/scap/ssg/content/ssg-sle15-ds.xml"
+    - flux pull artifact oci://$REPO_IMAGE --timeout 1h -o .
+    - |
+      if [ -f $DISK_IMAGE_FILENAME.gz ]; then
+        echo "Uncompressing $DISK_IMAGE_FILENAME"
+        gunzip $DISK_IMAGE_FILENAME.gz
+      fi
+    - oscap-vm image $DISK_IMAGE_NAME.raw $OSCAP_OPTION --report $REPORT_FILE_NAME $OSCAP_DEFINITION_FILE >> output.log || true
+  artifacts:
+    when: always
+    paths:
+      - "*.html"
+      - output.log
+  when: manual
+  timeout: 2h

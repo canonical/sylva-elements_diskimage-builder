@@ -12,6 +12,10 @@ stages:
   - generate-sbom
   - promote-image
 
+openscap-scan:
+  stage: build
+  extends: .openscap-scan
+
 build-image:
   stage: build
   extends: .build-image-suse
