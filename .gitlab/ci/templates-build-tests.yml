@@ -131,7 +131,7 @@
         gunzip $DISK_IMAGE_FILENAME.gz
       fi
     - guestmount -a $DISK_IMAGE_FILENAME -i mountpoint
-    - trivy rootfs --skip-db-update mountpoint -f cyclonedx -o artifacts/${DISK_IMAGE_FILENAME}.cdx
+    - trivy rootfs --skip-db-update --java-db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-java-db mountpoint -f cyclonedx -o artifacts/${DISK_IMAGE_FILENAME}.cdx
   cache:
     key: trivy
     paths:
