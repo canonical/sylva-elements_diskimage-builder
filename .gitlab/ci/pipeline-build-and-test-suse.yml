@@ -11,10 +11,8 @@ stages:
   - boot-image
   - generate-sbom
   - promote-image
-
-openscap-scan:
-  stage: build
-  extends: .openscap-scan
+  - scan-image
+  - publish-report
 
 build-image:
   stage: build
@@ -36,3 +34,11 @@ generate-sbom:
 promote:
   stage: promote-image
   extends: .promote-image
+
+openscap-scan:
+  stage: scan-image
+  extends: .openscap-scan
+
+upload-report:
+  stage: publish-report
+  extends: .publish-scan

@@ -26,7 +26,7 @@ variables:
   # renovate: datasource=docker
   GENERATE_OS_SBOM_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/trivy-libguestfs:1.0.0
   # renovate: datasource=docker
-  OPENSCAP_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/openscap/snapshot:0.0.0-git-8eb70feb
+  OPENSCAP_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/openscap:1.0.0
 
 stages:
   - test
@@ -68,10 +68,11 @@ include:
         | jq ".[].downstream_pipeline.id" \
         | grep -v null \
         | xargs -i curl -sS --header "PRIVATE-TOKEN: $RELEASE_NOTES_READ_API_TOKEN" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/{}/jobs" \
-        | jq '.[] | select(.name == "promote") | .id' \
+        | jq '.[] | select(.name == "upload-report") | .id' \
         | xargs -i curl --location --header "PRIVATE-TOKEN: $RELEASE_NOTES_READ_API_TOKEN" --output artifacts-{}.zip "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/jobs/{}/artifacts"
       ls
-      for z in *.zip; do unzip -o $z; done
+      find . -type f -name "*.zip" -empty -delete
+      for z in *.zip; do unzip -o $z || true; done
       echo "## Produced images:" >> release-notes.md
       echo " " >> release-notes.md
       cat *release.md | tee -a release-notes.md
@@ -139,11 +140,20 @@ gitleaks-custom:
   variables:
     OS: ubuntu
     OS_RELEASE: jammy
+    # Labal used to select OpenSCAP SSG file for security scan
+    # e.g. /usr/share/xml/scap/ssg/content/ssg-ubuntu2204-ds.xml is used for ubuntu jammy
+    SSG_FILE_LABEL: ubuntu2204
+    # profiles contained in the DS file
+    SSG_PROFILE_LIST: "standard cis_level1_server cis_level2_server"
 
 .opensuse_settings:
   variables:
     OS: opensuse
     OS_RELEASE: "15.6"
+    # Labal used to select OpenSCAP SSG file for security scan
+    # e.g. /usr/share/xml/scap/ssg/content/ssg-opensuse-ds.xml is used for opensuse
+    SSG_FILE_LABEL: opensuse
+    SSG_PROFILE_LIST: "standard"
 
 .default-trigger:
   trigger:
