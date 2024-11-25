@@ -36,7 +36,7 @@
         export ARTIFACT_DISK_IMAGE_FILENAME=$DISK_IMAGE_FILENAME.gz
         export COMPRESSION=gz
         echo "$(date -Iseconds): Compressing to $ARTIFACT_DISK_IMAGE_FILENAME"
-        gzip --fast $DISK_IMAGE_FILENAME
+        gzip --fast --keep $DISK_IMAGE_FILENAME
         echo "$(date -Iseconds): Done."
         export archive_size=$(ls -ls $ARTIFACT_DISK_IMAGE_FILENAME | awk '{ print $6 }')
       else
@@ -76,6 +76,11 @@
         cosign sign -y --tlog-upload=false --key env://COSIGN_PRIVATE_KEY $digest_url
       fi
     - echo $digest_url | tee artifacts/snapshot.digest_url
+  cache:
+    - key: image-${CI_PIPELINE_ID}
+      paths:
+      - '*.raw'
+      - '*.qcow2'
   artifacts:
     when: always
     expire_in: 6h
@@ -98,14 +103,18 @@
   script:
     - !reference [ .variables-definition]
     - mkdir -p artifacts oci_tmp
-    - flux pull artifact oci://${REPO_IMAGE_SNAPSHOT} --timeout 20m -o .
     - |
-      if [ -f $DISK_IMAGE_FILENAME.gz ]; then
-        echo "Uncompressing $DISK_IMAGE_FILENAME"
-        gunzip $DISK_IMAGE_FILENAME.gz
+      if [ ! -f $DISK_IMAGE_FILENAME ]; then
+        echo "$DISK_IMAGE_FILENAME is missing"
+        exit 1
       fi
     - export VM_SERIAL_FILE=artifacts/serial.log
     - ./tests/ci/validate-img.sh ./$DISK_IMAGE_FILENAME
+  cache:
+    - key: image-${CI_PIPELINE_ID}
+      paths:
+      - '*.raw'
+      - '*.qcow2'
   artifacts:
     when: always
     expire_in: 6h
@@ -115,22 +124,25 @@
 .generate-sbom:
   extends: .default-build
   image: $GENERATE_OS_SBOM_CI_IMAGE
-  stage: generate-sbom
+  stage: scan-image
   script:
     - !reference [ .variables-definition]
     - mkdir -p mountpoint artifacts
-    - flux pull artifact oci://${REPO_IMAGE_SNAPSHOT} --timeout 20m -o .
     - |
-      if [ -f $DISK_IMAGE_FILENAME.gz ]; then
-        echo "Uncompressing $DISK_IMAGE_FILENAME"
-        gunzip $DISK_IMAGE_FILENAME.gz
+      if [ ! -f $DISK_IMAGE_FILENAME ]; then
+        echo "$DISK_IMAGE_FILENAME is missing"
+        exit 1
       fi
     - guestmount -a $DISK_IMAGE_FILENAME -i mountpoint
     - trivy rootfs --skip-db-update --java-db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-java-db mountpoint -f cyclonedx -o artifacts/${DISK_IMAGE_FILENAME}.cdx
   cache:
-    key: trivy
-    paths:
+    - key: trivy
+      paths:
       - .cache/trivy/
+    - key: image-${CI_PIPELINE_ID}
+      paths:
+      - '*.raw'
+      - '*.qcow2'
   artifacts:
     name: "${DISK_IMAGE_NAME}.cdx"
     paths:
@@ -138,6 +150,34 @@
     reports:
       cyclonedx:
         - artifacts/*.cdx
+
+.openscap-scan:
+  extends: .default-build
+  image: $OPENSCAP_CI_IMAGE
+  stage: scan-image
+  script:
+    - !reference [ .variables-definition]
+    - export OSCAP_DEFINITION_FILE="/usr/share/xml/scap/ssg/content/ssg-${SSG_FILE_LABEL}-ds.xml"
+    - |
+      if [ -f $DISK_IMAGE_FILENAME ]; then
+        echo "Cached RAW image found: $DISK_IMAGE_FILENAME"
+        for profile in $SSG_PROFILE_LIST; do
+          echo "Scanning $DISK_IMAGE_FILENAME with profile $profile";
+          export REPORT_FILE_NAME=$DISK_IMAGE_NAME.openscap.$profile.html
+          oscap-vm image $DISK_IMAGE_FILENAME xccdf eval --profile $profile --fetch-remote-resources --report $REPORT_FILE_NAME $OSCAP_DEFINITION_FILE >> output.log || true
+        done
+      fi
+  cache:
+    key: image-${CI_PIPELINE_ID}
+    paths:
+      - '*.raw'
+      - '*.qcow2'
+  artifacts:
+    when: always
+    paths:
+      - "*.html"
+      - output.log
+  timeout: 2h
 
 .promote-image:
   extends: .default-build
@@ -172,41 +212,11 @@
     paths:
       - ${CI_PIPELINE_ID}-release.md
 
-.openscap-scan:
-  extends: .default-build
-  image: $OPENSCAP_CI_IMAGE
-  stage: scan-image
-  script:
-    - export K8S_VERSION_SHORT=${K8S_VERSION%+*}
-    - export DISK_IMAGE_NAME=${DISK_IMAGE_NAME//./-}-${K8S_VERSION_SHORT//./-}
-    - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
-    - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
-    - export OSCAP_DEFINITION_FILE="/usr/share/xml/scap/ssg/content/ssg-${SSG_FILE_LABEL}-ds.xml"
-    - flux pull artifact oci://$REPO_IMAGE --timeout 1h -o .
-    - |
-      if [ -f $DISK_IMAGE_FILENAME.gz ]; then
-        echo "Uncompressing $DISK_IMAGE_FILENAME"
-        gunzip $DISK_IMAGE_FILENAME.gz
-      fi
-    - |
-      for profile in $SSG_PROFILE_LIST; do
-        echo "Scanning $DISK_IMAGE_NAME with profile $profile";
-        export REPORT_FILE_NAME=$DISK_IMAGE_NAME.openscap.$profile.html
-        oscap-vm image $DISK_IMAGE_NAME.raw xccdf eval --profile $profile --fetch-remote-resources --report $REPORT_FILE_NAME $OSCAP_DEFINITION_FILE >> output.log || true
-      done
-  artifacts:
-    when: always
-    paths:
-      - "*.html"
-      - output.log
-  timeout: 2h
-
 .publish-scan:
   extends: .default-build
   stage: publish-report
   script:
-    - export K8S_VERSION_SHORT=${K8S_VERSION%+*}
-    - export DISK_IMAGE_NAME=${DISK_IMAGE_NAME//./-}-${K8S_VERSION_SHORT//./-}
+    - !reference [ .variables-definition]
     - echo "<br /> OpenSCAP report:" >> ${CI_PIPELINE_ID}-release.md
     - |
       for profile in $SSG_PROFILE_LIST; do
