@@ -5,6 +5,13 @@
     - saas-linux-medium-amd64
   image: $UBUNTU_CI_IMAGE
 
+.variables-definition:
+    - export K8S_VERSION_SHORT=${K8S_VERSION%+*}
+    - export DISK_IMAGE_NAME=${DISK_IMAGE_NAME//./-}-${K8S_VERSION_SHORT//./-}
+    - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
+    - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
+    - export REPO_IMAGE_SNAPSHOT=$REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
+
 .build-image:
   extends: .default-build
   stage: build
@@ -12,11 +19,7 @@
     - python3 -m pip install --user . --break-system-packages
     - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
   script:
-    - export K8S_VERSION_SHORT=${K8S_VERSION%+*}
-    - export DISK_IMAGE_NAME=${DISK_IMAGE_NAME//./-}-${K8S_VERSION_SHORT//./-}
-    - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
-    - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
-    - export REPO_IMAGE_SNAPSHOT=$REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
+    - !reference [ .variables-definition]
     - export HARDENED=$([[ "$FLAVOR" == "hardened" ]] && echo "true" || echo "false")
     - mkdir -p artifacts
     - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
@@ -93,11 +96,7 @@
   extends: .default-build
   stage: boot
   script:
-    - export K8S_VERSION_SHORT=${K8S_VERSION%+*}
-    - export DISK_IMAGE_NAME=${DISK_IMAGE_NAME//./-}-${K8S_VERSION_SHORT//./-}
-    - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
-    - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
-    - export REPO_IMAGE_SNAPSHOT=$REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
+    - !reference [ .variables-definition]
     - mkdir -p artifacts oci_tmp
     - flux pull artifact oci://${REPO_IMAGE_SNAPSHOT} --timeout 20m -o .
     - |
@@ -118,11 +117,7 @@
   image: $GENERATE_OS_SBOM_CI_IMAGE
   stage: generate-sbom
   script:
-    - export K8S_VERSION_SHORT=${K8S_VERSION%+*}
-    - export DISK_IMAGE_NAME=${DISK_IMAGE_NAME//./-}-${K8S_VERSION_SHORT//./-}
-    - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
-    - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
-    - export REPO_IMAGE_SNAPSHOT=$REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
+    - !reference [ .variables-definition]
     - mkdir -p mountpoint artifacts
     - flux pull artifact oci://${REPO_IMAGE_SNAPSHOT} --timeout 20m -o .
     - |
@@ -148,11 +143,7 @@
   extends: .default-build
   stage: promote
   script:
-    - export K8S_VERSION_SHORT=${K8S_VERSION%+*}
-    - export DISK_IMAGE_NAME=${DISK_IMAGE_NAME//./-}-${K8S_VERSION_SHORT//./-}
-    - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
-    - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
-    - export REPO_IMAGE_SNAPSHOT=$REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
+    - !reference [ .variables-definition]
     - export sha256=$(cat artifacts/checksum.sha256)
     - echo $sha256
     - skopeo copy
