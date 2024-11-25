@@ -13,9 +13,14 @@
 #    under the License.
 
 import argparse
+import hashlib
 import importlib
+import logging
 import os
+import shlex
+import sys
 from os import path
+from pathlib import Path
 import pkg_resources
 import re
 import subprocess
@@ -30,6 +35,8 @@ from typing import Any, Dict, List  # noqa: H301
 def filter_regex_replace(value, pat, target):
     return re.sub(pat, target, value)
 
+
+logger = logging.getLogger("kanod_image_builder")
 
 class ImageBuilder:
     '''Parameters of call to diskimage-builder'''
@@ -70,8 +77,10 @@ class ImageBuilder:
                 errors += 1
                 msg = error.message.replace('\n', '\n  ')
                 err_path = '.'.join([str(e) for e in error.absolute_path])
-                print(f'* {msg}')
-                print(f'  at {"." if err_path == "" else err_path}')
+                logger.error(
+                    f'* {msg}\n'
+                    f'  at {"." if err_path == "" else err_path}'
+                )
             if errors > 0:
                 raise Exception(
                     f'Invalid configuration ({errors} error(s)) in {folder}')
@@ -170,19 +179,21 @@ class ImageBuilder:
             update(self.packages, 'packages')
             update(self.elements, 'elements')
 
-    def run(self, name, additional, format):
+    def run(self, name: str, additional: str, format: str):
         elements_path = [
             path.abspath(path.join(folder, 'elements'))
             for folder in self.folders]
         self.setenv('ELEMENTS_PATH', ':'.join(elements_path))
         self.setenv('PATH', (
+            f"{path.dirname(sys.executable)}:" +
             '/usr/local/bin:' + path.join(os.environ['HOME'], '.local/bin') +
             ':/usr/bin:/usr/sbin:/bin:/sbin'))
         packages = ','.join(self.packages)
         command = [
             'disk-image-create', '-a', 'amd64', '-t', format, '-o', name,
-            '-p', packages, '-p', additional
-        ] + self.elements
+            '-p', packages, '-p', additional, *self.elements
+        ]
+        logger.debug(f"Running command: {shlex.join(command)}")
         if os.environ.get('KANOD_IMAGE_DEBUG', None) is not None:
             with open(os.environ['KANOD_IMAGE_DEBUG'], 'w') as fd:
                 fd.write('#!/bin/bash\n\n')
@@ -192,8 +203,36 @@ class ImageBuilder:
                 fd.write('\n')
         subprocess.run(command, check=True)
 
+    def gen_elements_signatures(self, element: str) -> dict:
+        folders = [pkg_resources.resource_filename("diskimage_builder", '/'), *self.folders]
+        for folder in folders:
+            element_folder = Path(folder) /"elements"/ element
+            f: Path
+            if element_folder.is_dir():
+                return dict(
+                files={
+                    str(f.relative_to(element_folder)): {
+                        "size": f.stat().st_size,
+                        "hash": hashlib.sha256(f.read_bytes()).hexdigest()
+                    }
+                    for f in element_folder.glob("**/*")
+                    if f.is_file()
+                    if not f.suffix.lower() in ['.pyc', '.pyo', 'rst', 'md']
+                }
+                )
+        raise ValueError(f"Could not locate element {element} in {folders!r}")
+
+    def gen_signatures(self, name: str) -> str:
+        out = dict(
+            name=name,
+            packages=sorted(self.packages),
+            elements={element: self.gen_elements_signatures(element) for element in self.elements}
+        )
+        return yaml.dump(out, sort_keys=True)
+
 
 def main():
+    logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser()
     parser.add_argument('modules', nargs='*')
     parser.add_argument(
@@ -216,6 +255,15 @@ def main():
         '--packages', '-p', default='',
         help='Additional packages (single comma separated list)'
     )
+    parser.add_argument(
+        '--dry-run', '-n', action='store_true',
+        help="Don't build the image"
+    )
+    parser.add_argument(
+        '--signatures-dir', default='',
+        help='The path to store the signatures'
+    )
+
     args = parser.parse_args()
     image_builder = ImageBuilder()
     flags = args.bool
@@ -237,4 +285,17 @@ def main():
     output = args.output or 'img'
     if '.' not in output:
         output = f'{output}.{args.format}'
-    image_builder.run(output, args.packages, args.format)
+
+
+    if args.signatures_dir:
+        (Path(args.signatures_dir) / f"{output}-signatures.yaml").write_text(
+            image_builder.gen_signatures(output)
+        )
+
+    if not args.dry_run:
+        image_builder.run(output, args.packages, args.format)
+    else:
+        logger.info("Don't running the actual image build as --dry-run was specified")
+
+if __name__ == '__main__':
+    main()

@@ -21,8 +21,10 @@
   script:
     - !reference [ .variables-definition]
     - export HARDENED=$([[ "$FLAVOR" == "hardened" ]] && echo "true" || echo "false")
+    - export KANOD_DIB_DRY_RUN=$([[ "$DIB_DRY_RUN" == "true" ]] && echo "--dry-run" || echo "")
     - mkdir -p artifacts
-    - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
+    - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME $KANOD_DIB_DRY_RUN --signatures-dir $CI_PROJECT_DIR/artifacts
+    - if [[ "$DIB_DRY_RUN" == "true" ]]; then exit 0; fi
     - export sha256=$(sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
     - export md5=$(md5sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
     - export size=$(ls -ls $DISK_IMAGE_FILENAME |  awk '{ print $6 }')
@@ -83,6 +85,7 @@
       - artifacts/checksum.sha256
       - artifacts/checksum.md5
       - artifacts/snapshot.digest_url
+      - artifacts/*-signatures.yaml
 
 .build-image-suse:
   extends: .build-image
