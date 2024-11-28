@@ -1,6 +1,6 @@
 #!/bin/sh
 
-growpart $(pvs --reportformat json | jq -rc '.report[].pv[] | select(.vg_name | contains("vg")) | .pv_name' | sed 's/\([0-9]\+\)$/ \1/')
+growpart $(pvs --reportformat json | jq -rc '.report[].pv[] | select(.vg_name | contains("vg")) | .pv_name' | sed -E 's|p?([0-9]+)$| \1|')
 pvresize $(pvs --reportformat json | jq -rc '.report[].pv[] | select(.vg_name | contains("vg")) | .pv_name')
 lvextend /dev/vg/lv_var -l 5%VG
 lvextend /dev/vg/lv_home -l 5%VG
