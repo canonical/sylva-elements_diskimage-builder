@@ -12,6 +12,13 @@
     - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
     - export REPO_IMAGE_SNAPSHOT=$REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
 
+.image-cache: &image-cache
+  - key: image-${CI_PIPELINE_ID}
+    paths:
+    - '*.raw'
+    - '*.qcow2'
+
+
 .build-image:
   extends: .default-build
   stage: build
@@ -76,11 +83,7 @@
         cosign sign -y --tlog-upload=false --key env://COSIGN_PRIVATE_KEY $digest_url
       fi
     - echo $digest_url | tee artifacts/snapshot.digest_url
-  cache:
-    - key: image-${CI_PIPELINE_ID}
-      paths:
-      - '*.raw'
-      - '*.qcow2'
+  cache: *image-cache
   artifacts:
     when: always
     expire_in: 6h
@@ -110,11 +113,7 @@
       fi
     - export VM_SERIAL_FILE=artifacts/serial.log
     - ./tests/ci/validate-img.sh ./$DISK_IMAGE_FILENAME
-  cache:
-    - key: image-${CI_PIPELINE_ID}
-      paths:
-      - '*.raw'
-      - '*.qcow2'
+  cache: *image-cache
   artifacts:
     when: always
     expire_in: 6h
@@ -136,13 +135,10 @@
     - guestmount -a $DISK_IMAGE_FILENAME -i mountpoint
     - trivy rootfs --skip-db-update --java-db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-java-db mountpoint -f cyclonedx -o artifacts/${DISK_IMAGE_FILENAME}.cdx
   cache:
+    - *image-cache
     - key: trivy
       paths:
       - .cache/trivy/
-    - key: image-${CI_PIPELINE_ID}
-      paths:
-      - '*.raw'
-      - '*.qcow2'
   artifacts:
     name: "${DISK_IMAGE_NAME}.cdx"
     paths:
@@ -167,11 +163,7 @@
           oscap-vm image $DISK_IMAGE_FILENAME xccdf eval --profile $profile --fetch-remote-resources --report $REPORT_FILE_NAME $OSCAP_DEFINITION_FILE >> output.log || true
         done
       fi
-  cache:
-    key: image-${CI_PIPELINE_ID}
-    paths:
-      - '*.raw'
-      - '*.qcow2'
+  cache: *image-cache
   artifacts:
     when: always
     paths:
