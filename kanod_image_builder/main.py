@@ -15,6 +15,7 @@
 import argparse
 import importlib
 import os
+import sys
 from os import path
 import pkg_resources
 import re
@@ -176,6 +177,7 @@ class ImageBuilder:
             for folder in self.folders]
         self.setenv('ELEMENTS_PATH', ':'.join(elements_path))
         self.setenv('PATH', (
+            f"{path.dirname(sys.executable)}:" +
             '/usr/local/bin:' + path.join(os.environ['HOME'], '.local/bin') +
             ':/usr/bin:/usr/sbin:/bin:/sbin'))
         packages = ','.join(self.packages)
