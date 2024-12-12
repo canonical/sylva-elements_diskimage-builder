@@ -140,7 +140,7 @@ gitleaks-custom:
   variables:
     OS: ubuntu
     OS_RELEASE: jammy
-    # Labal used to select OpenSCAP SSG file for security scan
+    # Label used to select OpenSCAP SSG file for security scan
     # e.g. /usr/share/xml/scap/ssg/content/ssg-ubuntu2204-ds.xml is used for ubuntu jammy
     SSG_FILE_LABEL: ubuntu2204
     # profiles contained in the DS file
@@ -150,7 +150,7 @@ gitleaks-custom:
   variables:
     OS: opensuse
     OS_RELEASE: "15.6"
-    # Labal used to select OpenSCAP SSG file for security scan
+    # Label used to select OpenSCAP SSG file for security scan
     # e.g. /usr/share/xml/scap/ssg/content/ssg-opensuse-ds.xml is used for opensuse
     SSG_FILE_LABEL: opensuse
     SSG_PROFILE_LIST: "standard"
