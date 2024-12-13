@@ -231,8 +231,9 @@
     - |
       for REPORT_FILE_NAME in *.html; do
         echo "Uploading $REPORT_FILE_NAME";
+        export FILENAME_SHORT=$(echo $REPORT_FILE_NAME | awk -F '.' '{print $(NF-1)"."$NF}')
         curl --fail-with-body --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file $REPORT_FILE_NAME "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/openscap/$CI_COMMIT_TAG/$REPORT_FILE_NAME"
-        echo "[$profile](${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/openscap/$CI_COMMIT_TAG/$REPORT_FILE_NAME)" >> ${CI_PIPELINE_ID}-release.md
+        echo "[$FILENAME_SHORT](${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/openscap/$CI_COMMIT_TAG/$REPORT_FILE_NAME)" >> ${CI_PIPELINE_ID}-release.md
       done
   artifacts:
     paths:
