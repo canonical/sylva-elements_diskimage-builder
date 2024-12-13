@@ -165,6 +165,30 @@
       - output.log
   timeout: 2h
 
+.openscap-scan-opensuse-oval:
+  extends: .default-build
+  image: $OPENSCAP_CI_IMAGE
+  stage: scan-image
+  script:
+    - !reference [ .variables-definition]
+    - curl -O $OVAL_URL
+    - export OSCAP_DEFINITION_FILE=$(basename "$OVAL_URL")
+    - flux pull artifact oci://${REPO_IMAGE_SNAPSHOT} --timeout 20m -o .
+    - |
+      if [ -f $DISK_IMAGE_FILENAME.gz ]; then
+        echo "Uncompressing $DISK_IMAGE_FILENAME"
+        gunzip $DISK_IMAGE_FILENAME.gz
+      fi
+    - echo "Scanning $DISK_IMAGE_FILENAME with $OVAL_URL";
+    - export REPORT_FILE_NAME=$DISK_IMAGE_NAME.openscap.oval.html
+    - oscap-vm image $DISK_IMAGE_FILENAME oval eval --report $REPORT_FILE_NAME $OSCAP_DEFINITION_FILE >> output.log || true
+  artifacts:
+    when: always
+    paths:
+      - "*.html"
+      - output.log
+  timeout: 2h
+
 .promote-image:
   extends: .default-build
   stage: promote
@@ -205,9 +229,8 @@
     - !reference [ .variables-definition]
     - echo "<br /> OpenSCAP report:" >> ${CI_PIPELINE_ID}-release.md
     - |
-      for profile in $SSG_PROFILE_LIST; do
-        export REPORT_FILE_NAME=$DISK_IMAGE_NAME.openscap.$profile.html
-        echo "Uploading $REPORT_FILE_NAME with profile $profile";
+      for REPORT_FILE_NAME in *.html; do
+        echo "Uploading $REPORT_FILE_NAME";
         curl --fail-with-body --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file $REPORT_FILE_NAME "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/openscap/$CI_COMMIT_TAG/$REPORT_FILE_NAME"
         echo "[$profile](${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/openscap/$CI_COMMIT_TAG/$REPORT_FILE_NAME)" >> ${CI_PIPELINE_ID}-release.md
       done
