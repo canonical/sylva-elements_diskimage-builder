@@ -22,7 +22,7 @@
     - !reference [ .variables-definition]
     - export HARDENED=$([[ "$FLAVOR" == "hardened" ]] && echo "true" || echo "false")
     - mkdir -p artifacts
-    - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
+    - DIB_BLOCK_SIZE=4096 kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
     - export sha256=$(sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
     - export md5=$(md5sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
     - export size=$(ls -ls $DISK_IMAGE_FILENAME |  awk '{ print $6 }')
