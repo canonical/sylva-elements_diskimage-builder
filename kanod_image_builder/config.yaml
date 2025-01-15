@@ -151,7 +151,6 @@ recipes:
   - build-info
   - fix-secureboot
   - gtp5g
-  - sylva-group
 - when:
   - tpm
   elements:
