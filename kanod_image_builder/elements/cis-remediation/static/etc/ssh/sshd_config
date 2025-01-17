@@ -63,6 +63,5 @@ PubkeyAuthentication yes
 StrictModes yes
 SyslogFacility AUTH
 TCPKeepAlive no
-UseLogin no
 X11Forwarding no
 X11UseLocalhost yes
