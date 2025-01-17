@@ -133,9 +133,6 @@ chmod 640 /etc/audit/rules.d/58-faillock.rules
 sed -i 's/^password.*pam_unix.so.*$/password        [success=1 default=ignore]      pam_unix.so obscure use_authtok try_first_pass remember=5/' /etc/pam.d/common-password
 sed -i 's/ENCRYPT_METHOD .*/ENCRYPT_METHOD yescrypt/' /etc/login.defs
 
-ufw disable
-apt remove ufw
-
 sed -i 's/rp_filter=2/rp_filter=1/g' /etc/sysctl.conf
 sysctl --system
 
