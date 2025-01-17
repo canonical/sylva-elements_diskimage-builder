@@ -1,11 +1,6 @@
 #!/bin/bash
 
-### Install a newer version of ansible which is not available for Ubuntu Jammy
 apt update
-apt install software-properties-common -y
-apt install gpg-agent -y
-apt install python3-jinja2 -y
-add-apt-repository --yes --update ppa:ansible/ansible
 apt install ansible -y
 export LC_ALL="en_US.UTF-8"
 export LC_CTYPE="en_US.UTF-8"
