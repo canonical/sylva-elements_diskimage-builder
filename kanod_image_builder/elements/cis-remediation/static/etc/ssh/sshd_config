@@ -47,7 +47,6 @@ KerberosTicketCleanup yes
 ListenAddress 0.0.0.0
 LoginGraceTime 30s
 LogLevel VERBOSE
-MaxAuthTries 2
 MaxSessions 10
 MaxStartups 10:30:60
 PasswordAuthentication yes
