@@ -36,11 +36,6 @@ cat > /tmp/site.yml <<EOF
   - { role: UBUNTU24-CIS, ignore_errors: yes, tags: ['hardening'] }
   
   tasks: 
-   - name: fix core dumps size
-     copy:
-      dest: "/etc/security/limits.d/00-core-dumps"
-      content: '* hard core 0'
-
    - name: stop auditd
      shell: service auditd stop
 
