@@ -25,7 +25,6 @@ cat > /tmp/site.yml <<EOF
       ubtu24cis_system_is_log_server: false
       ubtu24cis_firewall_package: none
       ubtu24cis_rsyslog_ansible_managed: false
-      ubtu24cis_nfs_client: true
       ubtu24cis_sshd:
         log_level: "INFO"
         max_auth_tries: 4
