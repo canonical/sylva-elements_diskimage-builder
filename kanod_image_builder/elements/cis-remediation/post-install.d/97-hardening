@@ -25,19 +25,8 @@ cat > /tmp/site.yml <<EOF
       ubtu24cis_system_is_log_server: false
       ubtu24cis_firewall_package: none
       ubtu24cis_rsyslog_ansible_managed: false
-      ubtu24cis_sshd:
-        log_level: "INFO"
-        max_auth_tries: 4
-        ciphers: "chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr"
-        macs: "hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256"
-        kex_algorithms: "curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group14-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256"
-        client_alive_interval: 300
-        client_alive_count_max: 0
-        login_grace_time: 60
-        max_sessions: 4
-        allow_users: ""
-        allow_groups: ""
-      ubtu24cis_grub_file: /boot/grub/grub.cfg
+      ubtu24cis_sshd_default_client_alive_count_max: 0
+      ubtu24cis_sshd_default_max_sessions: 4
       ubtu24cis_max_log_file_size: 150
       ubtu24cis_auditd:
         admin_space_left_action: rotate
@@ -47,21 +36,6 @@ cat > /tmp/site.yml <<EOF
   - { role: UBUNTU24-CIS, ignore_errors: yes, tags: ['hardening'] }
   
   tasks: 
-   - name: remove config file from uninstalled package telnet
-     ansible.builtin.package:
-      name: telnet
-      purge: yes
-      state: absent
-   
-   - name: remove config file from uninstalled package rsync
-     ansible.builtin.package:
-      name: rsync
-      purge: yes
-      state: absent
-      
-   - name: fix ClientAliveCountMax
-     command: sed -i -e 's/ClientAliveCountMax 0/ClientAliveCountMax 3/' /etc/ssh/sshd_config
-
    - name: fix core dumps size
      copy:
       dest: "/etc/security/limits.d/00-core-dumps"
