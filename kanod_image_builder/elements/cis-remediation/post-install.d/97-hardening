@@ -48,6 +48,9 @@ EOF
 
 ansible-galaxy install -r /tmp/requirements.yml
 
+# Create openssh privilege separation directory
+mkdir /run/sshd
+
 # The CIS benchmark tests skipped here are:
 # rule_2.3.6: Ensure RPC is not installed
 # rule_3.5.3.2.3: Ensure iptables outbound and established connections are configured
