@@ -115,7 +115,7 @@
 .generate-sbom:
   extends: .default-build
   image: $GENERATE_OS_SBOM_CI_IMAGE
-  stage: generate-sbom
+  stage: scan-image
   script:
     - !reference [ .variables-definition]
     - mkdir -p mountpoint artifacts
@@ -138,6 +138,56 @@
     reports:
       cyclonedx:
         - artifacts/*.cdx
+
+.openscap-scan:
+  extends: .default-build
+  image: $OPENSCAP_CI_IMAGE
+  stage: scan-image
+  script:
+    - !reference [ .variables-definition]
+    - export OSCAP_DEFINITION_FILE="/usr/share/xml/scap/ssg/content/ssg-${SSG_FILE_LABEL}-ds.xml"
+    - flux pull artifact oci://${REPO_IMAGE_SNAPSHOT} --timeout 20m -o .
+    - |
+      if [ -f $DISK_IMAGE_FILENAME.gz ]; then
+        echo "Uncompressing $DISK_IMAGE_FILENAME"
+        gunzip $DISK_IMAGE_FILENAME.gz
+      fi
+    - |
+      for profile in $SSG_PROFILE_LIST; do
+        echo "Scanning $DISK_IMAGE_FILENAME with profile $profile";
+        export REPORT_FILE_NAME=$DISK_IMAGE_NAME.openscap.$profile.html
+        oscap-vm image $DISK_IMAGE_FILENAME xccdf eval --profile $profile --fetch-remote-resources --report $REPORT_FILE_NAME $OSCAP_DEFINITION_FILE >> output.log || true
+      done
+  artifacts:
+    when: always
+    paths:
+      - "*.html"
+      - output.log
+  timeout: 2h
+
+.openscap-scan-opensuse-oval:
+  extends: .default-build
+  image: $OPENSCAP_CI_IMAGE
+  stage: scan-image
+  script:
+    - !reference [ .variables-definition]
+    - curl -O $OVAL_URL
+    - export OSCAP_DEFINITION_FILE=$(basename "$OVAL_URL")
+    - flux pull artifact oci://${REPO_IMAGE_SNAPSHOT} --timeout 20m -o .
+    - |
+      if [ -f $DISK_IMAGE_FILENAME.gz ]; then
+        echo "Uncompressing $DISK_IMAGE_FILENAME"
+        gunzip $DISK_IMAGE_FILENAME.gz
+      fi
+    - echo "Scanning $DISK_IMAGE_FILENAME with $OVAL_URL";
+    - export REPORT_FILE_NAME=$DISK_IMAGE_NAME.openscap.oval.html
+    - oscap-vm image $DISK_IMAGE_FILENAME oval eval --report $REPORT_FILE_NAME $OSCAP_DEFINITION_FILE >> output.log || true
+  artifacts:
+    when: always
+    paths:
+      - "*.html"
+      - output.log
+  timeout: 2h
 
 .promote-image:
   extends: .default-build
@@ -171,3 +221,22 @@
   artifacts:
     paths:
       - ${CI_PIPELINE_ID}-release.md
+
+.publish-scan:
+  extends: .default-build
+  stage: publish-report
+  script:
+    - !reference [ .variables-definition]
+    - echo "<br /> OpenSCAP report:" >> ${CI_PIPELINE_ID}-release.md
+    - |
+      for REPORT_FILE_NAME in *.html; do
+        echo "Uploading $REPORT_FILE_NAME";
+        export FILENAME_SHORT=$(echo $REPORT_FILE_NAME | awk -F '.' '{print $(NF-1)"."$NF}')
+        curl --fail-with-body --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file $REPORT_FILE_NAME "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/openscap/$CI_COMMIT_TAG/$REPORT_FILE_NAME"
+        echo "[$FILENAME_SHORT](${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/openscap/$CI_COMMIT_TAG/$REPORT_FILE_NAME)" >> ${CI_PIPELINE_ID}-release.md
+      done
+  artifacts:
+    paths:
+      - ${CI_PIPELINE_ID}-release.md
+  rules:
+    - if: $CI_COMMIT_TAG
