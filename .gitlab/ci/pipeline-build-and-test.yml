@@ -9,8 +9,9 @@ workflow:
 stages:
   - build
   - boot-image
-  - generate-sbom
+  - scan-image
   - promote-image
+  - publish-report
 
 build-image:
   stage: build
@@ -26,9 +27,19 @@ boot-image:
           - uefi
 
 generate-sbom:
-  stage: generate-sbom
+  stage: scan-image
   extends: .generate-sbom
+
+openscap-scan:
+  stage: scan-image
+  extends: .openscap-scan
+  needs:
+    - generate-sbom
 
 promote:
   stage: promote-image
   extends: .promote-image
+
+upload-report:
+  stage: publish-report
+  extends: .publish-scan
