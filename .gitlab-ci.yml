@@ -158,6 +158,7 @@ gitleaks-custom:
     SSG_FILE_LABEL: ubuntu2204
     # profiles contained in the DS file
     SSG_PROFILE_LIST: "standard cis_level1_server cis_level2_server"
+    OVAL_URL: "https://security-metadata.canonical.com/oval/com.ubuntu.${OS_RELEASE}.cve.oval.xml.bz2"
 
 .opensuse_settings:
   variables:

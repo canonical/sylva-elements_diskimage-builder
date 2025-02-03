@@ -38,7 +38,7 @@ openscap-scan:
 
 openscap-scan-opensuse-oval:
   stage: scan-image
-  extends: .openscap-scan-opensuse-oval
+  extends: .openscap-scan-oval
   needs:
     - generate-sbom
 

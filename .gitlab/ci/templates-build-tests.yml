@@ -165,21 +165,26 @@
       - output.log
   timeout: 2h
 
-.openscap-scan-opensuse-oval:
+.openscap-scan-oval:
   extends: .default-build
   image: $OPENSCAP_CI_IMAGE
   stage: scan-image
   script:
     - !reference [ .variables-definition]
     - curl -O $OVAL_URL
-    - export OSCAP_DEFINITION_FILE=$(basename "$OVAL_URL")
+    - OVAL_FILE_NAME=$(basename "$OVAL_URL")
+    - |
+      if [[ "$OVAL_URL" == *.bz2 ]]; then
+        bunzip2 $OVAL_FILE_NAME
+      fi
+    - export OSCAP_DEFINITION_FILE="${OVAL_FILE_NAME%.bz2}"
     - flux pull artifact oci://${REPO_IMAGE_SNAPSHOT} --timeout 20m -o .
     - |
       if [ -f $DISK_IMAGE_FILENAME.gz ]; then
         echo "Uncompressing $DISK_IMAGE_FILENAME"
         gunzip $DISK_IMAGE_FILENAME.gz
       fi
-    - echo "Scanning $DISK_IMAGE_FILENAME with $OVAL_URL";
+    - echo "Scanning $DISK_IMAGE_FILENAME with $OSCAP_DEFINITION_FILE";
     - export REPORT_FILE_NAME=$DISK_IMAGE_NAME.openscap.oval.html
     - oscap-vm image $DISK_IMAGE_FILENAME oval eval --report $REPORT_FILE_NAME $OSCAP_DEFINITION_FILE >> output.log || true
   artifacts:
