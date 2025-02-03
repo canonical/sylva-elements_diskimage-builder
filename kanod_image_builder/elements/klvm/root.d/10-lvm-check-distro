@@ -12,7 +12,7 @@ if [ 'ubuntu' != $DISTRO_NAME ]; then
     exit 1
 fi
 
-if [[ ! $DIB_RELEASE =~ (xenial|bionic|focal|jammy) ]]; then
-    echo "Only xenial/bionic/focal are officially supported for LVM support. The DIB_RELEASE is set to $DIB_RELEASE"
+if [[ ! $DIB_RELEASE =~ (xenial|bionic|focal|jammy|noble) ]]; then
+    echo "Only xenial/bionic/focal/noble are officially supported for LVM support. The DIB_RELEASE is set to $DIB_RELEASE"
     exit 0
 fi

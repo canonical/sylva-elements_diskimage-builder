@@ -139,7 +139,7 @@ gitleaks-custom:
 .ubuntu_settings:
   variables:
     OS: ubuntu
-    OS_RELEASE: jammy
+    OS_RELEASE: noble
     # Label used to select OpenSCAP SSG file for security scan
     # e.g. /usr/share/xml/scap/ssg/content/ssg-ubuntu2204-ds.xml is used for ubuntu jammy
     SSG_FILE_LABEL: ubuntu2204
