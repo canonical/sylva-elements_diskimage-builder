@@ -20,7 +20,7 @@ variables:
   DIB_DEBUG_TRACE: 1
   KANOD_OPTIONS_BASE: "-b no_kanod_network -b lvm -b growpart"
   # renovate: datasource=docker
-  UBUNTU_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu:v2.1.0
+  UBUNTU_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/ubuntu:v2.1.1
   # renovate: datasource=docker
   SUSE_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/ci-disk-image-builder/suse:v2.1.0
   # renovate: datasource=docker
@@ -139,7 +139,7 @@ gitleaks-custom:
 .ubuntu_settings:
   variables:
     OS: ubuntu
-    OS_RELEASE: jammy
+    OS_RELEASE: noble
     # Label used to select OpenSCAP SSG file for security scan
     # e.g. /usr/share/xml/scap/ssg/content/ssg-ubuntu2204-ds.xml is used for ubuntu jammy
     SSG_FILE_LABEL: ubuntu2204

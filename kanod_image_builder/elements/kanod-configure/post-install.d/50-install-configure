@@ -32,7 +32,7 @@ cd /opt/kanod-configure
 mkdir -p kanod_configure/includes
 cp -a "/tmp/in_target.d/config_includes/." kanod_configure/includes
 cp /tmp/in_target.d/config_templates/*.tmpl kanod_configure/templates
-"${PYTHON}" -m pip install . 
+"${PYTHON}" -m pip install . --break-system-packages
 
 mkdir -p /etc/kanod-configure
 touch /etc/kanod-configure/system.yaml

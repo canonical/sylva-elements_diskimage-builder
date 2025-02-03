@@ -24,16 +24,8 @@ if [ "${DISTRO_NAME}" == 'ubuntu' ]; then
 
   # Update cache
   apt update
-  # Package software-properties-common provides add-apt-repository
-  apt install -y software-properties-common
-  # Add the Ubuntu openstack Antelope repo
-  add-apt-repository cloud-archive:antelope
   # Install cloud-init package
   apt install -y cloud-init
-  # Remove Ubuntu openstack Antelope repo
-  add-apt-repository -r -y cloud-archive:antelope
-  # Remove the tool
-  apt remove --purge -y software-properties-common
 
   mv /etc/cloud/cloud.cfg.d/90_dpkg.cfg /etc/cloud/cloud.cfg.d/90_dpkg.cfg.orig
 
