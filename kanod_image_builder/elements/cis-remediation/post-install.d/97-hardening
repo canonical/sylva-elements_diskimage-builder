@@ -1,21 +1,16 @@
 #!/bin/bash
 
-### Install a newer version of ansible which is not available for Ubuntu Jammy
 apt update
-apt install software-properties-common -y
-apt install gpg-agent -y
-apt install python3-jinja2 -y
-add-apt-repository --yes --update ppa:ansible/ansible
 apt install ansible -y
 export LC_ALL="en_US.UTF-8"
 export LC_CTYPE="en_US.UTF-8"
 
 cat > /tmp/requirements.yml <<EOF
 roles:
-  - name: UBUNTU22-CIS
+  - name: UBUNTU24-CIS
     scm: git
-    src: https://github.com/ansible-lockdown/UBUNTU22-CIS
-    version: "V1.0.0"
+    src: https://github.com/ansible-lockdown/UBUNTU24-CIS
+    version: "1.0.0"
 EOF
 
 cat > /tmp/site.yml <<EOF
@@ -24,56 +19,23 @@ cat > /tmp/site.yml <<EOF
   become: true
   vars:
       is_container: false
-      ubtu22cis_is_router: true 
-      ubtu22cis_time_sync_tool: chrony
-      ubtu22cis_install_network_manager: false
-      ubtu22cis_system_is_log_server: false
-      ubtu22cis_firewall_package: none
-      ubtu22cis_rsyslog_ansible_managed: false
-      ubtu22cis_logrotate_create_settings: "0640 syslog adm"
-      ubtu22cis_nfs_client: true
-      ubtu22cis_sshd:
-        log_level: "INFO"
-        max_auth_tries: 4
-        ciphers: "chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr"
-        macs: "hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256"
-        kex_algorithms: "curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group14-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256"
-        client_alive_interval: 300
-        client_alive_count_max: 0
-        login_grace_time: 60
-        max_sessions: 4
-        allow_users: ""
-        allow_groups: ""
-      ubtu22cis_grub_file: /boot/grub/grub.cfg
-      ubtu22cis_max_log_file_size: 150
-      ubtu22cis_auditd:
+      ubtu24cis_is_router: true 
+      ubtu24cis_time_sync_tool: chrony
+      ubtu24cis_install_network_manager: false
+      ubtu24cis_system_is_log_server: false
+      ubtu24cis_firewall_package: none
+      ubtu24cis_rsyslog_ansible_managed: false
+      ubtu24cis_sshd_default_client_alive_count_max: 0
+      ubtu24cis_sshd_default_max_sessions: 4
+      ubtu24cis_max_log_file_size: 150
+      ubtu24cis_auditd:
         admin_space_left_action: rotate
         max_log_file_action: rotate
 
   roles:
-  - { role: UBUNTU22-CIS, ignore_errors: yes, tags: ['hardening'] }
+  - { role: UBUNTU24-CIS, ignore_errors: yes, tags: ['hardening'] }
   
   tasks: 
-   - name: remove config file from uninstalled package telnet
-     ansible.builtin.package:
-      name: telnet
-      purge: yes
-      state: absent
-   
-   - name: remove config file from uninstalled package rsync
-     ansible.builtin.package:
-      name: rsync
-      purge: yes
-      state: absent
-      
-   - name: fix ClientAliveCountMax
-     command: sed -i -e 's/ClientAliveCountMax 0/ClientAliveCountMax 3/' /etc/ssh/sshd_config
-
-   - name: fix core dumps size
-     copy:
-      dest: "/etc/security/limits.d/00-core-dumps"
-      content: '* hard core 0'
-
    - name: stop auditd
      shell: service auditd stop
 
@@ -81,46 +43,46 @@ EOF
 
 ansible-galaxy install -r /tmp/requirements.yml
 
+# Create openssh privilege separation directory
+mkdir /run/sshd
+
 # The CIS benchmark tests skipped here are:
-# rule_2.3.6: Ensure RPC is not installed
-# rule_3.5.3.2.3: Ensure iptables outbound and established connections are configured
-# rule_4.2.1.5: Ensure iptables outbound and established connections are configured
-# rule_1.6.1.2: Ensure AppArmor is enabled in the bootloader configuration
-# rule_4.1.1.3: Ensure auditing for processes that start prior to auditd is enabled
-# rule_4.1.1.4: Ensure audit_backlog_limit is sufficient
-# rule_5.4.4 : Ensure password hashing algorithm is up to date with the latest standards
-ansible-playbook /tmp/site.yml --skip-tags="rule_2.3.6,rule_3.5.3.2.3,rule_4.2.1.5,rule_1.6.1.2,rule_4.1.1.3,rule_4.1.1.4,rule_5.4.4"
+# rule_4.4.1.3: Ensure iptables outbound and established connections are configured
+# rule_1.3.1.2: Ensure AppArmor is enabled in the bootloader configuration
+# rule_6.2.1.3: Ensure auditing for processes that start prior to auditd is enabled
+# rule_6.2.1.4: Ensure audit_backlog_limit is sufficient
+ansible-playbook /tmp/site.yml --skip-tags="rule_4.4.1.3,rule_1.3.1.2,rule_6.2.1.3,rule_6.2.1.4"
 
 # CIS 1.1.1.1
 echo blacklist cramfs >> /etc/modprobe.d/cramfs.conf
 
-# CIS 1.1.1.2
+# CIS 1.1.1.7
 echo blacklist squashfs >> /etc/modprobe.d/squashfs.conf
 
-# CIS 1.1.1.3
+# CIS 1.1.1.8
 echo blacklist udf >> /etc/modprobe.d/udf.conf
 
-# CIS 1.1.1.10
+# CIS 1.1.1.9
 echo blacklist usb-storage >> /etc/modprobe.d/usb_storage.conf
 
 sed -i "s/^UMASK.*/UMASK 027/g" /etc/login.defs
 sed -i "/umask/d" /etc/login.defs
 echo "session optional  pam_mkhomedir.so  umask=0027" |sudo tee -a  /etc/pam.d/common-session
 
-# CIS 4.1.3.2
+# CIS 6.2.3.2
 cat > /etc/audit/rules.d/55-setgid.rules << EOF
 -a always,exit -F arch=b64 -S execve -C gid!=egid -F egid=0 -k setgid
 -a always,exit -F arch=b32 -S execve -C gid!=egid -F egid=0 -k setgid
 EOF
 chmod 640 /etc/audit/rules.d/55-setgid.rules
 
-# CIS 4.1.3.4
+# CIS 6.2.3.4
 cat > /etc/audit/rules.d/56-audit-time.rules << EOF
 -a always,exit -F arch=b32 -S stime -F key=audit_time_rules
 EOF
 chmod 640 /etc/audit/rules.d/56-audit-time.rules
 
-# CIS 4.1.3.19
+# CIS 6.2.3.19
 cat > /etc/audit/rules.d/57-modules.rules << EOF
 -w /sbin/insmod -p x -k modules
 -w /sbin/modprobe -p x -k modules
@@ -128,18 +90,15 @@ cat > /etc/audit/rules.d/57-modules.rules << EOF
 EOF
 chmod 640 /etc/audit/rules.d/57-modules.rules
 
-# CIS 4.1.3.12
+# CIS 6.2.3.12
 cat > /etc/audit/rules.d/58-faillock.rules << EOF
 -w /var/run/faillock -p wa -k logins
 EOF
 chmod 640 /etc/audit/rules.d/58-faillock.rules
 
-# CIS 5.4.4
+# CIS 5.3.3..4
 sed -i 's/^password.*pam_unix.so.*$/password        [success=1 default=ignore]      pam_unix.so obscure use_authtok try_first_pass remember=5/' /etc/pam.d/common-password
 sed -i 's/ENCRYPT_METHOD .*/ENCRYPT_METHOD yescrypt/' /etc/login.defs
-
-ufw disable
-apt remove ufw
 
 sed -i 's/rp_filter=2/rp_filter=1/g' /etc/sysctl.conf
 sysctl --system

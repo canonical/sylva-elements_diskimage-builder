@@ -29,7 +29,6 @@ AllowGroups sudo wheel
 AllowTcpForwarding no
 Banner /etc/issue.net
 ChallengeResponseAuthentication no
-Ciphers
 ClientAliveCountMax 3
 ClientAliveInterval 300
 DebianBanner no
@@ -45,12 +44,9 @@ IgnoreUserKnownHosts yes
 KerberosAuthentication no
 KerberosOrLocalPasswd no
 KerberosTicketCleanup yes
-KexAlgorithms
 ListenAddress 0.0.0.0
 LoginGraceTime 30s
 LogLevel VERBOSE
-MACs
-MaxAuthTries 2
 MaxSessions 10
 MaxStartups 10:30:60
 PasswordAuthentication yes
@@ -66,6 +62,5 @@ PubkeyAuthentication yes
 StrictModes yes
 SyslogFacility AUTH
 TCPKeepAlive no
-UseLogin no
 X11Forwarding no
 X11UseLocalhost yes
