@@ -36,6 +36,12 @@ openscap-scan:
   needs:
     - generate-sbom
 
+openscap-scan-oval:
+  stage: scan-image
+  extends: .openscap-scan-oval
+  needs:
+    - generate-sbom
+
 promote:
   stage: promote-image
   extends: .promote-image
