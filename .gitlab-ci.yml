@@ -159,9 +159,9 @@ gitleaks-custom:
     OS: opensuse
     OS_RELEASE: "15.6"
     # Label used to select OpenSCAP SSG file for security scan
-    # e.g. /usr/share/xml/scap/ssg/content/ssg-opensuse-ds.xml is used for opensuse
-    SSG_FILE_LABEL: opensuse
-    SSG_PROFILE_LIST: "standard"
+    # The SSG dictionary is patched to use /usr/share/xml/scap/ssg/content/ssg-sle15-ds.xml on opensuse
+    SSG_FILE_LABEL: sle15
+    SSG_PROFILE_LIST: "cis"
     OVAL_URL: "https://ftp.suse.com/pub/projects/security/oval/opensuse.leap.${OS_RELEASE}.xml"
 
 .default-trigger:
