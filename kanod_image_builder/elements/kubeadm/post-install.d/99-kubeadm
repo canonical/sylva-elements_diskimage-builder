@@ -35,6 +35,7 @@ K8S_XY_VERSION=${K8S_VERSION%.*}  # remove the .z in x.y.z
 if [[ ${DISTRO_NAME} =~ (ubuntu|debian) ]]; then
 
 	curl -fsSL https://pkgs.k8s.io/core:/stable:/v${K8S_XY_VERSION}/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+	mkdir -p /etc/apt/sources.list.d
 	echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v${K8S_XY_VERSION}/deb/ /" | tee /etc/apt/sources.list.d/kubernetes.list
 
 	apt update
