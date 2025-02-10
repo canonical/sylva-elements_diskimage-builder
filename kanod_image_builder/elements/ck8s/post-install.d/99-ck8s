@@ -38,7 +38,9 @@ K8S_SNAP_REVISION="${KNOWN_K8S_SNAPD_VERSIONS["${K8S_VERSION}"]}"
 
 # Support only Ubuntu style distro
 if [[ ${DISTRO_NAME} =~ (ubuntu) ]]; then
-
-	snap install k8s --revision "${K8S_SNAP_REVISION}" --classic
+        # snap installs fails on a chrooted env like the one created with disk image builder with
+	# error: cannot communicate with server: Post "http://localhost/v2/snaps/k8s": dial unix /run/snapd.socket: connect: no such file or directory
+	# snap install k8s --revision "${K8S_SNAP_REVISION}" --classic
+	echo "NOOP"
 fi
 
