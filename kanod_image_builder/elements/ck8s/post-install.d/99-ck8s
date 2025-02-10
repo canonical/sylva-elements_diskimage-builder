@@ -26,12 +26,7 @@ net.bridge.bridge-nf-call-iptables = 1
 net.ipv4.ip_forward = 1
 EOF
 
-# this is based on https://v1-27.docs.kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm
-
-K8S_VERSION=${K8S_VERSION%-*}  # remove the -... suffix
-K8S_XY_VERSION=${K8S_VERSION%.*}  # remove the .z in x.y.z
-
-# Support only Debian style distro
+# Support only Ubuntu style distro
 if [[ ${DISTRO_NAME} =~ (ubuntu) ]]; then
 
 	echo "NOOP, as Canonical Kubernetes is installed via snapd by CK8s"
