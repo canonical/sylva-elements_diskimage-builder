@@ -301,6 +301,8 @@ recipes:
   - ck8s
   elements:
   - ck8s
+  packages:
+  - snap
 - when:
   - '!lvm'
   elements:
