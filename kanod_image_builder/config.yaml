@@ -302,7 +302,7 @@ recipes:
   elements:
   - ck8s
   packages:
-  - snap
+  - snapd
 - when:
   - '!lvm'
   elements:
