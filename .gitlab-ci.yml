@@ -129,7 +129,7 @@ gitleaks-custom:
   parallel:
     matrix:
       - K8S_VERSION:
-          - 1.31-classical/stable
+          - 1.31-classical
 
 .rke2_settings:
   variables:
@@ -212,6 +212,15 @@ build-ubuntu-plain-kubeadm:
   extends:
     - .default-trigger
     - .kubeadm_settings
+    - .ubuntu_settings
+  variables:
+    FLAVOR: plain
+    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S"
+
+build-ubuntu-plain-ck8s:
+  extends:
+    - .default-trigger
+    - .ck8s_settings
     - .ubuntu_settings
   variables:
     FLAVOR: plain
