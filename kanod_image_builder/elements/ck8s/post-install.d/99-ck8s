@@ -57,7 +57,7 @@ if [[ ${DISTRO_NAME} =~ (ubuntu) ]]; then
 	mv "k8s_${K8S_SNAP_REVISION}.snap" "${SNAP_BIN_DIR}/k8s.snap"
 	mv "k8s_${K8S_SNAP_REVISION}.assert" "${SNAP_BIN_DIR}/k8s.assert"
 
-	snap download core20 --revision "${K8S_SNAP_REVISION}"
+	snap download core20 --revision "${CORE20_SNAP_REVISION}"
 	mv "core20_${CORE20_SNAP_REVISION}.snap" "${SNAP_BIN_DIR}/core20.snap"
 	mv "core20_${CORE20_SNAP_REVISION}.assert" "${SNAP_BIN_DIR}/core20.assert"
 fi
