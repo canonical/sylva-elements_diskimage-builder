@@ -117,7 +117,7 @@ env:
   - 'target=ubuntu'
   - 'release=bionic'
 - name: DIB_PYTHON3
-  value: python3.11
+  value: python3.12
   when:
   - 'target=opensuse'
 - name: YUM
@@ -242,10 +242,10 @@ recipes:
 - when:
   - target=opensuse
   packages:
-  - python311-base
-  - python311-devel
-  - python311-pip
-  - python311-setuptools
+  - python312-base
+  - python312-devel
+  - python312-pip
+  - python312-setuptools
   - virtme
   - parted
   - kbd
