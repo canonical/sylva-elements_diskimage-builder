@@ -29,7 +29,7 @@ if [ "${DISTRO_NAME}" == 'ubuntu' ]; then
   # Add the Ubuntu openstack Antelope repo
   add-apt-repository cloud-archive:antelope
   # Install cloud-init package
-  apt install -y cloud-init
+  apt install -y cloud-init=23.1.2-0ubuntu0~22.04.1
   # Remove Ubuntu openstack Antelope repo
   add-apt-repository -r -y cloud-archive:antelope
   # Remove the tool
