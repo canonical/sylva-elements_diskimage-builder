@@ -39,7 +39,9 @@ if [ "${DISTRO_NAME}" == 'ubuntu' ]; then
 
   # Replace the default Ubuntu user
   sed -i "s/name: ubuntu/name: ${DIB_CLOUD_INIT_DEFAULT_USERNAME}/" /etc/cloud/cloud.cfg
-  sed -i "s/gecos: Ubuntu/gecos: ${DIB_CLOUD_INIT_DEFAULT_USERNAME}/" /etc/cloud/cloud.cfg
+  sed -i "s/gecos: Ubuntu/gecos: ${DIB_CLOUD_INIT_SYLVA_GROUP}/" /etc/cloud/cloud.cfg
+  sed -i "/system_info/i groups:\n  - ${DIB_CLOUD_INIT_SYLVA_GROUP}\n" /etc/cloud/cloud.cfg
+  sed -i "s/\(groups: \[.*\)\]/\1, ${DIB_CLOUD_INIT_SYLVA_GROUP}]/" /etc/cloud/cloud.cfg
 fi
 
 if [ "${DISTRO_NAME}" == 'opensuse' ]; then
@@ -52,7 +54,9 @@ if [ "${DISTRO_NAME}" == 'opensuse' ]; then
   sed -i "s/distro: sles/distro: opensuse/" /etc/cloud/cloud.cfg
   # Replace the default suse user
   sed -i "s/name: sles/name: ${DIB_CLOUD_INIT_DEFAULT_USERNAME}/" /etc/cloud/cloud.cfg
-  sed -i "s/gecos: sles Cloud User/gecos: ${DIB_CLOUD_INIT_DEFAULT_USERNAME}/" /etc/cloud/cloud.cfg
+  sed -i "s/gecos: sles Cloud User/gecos: ${DIB_CLOUD_INIT_SYLVA_GROUP}/" /etc/cloud/cloud.cfg
+  sed -i "/system_info/i groups:\n  - ${DIB_CLOUD_INIT_SYLVA_GROUP}\n" /etc/cloud/cloud.cfg
+  sed -i "s/\(groups: \[.*\)\]/\1, ${DIB_CLOUD_INIT_SYLVA_GROUP}]/" /etc/cloud/cloud.cfg
 fi
 
 systemctl enable cloud-config
@@ -65,7 +69,7 @@ datasource_list: [ NoCloud, ConfigDrive, OpenStack, None ]
 EOF
 
 cat >> /etc/ssh/sshd_config <<EOF
-AllowUsers ${DIB_CLOUD_INIT_DEFAULT_USERNAME}
+AllowGroups ${DIB_CLOUD_INIT_SYLVA_GROUP}
 EOF
 
 if [ "${DIB_NO_KANOD_NETWORK:-0}" = 1 ]; then

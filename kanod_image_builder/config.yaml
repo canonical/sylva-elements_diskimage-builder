@@ -75,6 +75,8 @@ env:
   - image_size
 - name: DIB_CLOUD_INIT_DEFAULT_USERNAME
   value: 'node-admin'
+- name: DIB_CLOUD_INIT_SYLVA_GROUP
+  value: 'sylva-ops'
 - name: DIB_CLOUD_INIT_ETC_HOSTS
   value: 'true'
 - name: DIB_CLOUD_INIT_DATASOURCES
