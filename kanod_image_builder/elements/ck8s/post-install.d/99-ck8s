@@ -34,13 +34,23 @@ SNAP_BIN_DIR="/capi/snap-binaries"
 declare -A KNOWN_K8S_SNAPD_VERSIONS
 declare -A KNOWN_CORE20_SNAPD_VERSIONS
 
-KNOWN_K8S_SNAPD_VERSIONS["1.31.5"]="2135"
+K8S_VERSION_1_31_5="1.31.5"
 
-# K8S snap depends on core20 snap
-KNOWN_CORE20_SNAPD_VERSIONS["1.31.5"]="2434"
+KNOWN_K8S_SNAPD_VERSIONS[$K8S_VERSION_1_31_5]="2135"
+KNOWN_CORE20_SNAPD_VERSIONS[$K8S_VERSION_1_31_5]="2434"
 
 K8S_SNAP_REVISION="${KNOWN_K8S_SNAPD_VERSIONS["${K8S_VERSION}"]}"
 CORE20_SNAP_REVISION="${KNOWN_CORE20_SNAPD_VERSIONS["${K8S_VERSION}"]}"
+
+if [ -z "${K8S_SNAP_REVISION}" ]; then
+	echo "K8S_SNAP_REVISION for K8S_VERSION ${K8S_VERSION} has not been configured yet."
+	exit 1
+fi
+
+if [ -z "${CORE20_SNAP_REVISION}" ]; then
+	echo "CORE20_SNAP_REVISION for K8S_VERSION ${K8S_VERSION} has not been configured yet."
+	exit 1
+fi
 
 # Support only Ubuntu style distro
 if [[ ${DISTRO_NAME} =~ (ubuntu) ]]; then
@@ -60,5 +70,8 @@ if [[ ${DISTRO_NAME} =~ (ubuntu) ]]; then
 	snap download core20 --revision "${CORE20_SNAP_REVISION}"
 	mv "core20_${CORE20_SNAP_REVISION}.snap" "${SNAP_BIN_DIR}/core20.snap"
 	mv "core20_${CORE20_SNAP_REVISION}.assert" "${SNAP_BIN_DIR}/core20.assert"
+else
+	echo "Distro ${DISTRO_NAME} is not supported."
+	exit 1
 fi
 
