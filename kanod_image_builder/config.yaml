@@ -42,6 +42,8 @@ options:
   kind: flag
 - name: kubeadm
   kind: flag
+- name: ck8s
+  kind: flag
 
 env:
 - name: DIB_TPM2_TOOLS
@@ -298,6 +300,12 @@ recipes:
   - kubeadm
   elements:
   - kubeadm
+- when:
+  - ck8s
+  elements:
+  - ck8s
+  packages:
+  - snapd
 - when:
   - '!lvm'
   elements:
