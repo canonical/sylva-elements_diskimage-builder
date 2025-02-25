@@ -272,6 +272,7 @@ recipes:
   - vim
   - nfs-client
   - kernel-firmware-network
+  - rsyslog
   elements:
   - opensuse{{ "" if image is defined else "-minimal" }}
   - opensuse-fix
