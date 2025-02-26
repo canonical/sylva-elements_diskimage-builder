@@ -168,7 +168,7 @@ gitleaks-custom:
     # e.g. /usr/share/xml/scap/ssg/content/ssg-opensuse-ds.xml is used for opensuse
     SSG_FILE_LABEL: opensuse
     SSG_PROFILE_LIST: "standard"
-    OVAL_URL: "https://ftp.suse.com/pub/projects/security/oval/opensuse.leap.15.6.xml"
+    OVAL_URL: "https://ftp.suse.com/pub/projects/security/oval/opensuse.leap.${OS_RELEASE}.xml"
 
 .default-trigger:
   trigger:
