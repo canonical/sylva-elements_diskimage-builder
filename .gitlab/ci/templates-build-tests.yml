@@ -7,7 +7,7 @@
 
 .variables-definition:
     - export K8S_VERSION_SHORT=${K8S_VERSION%+*}
-    - export DISK_IMAGE_NAME=${DISK_IMAGE_NAME//./-}-${K8S_VERSION_SHORT//./-}
+    - export DISK_IMAGE_NAME=${DISK_IMAGE_NAME//./-}-${K8S_VERSION_SHORT//./-}-$OCI_TAG_FORMAT
     - export DISK_IMAGE_FILENAME=$DISK_IMAGE_NAME.$IMAGE_FORMAT
     - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
     - export REPO_IMAGE_SNAPSHOT=$REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
@@ -52,7 +52,7 @@
           --source="${CI_REPOSITORY_URL/gitlab-ci-token*@/}"
           --revision="$(git tag --points-at HEAD)@sha1:$(git rev-parse HEAD)"
           --creds $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD
-          --annotations sylvaproject.org/diskimage/filename=$DISK_IMAGE_FILENAME
+          --annotations sylvaproject.org/diskimage/filename=$DISK_IMAGE_FILENAME-$OCI_TAG_FORMAT
           --annotations sylvaproject.org/diskimage/os=$OS
           --annotations sylvaproject.org/diskimage/os-release=$OS_RELEASE
           --annotations sylvaproject.org/diskimage/flavor=$FLAVOR
