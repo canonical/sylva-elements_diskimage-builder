@@ -56,7 +56,7 @@ include:
     ref: 2.5.2
     file: "templates/gitlab-ci-gitleaks.yml"
   - project: 'sylva-projects/sylva-elements/ci-tooling/ci-templates'
-    ref: 1.0.37
+    ref: 1.0.38
     file:
       - 'templates/release-notes.yml'
 
