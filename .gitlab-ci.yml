@@ -122,6 +122,15 @@ gitleaks-custom:
             # renovate: datasource=github-releases depName=kubernetes/kubernetes VersionTemplate=v
           - 1.28.15
 
+.ck8s_settings:
+  variables:
+    K8S_FLAVOR: ck8s
+    KANOD_OPTIONS_K8S: "-b ck8s"
+  parallel:
+    matrix:
+      - K8S_VERSION:
+          - 1.31.5
+
 .rke2_settings:
   variables:
     K8S_FLAVOR: rke2
@@ -203,6 +212,15 @@ build-ubuntu-plain-kubeadm:
   extends:
     - .default-trigger
     - .kubeadm_settings
+    - .ubuntu_settings
+  variables:
+    FLAVOR: plain
+    KANOD_OPTIONS: "$KANOD_OPTIONS_BASE $KANOD_OPTIONS_K8S"
+
+build-ubuntu-plain-ck8s:
+  extends:
+    - .default-trigger
+    - .ck8s_settings
     - .ubuntu_settings
   variables:
     FLAVOR: plain
