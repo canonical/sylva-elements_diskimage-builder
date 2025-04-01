@@ -12,6 +12,9 @@
     - export REPO_IMAGE=$REPO_URL/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
     - export REPO_IMAGE_SNAPSHOT=$REPO_URL/snapshots/$DISK_IMAGE_NAME:$OCI_TAG_FORMAT
 
+.patch-ssg:
+    - echo "No patching of the SSG"
+
 .build-image:
   extends: .default-build
   stage: build
@@ -86,11 +89,6 @@
 
 .build-image-suse:
   extends: .build-image
-  image: $SUSE_CI_IMAGE
-  before_script:
-    - python3 -m pip install --user . --ignore-requires-python
-    - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
-    - zypper install -y xfsprogs
 
 .boot-image:
   extends: .default-build
@@ -145,6 +143,7 @@
   stage: scan-image
   script:
     - !reference [ .variables-definition]
+    - !reference [ .patch-ssg ]
     - export OSCAP_DEFINITION_FILE="/usr/share/xml/scap/ssg/content/ssg-${SSG_FILE_LABEL}-ds.xml"
     - flux pull artifact oci://${REPO_IMAGE_SNAPSHOT} --timeout 20m -o .
     - |
