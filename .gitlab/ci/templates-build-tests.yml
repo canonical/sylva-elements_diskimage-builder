@@ -3,7 +3,7 @@
 .default-build:
   tags:
     - saas-linux-medium-amd64
-  image: $UBUNTU_CI_IMAGE
+  image: $BUILD_IMAGE
 
 .variables-definition:
     - export K8S_VERSION_SHORT=${K8S_VERSION%+*}
@@ -16,13 +16,15 @@
   extends: .default-build
   stage: build
   before_script:
-    - python3 -m pip install --user . --break-system-packages
-    - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
+    - apt update && apt install -y python3-virtualenv
+    - python3 -m virtualenv venv && source venv/bin/activate
+    - pip install -r build-requirements.txt
   script:
     - !reference [ .variables-definition]
     - export HARDENED=$([[ "$FLAVOR" == "hardened" ]] && echo "true" || echo "false")
     - mkdir -p artifacts
-    - kanod-image-builder -s target=$OS -s release=$OS_RELEASE $KANOD_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
+    - echo "Running sylva-image-builder --config ./build-config.yaml -s target=$OS -s release=$OS_RELEASE $IMAGEBUILDER_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME"
+    - sylva-image-builder --config ./build-config.yaml -s target=$OS -s release=$OS_RELEASE $IMAGEBUILDER_OPTIONS --format $IMAGE_FORMAT -o $DISK_IMAGE_FILENAME
     - export sha256=$(sha256sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
     - export md5=$(md5sum $DISK_IMAGE_FILENAME | awk '{ print $1 }')
     - export size=$(ls -ls $DISK_IMAGE_FILENAME |  awk '{ print $6 }')
@@ -88,9 +90,9 @@
   extends: .build-image
   image: $SUSE_CI_IMAGE
   before_script:
-    - python3 -m pip install --user . --ignore-requires-python
-    - export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
-    - zypper install -y xfsprogs
+    - zypper install -y python311-virtualenv xfsprogs
+    - python3.11 -m virtualenv venv && source venv/bin/activate
+    - pip install -r build-requirements.txt
 
 .boot-image:
   extends: .default-build

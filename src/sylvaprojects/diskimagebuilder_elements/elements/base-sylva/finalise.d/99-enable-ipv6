@@ -1,0 +1,24 @@
+#!/bin/bash
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+
+if type grub2-mkconfig >/dev/null; then
+    GRUB_MKCONFIG="grub2-mkconfig"
+else
+    GRUB_MKCONFIG="grub-mkconfig"
+fi
+if [ -d /boot/grub2 ]; then
+    GRUB_CFG=/boot/grub2/grub.cfg
+    GRUBENV=/boot/grub2/grubenv
+else
+    GRUB_CFG=/boot/grub/grub.cfg
+    GRUBENV=/boot/grub/grubenv
+fi
+
+# Enable IPv6
+sed -i 's/ipv6.disable=1//g' /etc/default/grub
+$GRUB_MKCONFIG -o $GRUB_CFG

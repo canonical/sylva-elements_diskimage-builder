@@ -29,23 +29,24 @@ boot-image:
 generate-sbom:
   stage: scan-image
   extends: .generate-sbom
+  needs:
+    - build-image
 
 openscap-scan:
   stage: scan-image
   extends: .openscap-scan
   needs:
-    - generate-sbom
+    - build-image
 
 openscap-scan-opensuse-oval:
   stage: scan-image
   extends: .openscap-scan-oval
   needs:
-    - generate-sbom
+    - build-image
 
 promote:
   stage: promote-image
   extends: .promote-image
-
 
 upload-report:
   stage: publish-report

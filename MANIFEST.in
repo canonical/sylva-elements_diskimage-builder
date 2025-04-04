@@ -1,3 +1,2 @@
-include kanod_image_builder/**/*
-include kanod_image_builder/*
-recursive-include kanod_image_builder/elements *
+recursive-include src/sylvaprojects/diskimagebuilder_elements/elements *
+recursive-include src/sylvaprojects/diskimagebuilder/ *

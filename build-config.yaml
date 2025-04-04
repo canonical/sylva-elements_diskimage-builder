@@ -1,0 +1,62 @@
+modules:
+  - name: sylvaprojects.diskimagebuilder_elements
+
+options:
+- name: target
+  choices:
+  - ubuntu
+  - opensuse
+  kind: var
+- name: k8s_flavor
+  choices:
+    - kubeadm
+    - rke2
+    - ck8s
+  kind: var
+- name: release
+  kind: var
+- name: lvm
+  kind: flag
+- name: cis_remediation
+  kind: flag
+- name: growpart
+  kind: flag
+
+env:
+- name: DIB_RELEASE
+  value: '{{release}}'
+
+recipes:
+- elements:
+  # Standard Diskimage-builder elements
+  - vm
+  - '{{ target }}-minimal'
+  - bootloader
+  - cloud-init
+  - openssh-server
+  - runtime-ssh-host-keys
+  # Sylva elements
+  - base-sylva
+  - gtp5g-sylva
+  - 'base-{{ target }}-sylva'
+  - 'k8s-{{k8s_flavor}}-sylva'
+
+- elements:
+  - cis-remediation-{{ target }}-sylva
+  when:
+  - cis_remediation
+
+- elements:
+  - cloud-init-growpart-sylva
+  when:
+  - growpart
+
+- elements:
+  - block-device-efi
+  when:
+  - '!lvm'
+
+- elements:
+  - block-device-{{k8s_flavor}}-lvm-sylva
+  when:
+  - lvm

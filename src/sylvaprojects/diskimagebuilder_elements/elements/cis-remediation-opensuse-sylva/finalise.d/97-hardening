@@ -1,0 +1,28 @@
+#!/bin/bash
+export LC_ALL="en_US.UTF-8"
+export LC_CTYPE="en_US.UTF-8"
+
+# Generate tailoring file to remove not compatible rules
+autotailor -v sysctl_net_ipv6_conf_all_forwarding_value=1 -v sysctl_net_ipv4_conf_all_forwarding_value=1 -v sysctl_net_ipv4_conf_all_rp_filter_value=2 -v sysctl_net_ipv4_conf_default_rp_filter_value=2 --unselect package_firewalld_installed --unselect service_firewalld_enabled --unselect package_dhcp_client_removed --unselect banner_etc_issue --unselect banner_etc_issue_net --unselect kernel_module_vfat_disabled --unselect package_rpcbind_removed --output tailoring_file.xml --new-profile-id xccdf_org.ssgproject.content_profile_cis_custom /usr/share/xml/scap/ssg/content/ssg-sle15-ds-1.2.xml xccdf_org.ssgproject.content_profile_cis
+
+# Reformat tailoring XML file (bug on OpenSCAP version < 1.39)
+xmllint --format tailoring_file.xml > tailoring_file_correct.xml
+
+# Generate the bash script with all the rules to apply including the customization from the tailoring file
+oscap xccdf generate fix --profile xccdf_org.ssgproject.content_profile_cis_custom --tailoring-file tailoring_file_correct.xml  --output fix.sh /usr/share/xml/scap/ssg/content/ssg-sle15-ds-1.2.xml
+
+# Fix potential issues in the openscap hardening script
+sed -i 's|/usr/sbin/aide|/usr/bin/aide|g' fix.sh
+
+# Execute the bash scripts
+chmod +x fix.sh
+./fix.sh || true
+
+# Cleanup
+# TODO: use https://docs.openstack.org/diskimage-builder/latest/elements/package-installs/README.html
+# instead of installing it manually
+# Example
+# git make:
+#   phase: finalise.d
+zypper -n remove openscap-utils openscap scap-security-guide libopenscap25 libxml2-tools
+rm -rf tailoring_file.xml tailoring_file_correct.xml fix.sh
