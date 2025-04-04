@@ -1,0 +1,4 @@
+# Install bash scripts and Ansible playbook used for CIS remediation
+scap-security-guide:
+openscap-utils:
+libxml2-tools:

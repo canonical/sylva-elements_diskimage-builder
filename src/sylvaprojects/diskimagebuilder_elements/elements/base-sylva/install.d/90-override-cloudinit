@@ -1,0 +1,19 @@
+#!/bin/bash
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+tee /etc/cloud/cloud.cfg.d/99_sylva_overrides.cfg <<EOF
+groups:
+ - ${DIB_CLOUD_INIT_SYLVA_GROUP}:
+   - ${DIB_CLOUD_INIT_DEFAULT_USERNAME}
+
+system_info:
+  distro: ${DISTRO_NAME}
+  default_user:
+    name: ${DIB_CLOUD_INIT_DEFAULT_USERNAME}
+    gecos: ${DIB_CLOUD_INIT_DEFAULT_USERNAME}
+
+EOF

@@ -1,8 +1,0 @@
-python3.8:
-  when:
-  - DIB_RELEASE = bionic
-python38:
-  when:
-  - DIB_RELEASE = 8-stream
-python3-setuptools:
-python3-pip:

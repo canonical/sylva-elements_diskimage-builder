@@ -1,7 +1,0 @@
-#!/bin/bash
-set -eu
-
-if [ "${DIB_NO_MOTD_NEWS:-0}" == 1 ]; then
-    rm /etc/update-motd.d/10-help-text
-    rm /etc/update-motd.d/50-motd-news
-fi
