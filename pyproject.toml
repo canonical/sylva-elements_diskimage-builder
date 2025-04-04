@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm[toml]"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = [
+  "sylvaprojects.diskimagebuilder_elements",
+  "sylvaprojects.diskimagebuilder",
+]
+
+
+[project]
+name = "sylvaprojects.diskimagebuilder"
+description = "diskimage builder core and elements for sylva images"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.8"
+dependencies = [
+  "diskimage-builder",
+  "importlib-resources>=5.0",
+  "Jinja2>=3.0.1",
+  "jsonschema>=3.2.0",
+  "PyYAML>=5.3.1",
+]
+dynamic = [
+  "version",
+]
+
+[project.scripts]
+sylva-image-builder = "sylvaprojects.diskimagebuilder.cli:image_builder"
+
+[tool.isort]
+profile = "black"
+
+[tool.black]
+target-version = ['py38']
+include = '\.py?$'

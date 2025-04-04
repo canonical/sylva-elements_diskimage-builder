@@ -1,0 +1,59 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-1}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+export LC_ALL="en_US.UTF-8"
+export LC_CTYPE="en_US.UTF-8"
+
+# TODO: use https://docs.openstack.org/diskimage-builder/latest/elements/package-installs/README.html
+# instead of installing it manually
+# Example
+# git make:
+#   phase: finalise.d
+
+
+gtp5g_version="v0.9.4"
+target_kernel=$(basename $(readlink -f /boot/vmlinuz)|sed -e 's/vmlinuz-//')
+
+# Install module on Debian/Ubuntu OS
+if [[ ${DISTRO_NAME} =~ (ubuntu|debian) ]]; then
+
+  ## Install required packages to build the system
+  apt update
+  apt install -y git make gcc gcc-12 autoconf linux-headers-generic
+
+  ## Clone, make and install
+  git clone https://github.com/free5gc/gtp5g.git -b $gtp5g_version gtp5g
+  cd gtp5g
+  KVER=$target_kernel ARCH=x86 make
+  # Can't invoke make install in chroot env
+  cp gtp5g.ko /lib/modules/$target_kernel/kernel/drivers/net
+  /sbin/depmod -v -a $target_kernel
+  cd -
+  rm -rf gtp5g
+  apt remove --purge -y git make gcc gcc-12 autoconf linux-headers-generic
+
+fi
+
+# Install module on SuSE OS
+if [[ ${DISTRO_NAME} =~ (opensuse|sle) ]]; then
+
+  # Install required packages
+  zypper install -y git make gcc autoconf kernel-default-devel
+
+  ## Clone, make and install
+  git clone https://github.com/free5gc/gtp5g.git -b $gtp5g_version gtp5g
+  cd gtp5g
+  KDIR=/usr/src/linux-obj/x86_64/default ARCH=x86 make
+  # Can't involke the module install, chroot env
+  mkdir -p /lib/modules/$target_kernel/extra/
+  cp gtp5g.ko /lib/modules/$target_kernel/extra/
+  /sbin/depmod -v -a $target_kernel
+  cd -
+  rm -rf gtp5g
+  zypper remove -y git make gcc autoconf kernel-default-devel
+fi

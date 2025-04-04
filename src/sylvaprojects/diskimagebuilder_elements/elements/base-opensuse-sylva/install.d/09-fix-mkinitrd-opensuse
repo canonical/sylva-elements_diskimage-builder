@@ -1,0 +1,14 @@
+#!/bin/bash
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+if [ "$DISTRO_NAME" == "opensuse" ]; then
+    if [ ! -f /usr/bin/mkinitrd ]; then
+        echo "Replace mkinitrd by dracut on opensuse"
+        echo -e '#!/bin/bash\ndracut --regenerate-all' > /usr/bin/mkinitrd
+        chmod +x /usr/bin/mkinitrd
+    fi
+fi

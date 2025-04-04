@@ -22,8 +22,8 @@ Then generate the cosign key pair with the Gitlab provider:
 
 ```shell
 $ cosign generate-key-pair gitlab://43786055
-Enter password for private key: 
-Enter password for private key again: 
+Enter password for private key:
+Enter password for private key again:
 Password written to "COSIGN_PASSWORD" variable
 Private key written to "COSIGN_PRIVATE_KEY" variable
 Public key written to "COSIGN_PUBLIC_KEY" variable
@@ -111,7 +111,7 @@ $ cosign verify --key env://COSIGN_PUBLIC_KEY registry.gitlab.com/sylva-projects
 When using the Gitlab provider, set the environment varioable `GITLAB_TOKEN` with read access on Gitlab CI/CD variable:
 
 ```shell
-$ export GITLAB_TOKEN=glpat-..... 
+$ export GITLAB_TOKEN=glpat-.....
 
 $ cosign verify --key gitlab://43786055 registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-hardened-rke2-1-28-9:0.2.7
 
@@ -122,7 +122,7 @@ The following checks were performed on each of these signatures:
   - The signatures were verified against the specified public key
 
 [{"critical":{"identity":{"docker-reference":"registry.gitlab.com/sylva-projects/sylva-elements/diskimage-builder/ubuntu-jammy-hardened-rke2-1-28-9"},"image":{"docker-manifest-digest":"sha256:26c25b45429d63539ff975f9e9914acb57f1f11f40dfc167963a555534fed504"},"type":"cosign container image signature"},"optional":{"Bundle":{"SignedEntryTimestamp":"MEUCIQDG8pgp0VTJUrfnL+Wz9nPqW6DRgHIHPNYalsBcgC32PAIgSJi7b8vvQDMmb8mTsUqjpSTpn3hs2W+axgPnGQAl4UA=","Payload":{"body":"eyJhcGlWZXJzaW9uIjoiMC4wLjEiLCJraW5kIjoiaGFzaGVkcmVrb3JkIiwic3BlYyI6eyJkYXRhIjp7Imhhc2giOnsiYWxnb3JpdGhtIjoic2hhMjU2IiwidmFsdWUiOiI2YTY2OGJhNzE4YmNkY2NhOWRhMTZmOGRmMGRjMThiMGIzZGEyNzIwMzM2MDdjODgzOWUzMzU5ZTJjOTVjNzZiIn19LCJzaWduYXR1cmUiOnsiY29udGVudCI6Ik1FVUNJUURSZDh5dmZYWDFXT2dSK0ErSU5abTFDeGZQbFIxaFhiWEl2NHA3MzVMRnRRSWdUbFBXejVlZ2ZnQlV4NHArNjlqTE95UTZIVzVSM09VRUFDanRpODlGNVk0PSIsInB1YmxpY0tleSI6eyJjb250ZW50IjoiTFMwdExTMUNSVWRKVGlCUVZVSk1TVU1nUzBWWkxTMHRMUzBLVFVacmQwVjNXVWhMYjFwSmVtb3dRMEZSV1VsTGIxcEplbW93UkVGUlkwUlJaMEZGWTNWMVRITjZkM2t3ZFRkNU16azBTMWsyUjFjeFFtZHFabUZWTmdwaFN6ZGxPVFZOVml0cGExcHVVbVpTTlVWSWRIRkZhekYwVTJOT2FFMXhVVXBOY0hWR2N6TlJTREZVVmtKeU5sUkpWMVpNZURWalZYUm5QVDBLTFMwdExTMUZUa1FnVUZWQ1RFbERJRXRGV1MwdExTMHRDZz09In19fX0=","integratedTime":1715701994,"logIndex":93773388,"logID":"c0d23d6ad406973f9559f3ba2d1ca01f84147d8ffc5b8445c224f98b9591801d"}}}}]
-``` 
+```
 
 
 > **_NOTE_**: use the option `--insecure-ignore-tlog=true` in air-gap environment.
@@ -166,4 +166,4 @@ The following checks were performed on each of these signatures:
 ]
 ```shell
 
-The payload is actually a [Hashed Rekord](https://github.com/sigstore/rekor/blob/main/types.md#hashed-rekord) 
+The payload is actually a [Hashed Rekord](https://github.com/sigstore/rekor/blob/main/types.md#hashed-rekord)

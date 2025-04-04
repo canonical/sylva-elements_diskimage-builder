@@ -1,0 +1,13 @@
+{
+  "family": {
+    "redhat": {
+      "growpart_package": "cloud-utils-growpart"
+    },
+    "debian": {
+      "growpart_package": "cloud-guest-utils"
+    },
+    "suse": {
+      "growpart_package": "growpart"
+    }
+  }
+}

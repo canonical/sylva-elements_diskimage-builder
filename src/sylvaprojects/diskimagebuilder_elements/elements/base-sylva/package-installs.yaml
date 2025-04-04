@@ -1,0 +1,9 @@
+vim:
+nfs-client:
+cryptsetup:
+chrony:
+parted:
+kbd:
+iptables:
+jq:
+tuned:
