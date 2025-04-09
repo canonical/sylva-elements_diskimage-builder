@@ -1,0 +1,22 @@
+#!/bin/sh
+
+growpart $(pvs --reportformat json | jq -rc '.report[].pv[] | select(.vg_name | contains("vg")) | .pv_name' | sed -E 's|p?([0-9]+)$| \1|')
+pvresize $(pvs --reportformat json | jq -rc '.report[].pv[] | select(.vg_name | contains("vg")) | .pv_name')
+lvextend /dev/vg/lv_var -l 5%VG
+lvextend /dev/vg/lv_home -l 5%VG
+lvextend /dev/vg/lv_tmp -l 5%VG
+lvextend /dev/vg/lv_vartmp -l 5%VG
+lvextend /dev/vg/lv_varlog -l 5%VG
+lvextend /dev/vg/lv_varlogaudit -l 5%VG
+lvextend /dev/vg/lv_etcd -l 10%VG
+lvextend /dev/vg/lv_containerd -l 30%VG
+lvextend /dev/vg/lv_kubelet -l 20%VG
+resize2fs /dev/vg/lv_var
+resize2fs /dev/vg/lv_home
+resize2fs /dev/vg/lv_tmp
+resize2fs /dev/vg/lv_vartmp
+resize2fs /dev/vg/lv_varlog
+resize2fs /dev/vg/lv_varlogaudit
+xfs_growfs /dev/vg/lv_etcd
+resize2fs /dev/vg/lv_containerd
+resize2fs /dev/vg/lv_kubelet

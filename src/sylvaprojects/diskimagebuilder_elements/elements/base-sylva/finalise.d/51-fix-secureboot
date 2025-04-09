@@ -1,0 +1,41 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-1}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+if type grub2-mkconfig >/dev/null; then
+    GRUB_MKCONFIG="grub2-mkconfig"
+else
+    GRUB_MKCONFIG="grub-mkconfig"
+fi
+if [ -d /boot/grub2 ]; then
+    GRUB_CFG=/boot/grub2/grub.cfg
+    GRUBENV=/boot/grub2/grubenv
+else
+    GRUB_CFG=/boot/grub/grub.cfg
+    GRUBENV=/boot/grub/grubenv
+fi
+
+# Remove GRUB_TERMINAL serial introduced by dib>bootloader>50-bootloader
+# to prevent error message during the boot indicating serial module
+# cannot be loaded.
+sed -i "/GRUB_TERMINAL/s/serial //g" /etc/default/grub
+$GRUB_MKCONFIG -o $GRUB_CFG
+
+
+# Support only Debian style distro
+if [[ ${DISTRO_NAME} =~ (ubuntu|debian) ]]; then
+  #TODO: make DIB install the packages
+  apt install -y shim-signed grub-efi-amd64-signed
+  update-grub
+fi
+
+# Support OpenSuSE and SLE distro
+if [[ ${DISTRO_NAME} =~ (opensuse|sle) ]]; then
+  #TODO: make DIB install the packages
+  zypper install -y shim
+  shim-install --config-file=$GRUB_CFG --removable
+fi

@@ -7,13 +7,13 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": "kanod_image_builder/elements/cis-remediation/post-install.d/97-hardening",
+      "fileMatch": "src/syvlva-projects/diskimagebuilder-elements/cis-remediation-ubuntu-sylva/post-install.d/97-hardening",
       "matchStrings": ["https:\/\/github\\.com\/(?<depName>.*?)\\n\\s+version: \"(?<currentValue>.*)\""],
       "datasourceTemplate": "github-tags"
     },
     {
       "customType": "regex",
-      "fileMatch": "kanod_image_builder/elements/gtp5g/finalise.d/90-install",
+      "fileMatch": "src/syvlva-projects/diskimagebuilder-elements/elements/gtp5g/finalise.d/90-install",
       "depNameTemplate": "free5gc/gtp5g",
       "matchStrings": ["\\s+gtp5g_version=\"?(?<currentValue>v?\\d+.\\d+.\\d+)\"?"],
       "datasourceTemplate": "github-tags"

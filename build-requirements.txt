@@ -1,0 +1,5 @@
+# Pin diskimage-builder version
+diskimage-builder == 3.36.0
+
+# Local elements
+.

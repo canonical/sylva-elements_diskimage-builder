@@ -1,0 +1,16 @@
+wicked:
+kernel-firmware-network:
+gcc:
+apparmor-utils:
+wicked-service:
+bind-utils:
+virtme:
+conntrackd:
+conntrack-tools:
+iproute2:
+gptfdisk:
+patch:
+curl:
+dracut:
+bash-completion:
+rsyslog:

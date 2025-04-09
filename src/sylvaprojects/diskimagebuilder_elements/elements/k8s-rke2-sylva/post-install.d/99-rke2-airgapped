@@ -1,0 +1,23 @@
+#!/bin/bash
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+export K8S_VERSION_WEB=${K8S_VERSION/+/%2B}
+
+# as described here: https://docs.rke2.io/install/airgap#rke2-installsh-script-install
+
+mkdir /opt/rke2-artifacts && cd /opt/rke2-artifacts
+curl -OLsS "https://github.com/rancher/rke2/releases/download/v${K8S_VERSION_WEB}/rke2-images.linux-amd64.tar.zst"
+curl -OLsS "https://github.com/rancher/rke2/releases/download/v${K8S_VERSION_WEB}/rke2.linux-amd64.tar.gz"
+curl -OLsS "https://github.com/rancher/rke2/releases/download/v${K8S_VERSION_WEB}/sha256sum-amd64.txt"
+curl -sSfL https://get.rke2.io --output install.sh
+
+ls -lh .
+if [[ ! -s sha256sum-amd64.txt ]]; then
+  echo "RKE2 checksum file is empty!"
+  exit 1
+fi
+sha256sum -c sha256sum-amd64.txt --ignore-missing --strict

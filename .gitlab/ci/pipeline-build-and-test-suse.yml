@@ -29,24 +29,30 @@ boot-image:
 generate-sbom:
   stage: scan-image
   extends: .generate-sbom
+  needs:
+    - build-image
 
 openscap-scan:
   stage: scan-image
   extends: .openscap-scan
   needs:
-    - generate-sbom
+    - build-image
 
 openscap-scan-opensuse-oval:
   stage: scan-image
   extends: .openscap-scan-oval
   needs:
-    - generate-sbom
+    - build-image
 
 promote:
   stage: promote-image
   extends: .promote-image
 
-
 upload-report:
   stage: publish-report
   extends: .publish-scan
+
+# Patch to make openscap make the same checks on opensuse as on SLE15
+.patch-ssg:
+  - echo "Patching the SSG to make the same checks on opensuse as on SLE15"
+  - sed -i 's/^\(.*cpe-dict:check.*\)oval:ssg-installed_OS_is_sle15:def:1/\1oval:ssg-installed_OS_is_opensuse_leap15:def:1/' /usr/share/xml/scap/ssg/content/ssg-sle15-ds.xml

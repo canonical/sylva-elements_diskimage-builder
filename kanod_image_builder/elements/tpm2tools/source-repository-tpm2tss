@@ -1,1 +1,0 @@
-tpm2tss tar /opt/ https://github.com/tpm2-software/tpm2-tss/releases/download/${DIB_TPM2_TSS}/tpm2-tss-${DIB_TPM2_TSS}.tar.gz .
