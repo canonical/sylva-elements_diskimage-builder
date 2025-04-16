@@ -153,6 +153,7 @@ recipes:
   - build-info
   - fix-secureboot
   - gtp5g
+  - disks-udev-rules
 - when:
   - tpm
   elements:

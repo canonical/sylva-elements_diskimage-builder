@@ -1,0 +1,1 @@
+ENV{ID_SERIAL_SHORT}=="?*", SYMLINK+="disk/by-sn/$env{ID_SERIAL_SHORT}$env{.PART_SUFFIX}"
