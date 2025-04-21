@@ -9,7 +9,7 @@ set -o pipefail
 export LC_ALL="en_US.UTF-8"
 export LC_CTYPE="en_US.UTF-8"
 
-gtp5g_version="v0.9.4"
+gtp5g_version="v0.9.14"
 target_kernel=$(basename $(readlink -f /boot/vmlinuz)|sed -e 's/vmlinuz-//')
 
 # Install module on Debian/Ubuntu OS
