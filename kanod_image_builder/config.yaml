@@ -184,6 +184,7 @@ recipes:
   - ubuntu{{ "" if image is defined else "-minimal" }}
   - ubuntu-fix
   - klvm
+  - grub-password
 - when:
   - debug
   elements:
