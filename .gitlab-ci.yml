@@ -116,9 +116,9 @@ gitleaks-custom:
     matrix:
       - K8S_VERSION:
             # renovate: datasource=github-releases depName=kubernetes/kubernetes VersionTemplate=v
-          - 1.31.7
+          - 1.31.8
             # renovate: datasource=github-releases depName=kubernetes/kubernetes VersionTemplate=v
-          - 1.30.11
+          - 1.30.12
             # renovate: datasource=github-releases depName=kubernetes/kubernetes VersionTemplate=v
           - 1.29.15
 
@@ -139,9 +139,9 @@ gitleaks-custom:
     matrix:
       - K8S_VERSION:
           # renovate: datasource=github-releases depName=rancher/rke2 VersionTemplate=v
-          - 1.31.7+rke2r1
+          - 1.31.8+rke2r1
           # renovate: datasource=github-releases depName=rancher/rke2 VersionTemplate=v
-          - 1.30.11+rke2r1
+          - 1.30.12+rke2r1
           # renovate: datasource=github-releases depName=rancher/rke2 VersionTemplate=v
           - 1.29.15+rke2r1
 
