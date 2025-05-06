@@ -14,12 +14,26 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
 set -eu
+set -o pipefail
 
-mkdir /opt/rke2-artifacts
-curl -sfL https://get.rke2.io > /opt/install.sh
 export K8S_VERSION_WEB=${K8S_VERSION/+/%2B}
-curl -sfL https://github.com/rancher/rke2/releases/download/v$K8S_VERSION_WEB/rke2-images.linux-amd64.tar.zst -o /opt/rke2-artifacts/rke2-images.linux-amd64.tar.zst
-curl -sfL https://github.com/rancher/rke2/releases/download/v$K8S_VERSION_WEB/rke2.linux-amd64.tar.gz -o /opt/rke2-artifacts/rke2.linux-amd64.tar.gz
-curl -sfL https://github.com/rancher/rke2/releases/download/v$K8S_VERSION_WEB/sha256sum-amd64.txt -o /opt/rke2-artifacts/sha256sum-amd64.txt
+
+# as described here: https://docs.rke2.io/install/airgap#rke2-installsh-script-install
+# and here https://github.com/rancher/cluster-api-provider-rke2/blob/main/docs/book/src/02_topics/01_air-gapped-installation.md#pre-requisites-on-base-image
+
+mkdir /opt/rke2-artifacts && cd /opt/rke2-artifacts
+curl -OLsS "https://github.com/rancher/rke2/releases/download/v${K8S_VERSION_WEB}/rke2-images.linux-amd64.tar.zst"
+curl -OLsS "https://github.com/rancher/rke2/releases/download/v${K8S_VERSION_WEB}/rke2.linux-amd64.tar.gz"
+curl -OLsS "https://github.com/rancher/rke2/releases/download/v${K8S_VERSION_WEB}/sha256sum-amd64.txt"
+curl -sSfL https://get.rke2.io --output /opt/install.sh
+
+ls -lh .
+if [[ ! -s sha256sum-amd64.txt ]]; then
+  echo "RKE2 checksum file is empty!"
+  exit 1
+fi
+sha256sum -c sha256sum-amd64.txt --ignore-missing --strict
