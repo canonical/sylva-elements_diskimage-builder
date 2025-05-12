@@ -46,7 +46,7 @@
 
       - name: lv_var
         base: vg
-        size: 5G
+        size: 8G
 
       - name: lv_vartmp
         base: vg
@@ -61,18 +61,6 @@
         size: 1G
 
       - name: lv_home
-        base: vg
-        size: 1G
-
-      - name: lv_etcd
-        base: vg
-        size: 1G
-
-      - name: lv_containerd
-        base: vg
-        size: 1G
-
-      - name: lv_kubelet
         base: vg
         size: 1G
 
@@ -155,39 +143,6 @@
         mount_point: /home
         fstab:
             options: "rw,relatime,nodev,nosuid"
-            fsck-passno: 1
-
-- mkfs:
-    name: fs_etcd
-    base: lv_etcd
-    type: xfs
-    label: "img-etcd"
-    mount:
-        mount_point: /var/lib/etcd
-        fstab:
-            options: "rw,relatime,nodev"
-            fsck-passno: 1
-
-- mkfs:
-    name: fs_containerd
-    base: lv_containerd
-    type: ext4
-    label: "img-containerd"
-    mount:
-        mount_point: /var/lib/containerd
-        fstab:
-            options: "rw,relatime,nodev"
-            fsck-passno: 1
-
-- mkfs:
-    name: fs_kubelet
-    base: lv_kubelet
-    type: ext4
-    label: "img-kubelet"
-    mount:
-        mount_point: /var/lib/kubelet
-        fstab:
-            options: "rw,relatime,nodev"
             fsck-passno: 1
 
 - mkfs:
