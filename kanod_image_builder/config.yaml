@@ -321,3 +321,8 @@ recipes:
   - kubeadm
   elements:
   - block-device-kubeadm-lvm
+- when:
+  - lvm
+  - ck8s
+  elements:
+  - block-device-ck8s-lvm
