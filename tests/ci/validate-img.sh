@@ -45,10 +45,11 @@ case `echo ${VM_BOOT_MODE} | tr '[:upper:]' '[:lower:]'` in
 esac
 
 # Reset output file
+rm -f ${VM_SERIAL_FILE}
 echo "" > ${VM_SERIAL_FILE}
 
 # Start VM
-(qemu-system-x86_64 ${VM_DEFAULT_OPTIONS} ${VM_OPTIONS} 2>/dev/null 1>/dev/null) &
+(qemu-system-x86_64 ${VM_DEFAULT_OPTIONS} ${VM_OPTIONS} 2>&1 | tee -a $VM_SERIAL_FILE) &
 
 until [ $MONITOR_NB_RETRY -lt 1 ]; do
 	# Check output log
