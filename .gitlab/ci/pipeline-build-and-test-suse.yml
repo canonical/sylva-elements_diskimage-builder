@@ -50,3 +50,8 @@ promote:
 upload-report:
   stage: publish-report
   extends: .publish-scan
+
+# Patch to make openscap make the same checks on opensuse as on SLE15
+.patch-ssg:
+  - echo "Patching the SSG to make the same checks on opensuse as on SLE15"
+  - sed -i 's/^\(.*cpe-dict:check.*\)oval:ssg-installed_OS_is_sle15:def:1/\1oval:ssg-installed_OS_is_opensuse_leap15:def:1/' /usr/share/xml/scap/ssg/content/ssg-sle15-ds.xml
