@@ -10,7 +10,7 @@ roles:
   - name: UBUNTU24-CIS
     scm: git
     src: https://github.com/ansible-lockdown/UBUNTU24-CIS
-    version: "1.0.0"
+    version: "1.0.2"
 EOF
 
 cat > /tmp/site.yml <<EOF
