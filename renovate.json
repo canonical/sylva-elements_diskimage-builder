@@ -3,34 +3,48 @@
   "extends": [
     "gitlab>sylva-projects/sylva-elements/renovate-config:default"
   ],
-  "ignorePaths": ["demo/**"],
+  "ignorePaths": [
+    "demo/**"
+  ],
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": "kanod_image_builder/elements/cis-remediation/post-install.d/97-hardening",
-      "matchStrings": ["https:\/\/github\\.com\/(?<depName>.*?)\\n\\s+version: \"(?<currentValue>.*)\""],
+      "managerFilePatterns": [
+        "/kanod_image_builder/elements/cis-remediation/post-install.d/97-hardening/"
+      ],
+      "matchStrings": [
+        "https://github\\.com/(?<depName>.*?)\\n\\s+version: \"(?<currentValue>.*)\""
+      ],
       "datasourceTemplate": "github-tags"
     },
     {
       "customType": "regex",
-      "fileMatch": "kanod_image_builder/elements/gtp5g/finalise.d/90-install",
+      "managerFilePatterns": [
+        "/kanod_image_builder/elements/gtp5g/finalise.d/90-install/"
+      ],
       "depNameTemplate": "free5gc/gtp5g",
-      "matchStrings": ["\\s+gtp5g_version=\"?(?<currentValue>v?\\d+.\\d+.\\d+)\"?"],
+      "matchStrings": [
+        "\\s+gtp5g_version=\"?(?<currentValue>v?\\d+.\\d+.\\d+)\"?"
+      ],
       "datasourceTemplate": "github-tags"
     },
     {
       "description": "Match docker image define in CI_IMAGE variables for gitlab-ci",
       "customType": "regex",
-      "fileMatch": [".gitlab-ci.yml"],
+      "managerFilePatterns": [
+        "/.gitlab-ci.yml/"
+      ],
       "matchStrings": [
-        "\\s+# renovate: datasource=(?<datasource>.*?)\\s+.*?CI_IMAGE: (?<registryUrl>.*?)\/(?<depName>.*?):(?<currentValue>.*)"
+        "\\s+# renovate: datasource=(?<datasource>.*?)\\s+.*?CI_IMAGE: (?<registryUrl>.*?)/(?<depName>.*?):(?<currentValue>.*)"
       ],
       "registryUrlTemplate": "https://{{{ registryUrl }}}"
     },
     {
       "description": "Match Kubernetes version",
       "customType": "regex",
-      "fileMatch": [".gitlab-ci.yml"],
+      "managerFilePatterns": [
+        "/.gitlab-ci.yml/"
+      ],
       "matchStrings": [
         "\\s+# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( VersionTemplate=(?<VersionTemplate>.*?))?\\s+-\\s+(?<currentValue>\\d+.\\d+.\\d+.*)"
       ],
@@ -39,40 +53,45 @@
   ],
   "packageRules": [
     {
-      "matchPackageNames": ["rancher/rke2"],
+      "matchPackageNames": [
+        "rancher/rke2"
+      ],
       "versioning": "regex:(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\+rke2r(?<build>\\d+)"
     },
     {
-      "matchPackagePatterns": [
-        "kubernetes/kubernetes",
-        "rancher/rke2"
+      "matchUpdateTypes": [
+        "major",
+        "minor"
       ],
-      "matchUpdateTypes": ["major", "minor"],
       "description": "disabling major and minor version to only keep the patch updates",
-      "enabled": false
+      "enabled": false,
+      "matchPackageNames": [
+        "/kubernetes/kubernetes/",
+        "/rancher/rke2/"
+      ]
     },
     {
-      "matchPackagePatterns": [
-        "kubernetes/kubernetes",
-        "rancher/rke2"
-      ],
       "description": "renovate to propose only patch update without grouping them with minor update",
       "separateMinorPatch": true,
-      "separateMajorMinor": true
+      "separateMajorMinor": true,
+      "matchPackageNames": [
+        "/kubernetes/kubernetes/",
+        "/rancher/rke2/"
+      ]
     },
     {
       "description": "Regroup kubernetes updates",
-      "matchPackagePatterns": [
-        "kubernetes/kubernetes",
-        "rancher/rke2"
-      ],
-      "groupName": "Kubernetes updates"
+      "groupName": "Kubernetes updates",
+      "matchPackageNames": [
+        "/kubernetes/kubernetes/",
+        "/rancher/rke2/"
+      ]
     },
     {
-      "matchPackagePatterns": [
-        ".*ci-disk-image-builder.*"
-      ],
-      "groupName": "CI images"
+      "groupName": "CI images",
+      "matchPackageNames": [
+        "/.*ci-disk-image-builder.*/"
+      ]
     }
   ]
 }
