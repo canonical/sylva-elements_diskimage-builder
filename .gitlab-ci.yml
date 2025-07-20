@@ -26,7 +26,7 @@ variables:
   # renovate: datasource=docker
   GENERATE_OS_SBOM_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/trivy-libguestfs:1.0.0
   # renovate: datasource=docker
-  OPENSCAP_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/openscap:1.0.1
+  OPENSCAP_CI_IMAGE: registry.gitlab.com/sylva-projects/sylva-elements/container-images/openscap:1.1.0
 
 stages:
   - test
